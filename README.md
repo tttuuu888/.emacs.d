@@ -1,12 +1,12 @@
-# SK Emacs setting
+# SK Emacs setting #
 This is my personal Emacs setting.
 
-## Setup
-    ```git clone https://github.com/tttuuu888/emacs.d.git ~/.emacs.d```
+## Setup ##
+    git clone https://github.com/tttuuu888/emacs.d.git ~/.emacs.d
 Packages are automatically installed when you start emacs.
 (Try restart a couple of times more, if it's not done at once.)
 
-## Packages
+## Packages ##
     * auto-complete
     * magit / git-commit-mode / git-rebase-mode
     * ggtags
@@ -19,14 +19,16 @@ Packages are automatically installed when you start emacs.
     * clojure-mode / cider / ac-cider-compliment / paredit
     * expand-region
 
-## Dependencies
-Python :
-    ```pip install virtualenv```
+## Dependencies ##
 
-Cygwin :
-* If you don't use cygwin on Windows, edit **conf.d/0500_cygwin.el** file as below:
-    ```...
-        (defvar cygwin-use **nil**)
-    ```
+#### Python : ####
+    pip install virtualenv
+
+#### Cygwin : ####
+If you don't use cygwin on Windows, edit `conf.d/0500_cygwin.el` file as below:
+
+        ...
+            (defvar cygwin-use nil)
+
     
     
