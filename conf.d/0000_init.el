@@ -11,6 +11,7 @@
     git-commit-mode
     git-rebase-mode
     ggtags
+    xcscope
     magit
     popup
     python-mode
@@ -38,9 +39,6 @@
     (push 'anything-git installing-package-list)
     (push 'anything-git-grep installing-package-list)
     (push 'cygwin-mount installing-package-list)))
-
-(when unixp  
-    (push 'xcscope installing-package-list))
 
 (let ((not-installed (loop for x in installing-package-list
                         when (not (package-installed-p x))

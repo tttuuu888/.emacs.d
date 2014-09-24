@@ -9,7 +9,7 @@ Packages are automatically installed when you start emacs.
 ## Packages ##
     * auto-complete
     * magit / git-commit-mode / git-rebase-mode
-    * ggtags
+    * ggtags / xcscope
     * python-mode / jedi
     * redo+
     * slime / ac-slime
