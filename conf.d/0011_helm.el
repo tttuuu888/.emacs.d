@@ -5,8 +5,8 @@
 
 (define-key global-map [(control c)(h)(f)] 'helm-git-files)
 (if unixp
-     (define-key global-map [(control c)(h)(s)] 'helm-git-grep)
-     (define-key global-map [(control c)(h)(s)] 'anything-git-grep))
+     (define-key global-map [(control c)(h)(s)] 'helm-git-grep-at-point)
+     (define-key global-map [(control c)(h)(s)] 'anything-git-grep-from-here))
 
 (when (not window-system)
   (custom-set-faces
