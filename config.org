@@ -1456,7 +1456,6 @@ settings.
           ivy-sort-matches-functions-alist
           '((t . ivy--prefix-sort)
             (ivy-switch-buffer . ivy-sort-function-buffer)))
-    (require 'subr-x)
     (ivy-mode 1)
     (when (display-graphic-p)
       (ivy-posframe-mode 1))
