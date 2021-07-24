@@ -2148,7 +2148,7 @@ settings.
   (use-package eglot
     :config
     (setq eglot-server-programs
-          (append '(((c++-mode c-mode) "clangd")
+          (append '(((c++-mode c-mode) "ccls")
                     (python-mode
                      . (eglot-pyright . ("pyright-langserver" "--stdio"))))
                   eglot-server-programs))
