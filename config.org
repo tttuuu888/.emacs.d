@@ -2162,7 +2162,8 @@ settings.
     (setq eglot-server-programs
           (append '(((c++-mode c-mode) "ccls")
                     (python-mode
-                     . (eglot-pyright . ("pyright-langserver" "--stdio"))))
+                     . (eglot-pyright . ("pyright-langserver" "--stdio")))
+                    ((rust-mode) "rust-analyzer"))
                   eglot-server-programs))
     (require 'projectile)
     (defun my-projectile-project-find (dir)
