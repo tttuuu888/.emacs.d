@@ -1660,7 +1660,7 @@ settings.
   
   (use-package python
     :ensure nil
-    :hook (python-mode . eglot-ensure)
+    :hook (python-mode . my-python-mode-hook)
     :commands sk-toggle-python
     :bind (:map python-mode-map
             ("S-<left>"  . python-indent-shift-left)
@@ -1668,6 +1668,9 @@ settings.
     :config
     (setq imenu-create-index-function 'python-imenu-create-index
           python-indent-guess-indent-offset-verbose nil)
+    (defun my-python-mode-hook ()
+      (setq-local tab-width 4)
+      (eglot-ensure))
     (defun sk-toggle-python ()
       "Toggle between Python2 and Python3"
       (interactive)
