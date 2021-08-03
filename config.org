@@ -620,12 +620,6 @@ settings.
     (add-to-list 'recentf-exclude
                  (expand-file-name "elpa/.*" emacs-config-dir)))
   
-  (use-package ido
-    :ensure nil
-    :config
-    (ivy-mode 1)
-    (defalias 'ido-completing-read 'ivy-completing-read))
-  
   (use-package calendar
     :ensure nil
     :bind (:map calendar-mode-map
@@ -1453,6 +1447,7 @@ settings.
            ("C-j"      . ivy-partial)
            ("TAB"      . ivy-alt-done))
     :init
+    (defalias 'completing-read 'ivy-completing-read)
     (evil-leader/set-key
       "b" 'ivy-switch-buffer)
     :config
