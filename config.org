@@ -1603,6 +1603,10 @@ settings.
     (sk-defer-init (which-key-mode 1)))
   
   (use-package auctex)
+  
+  (use-package avy
+    :init
+    (evil-global-set-key 'normal "gss" 'avy-goto-char-2))
 #+END_SRC
 * Development packages - built-in
 #+BEGIN_SRC emacs-lisp
