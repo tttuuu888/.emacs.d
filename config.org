@@ -895,17 +895,6 @@ settings.
     (add-hook 'org-babel-after-execute-hook 'my-org-inline-image-hook)
     (add-hook 'org-export-before-processing-hook 'my-org-before-process-hook))
   
-  (use-package ox-latex
-    :ensure nil
-    :config
-    (add-to-list 'org-latex-classes
-                 '("awesomecv" "\\documentclass{awesome-cv} [NO-DEFAULT-PACKAGES]"
-                   ("\\cvsection{%s}" . "\\cvsection{%s}")
-                   ("\\cvsubsection{%s}" . "\\cvsubsection{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\cvparagraph{%s}" . "\\cvparagraph{%s}"))))
-  
   (use-package ibuffer
     :ensure nil
     :bind ("C-x C-b" . ibuffer)
