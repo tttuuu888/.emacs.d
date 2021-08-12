@@ -2173,13 +2173,6 @@ settings.
                t
              :json-false)))))
   
-    (add-to-list 'project-find-functions 'my-projectile-project-find)
-    (advice-add 'projectile-kill-buffers :before
-                (lambda ()
-                  (when (eglot-current-server)
-                    (call-interactively
-                     'eglot-shutdown '((eglot-current-server) t)))))
-  
     (defun my-eglot-start (&rest _)
       (let* ((file (buffer-file-name))
              (proj (cdr (eglot--current-project)))
