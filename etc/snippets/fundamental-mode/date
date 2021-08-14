@@ -1,4 +1,4 @@
 # name: current-date
-# key: ;dd
+# key: ,dd
 # --
 `(format-time-string "%Y-%m-%d %A")`
