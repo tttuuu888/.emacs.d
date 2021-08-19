@@ -5,8 +5,7 @@
       (sk-config-el  (expand-file-name "config.el"  user-emacs-directory))
       (sk-config-org (expand-file-name "config.org" user-emacs-directory)))
 
-  (when (or (not (file-exists-p sk-config-el))
-            (file-newer-than-file-p sk-config-org sk-config-el))
+  (when (file-newer-than-file-p sk-config-org sk-config-el)
     (package-initialize)
     (require 'org)
     (org-babel-tangle-file sk-config-org))
