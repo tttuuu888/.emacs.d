@@ -2,12 +2,12 @@
 
 (let ((file-name-handler-alist nil)
       (gc-cons-threshold most-positive-fixnum)
-      (sk-config-el  (expand-file-name "config.el"  user-emacs-directory))
-      (sk-config-org (expand-file-name "config.org" user-emacs-directory)))
+      (config-el  (expand-file-name "config.el"  user-emacs-directory))
+      (config-org (expand-file-name "config.org" user-emacs-directory)))
 
-  (when (file-newer-than-file-p sk-config-org sk-config-el)
+  (when (file-newer-than-file-p config-org config-el)
     (package-initialize)
     (require 'org)
-    (org-babel-tangle-file sk-config-org))
+    (org-babel-tangle-file config-org))
 
-  (require 'config sk-config-el))
+  (require 'config config-el))
