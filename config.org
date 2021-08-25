@@ -2147,6 +2147,7 @@ settings.
   (use-package eglot
     :config
     (setq my-eglot-projects (make-hash-table :test 'equal)
+          eglot-autoshutdown t
           eglot-server-programs
           (append '(((c++-mode c-mode) "ccls")
                     (python-mode
@@ -2157,7 +2158,6 @@ settings.
     (defun my-projectile-project-find (dir)
       (let ((root (projectile-project-root dir)))
         (and root (cons 'transient root))))
-  
     (defclass eglot-pyright (eglot-lsp-server) ()
       :documentation "MS pyright Language Server.")
     (cl-defmethod eglot-client-capabilities ((server eglot-pyright))
@@ -2168,37 +2168,6 @@ settings.
           ,(if (my-projectile-project-find default-directory)
                t
              :json-false)))))
-  
-    (defun my-eglot-start (&rest _)
-      (let* ((file (buffer-file-name))
-             (proj (cdr (eglot--current-project)))
-             (my-proj-list (gethash proj my-eglot-projects)))
-        (puthash proj (cons file my-proj-list) my-eglot-projects)))
-  
-    (defun my-eglot-kill-file (&rest _)
-      (let* ((file (buffer-file-name))
-             (my-projs (hash-table-keys my-eglot-projects)))
-        (dolist (proj my-projs)
-          (let ((my-proj-list (gethash proj my-eglot-projects)))
-            (when (member file my-proj-list)
-              (puthash proj (delete file my-proj-list) my-eglot-projects)
-              (unless (delete file my-proj-list)
-                (eglot-shutdown (eglot-current-server))
-                (remhash proj my-eglot-projects)))))))
-  
-    (defun my-eglot-open-file (&rest _)
-      (let* ((file (buffer-file-name))
-             (my-projs (hash-table-keys my-eglot-projects)))
-        (dolist (proj my-projs)
-          (when (string-match-p proj file)
-            (puthash proj
-                     (cons file (gethash proj my-eglot-projects))
-                     my-eglot-projects)))))
-  
-    (add-hook 'eglot-server-initialized-hook 'my-eglot-start)
-    (add-hook 'kill-buffer-hook 'my-eglot-kill-file)
-    (add-hook 'find-file-hook 'my-eglot-open-file)
-  
     (evil-define-minor-mode-key 'normal 'eglot--managed-mode
       "gh" 'eldoc-doc-buffer))
   
