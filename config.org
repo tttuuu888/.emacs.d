@@ -821,6 +821,7 @@ settings.
       "ce"  'org-export-dispatch
       "ci"  'org-insert-link
       "cl"  'org-store-link
+      "cs"  'my-org-capture-image
       "ct"  'org-todo
       "cw"  'org-refile
       "ee"  'org-edit-src-code
@@ -892,6 +893,19 @@ settings.
        ((eq exporter 'latex)
         (setq-local org-export-with-section-numbers t
                     org-export-with-toc 2))))
+    (defun my-org-capture-image ()
+      (interactive)
+      (let* ((pre (concat
+                   (if (buffer-file-name)
+                       (file-name-base (buffer-file-name))
+                     (buffer-name))
+                   "_" (format-time-string "%y%m%d") "_"))
+             (img (concat "imgs/"(make-temp-name pre) ".png")))
+        (unless (file-exists-p "imgs")
+          (make-directory "imgs"))
+        (call-process "import" nil nil nil img)
+        (when (file-exists-p img)
+          (insert (concat "[[file:" img "]]")))))
     (add-hook 'org-babel-after-execute-hook 'my-org-inline-image-hook)
     (add-hook 'org-export-before-processing-hook 'my-org-before-process-hook))
   
