@@ -706,7 +706,7 @@ settings.
       (interactive)
       (let* ((dest (read-file-name "Rsync to: " (dired-dwim-target-directory)))
              (files (dired-get-marked-files nil current-prefix-arg))
-             (regex "\\(^/scp.?:\\)\\|\\(^/ssh.?:\\)")
+             (regex (rx bol "/" (or "ssh" "scp") (? any) ":"))
              (prefix (cond ((string-match-p regex dest)
                             (replace-regexp-in-string regex "" dest))
                            ((string-match-p ".@.*:" dest) dest)
@@ -1502,7 +1502,9 @@ settings.
              (path (if path-mod
                        (concat path-prefix
                                "…"
-                               (replace-regexp-in-string "^[^~/]*" "" path-mod))
+                               (replace-regexp-in-string (rx bol (* (not (or "~" "/"))))
+                                                         ""
+                                                         path-mod))
                      path-opt))
              (form (format "%%-%ds  %%-%ds  %%s" nmax path-margin)))
         (format form buf mode (or path ""))))
