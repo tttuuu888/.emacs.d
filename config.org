@@ -1861,33 +1861,36 @@ settings.
             (goto-char (1+ (point))))
           (call-interactively 'cider-eval-last-sexp)))
       (setq deactivate-mark t))
-    (evil-define-key 'normal clojure-mode-map
-      "gd"  'cider-find-dwim
-      "gp"  'cider-pop-back
-      "ghc" 'cider-clojuredocs
-      "ghe" 'cider-apropos-documentation-select
-      "ghh" 'cider-doc
-      "ghj" 'cider-javadoc
-      "ghw" 'cider-clojuredocs-web)
-    (evil-leader/set-key-for-mode 'clojure-mode
-      "z"   'cider-switch-to-repl-buffer
-      "eb"  'cider-eval-buffer
-      "ee"  'my-cider-eval-last-sexp-or-region
-      "ef"  'cider-eval-defun-at-point
-      "er"  'cider-eval-region
-      "epc" 'cider-pprint-eval-last-sexp-to-comment
-      "epf" 'cider-pprint-eval-defun-at-point
-      "epp" 'cider-pprint-eval-last-sexp
-      "esb" 'cider-browse-ns
-      "esf" 'cider-find-ns
-      "ess" 'cider-repl-set-ns
-      "eta" 'cider-test-rerun-test
-      "etn" 'cider-test-run-ns-tests
-      "etp" 'cider-test-run-project-tests
-      "etr" 'cider-test-rerun-failed-tests
-      "ett" 'cider-test-run-test
-      "evv" 'cider-eval-sexp-at-point
-      "evx" 'cider-eval-last-sexp-and-replace))
+    (dolist (m (list clojure-mode-map clojurescript-mode-map))
+      (evil-define-key* 'normal m
+        "gd"  'cider-find-dwim
+        "gp"  'cider-pop-back
+        "ghc" 'cider-clojuredocs
+        "ghe" 'cider-apropos-documentation-select
+        "ghh" 'cider-doc
+        "ghj" 'cider-javadoc
+        "ghw" 'cider-clojuredocs-web))
+    (dolist (m '(clojure-mode clojurescript-mode))
+      (evil-leader/set-key-for-mode m
+        "z"   'cider-switch-to-repl-buffer
+        "cj"  'cider
+        "eb"  'cider-eval-buffer
+        "ee"  'my-cider-eval-last-sexp-or-region
+        "ef"  'cider-eval-defun-at-point
+        "er"  'cider-eval-region
+        "epc" 'cider-pprint-eval-last-sexp-to-comment
+        "epf" 'cider-pprint-eval-defun-at-point
+        "epp" 'cider-pprint-eval-last-sexp
+        "esb" 'cider-browse-ns
+        "esf" 'cider-find-ns
+        "ess" 'cider-repl-set-ns
+        "eta" 'cider-test-rerun-test
+        "etn" 'cider-test-run-ns-tests
+        "etp" 'cider-test-run-project-tests
+        "etr" 'cider-test-rerun-failed-tests
+        "ett" 'cider-test-run-test
+        "evv" 'cider-eval-sexp-at-point
+        "evx" 'cider-eval-last-sexp-and-replace)))
   
   (use-package cider
     :config
@@ -1913,10 +1916,9 @@ settings.
       (kbd "RET") 'my-comint-return)
     (evil-define-minor-mode-key 'normal 'cider-popup-buffer-mode
       "q" 'quit-window)
-    (evil-leader/set-key-for-mode 'clojurescript-mode
-      "z" 'cider-switch-to-repl-buffer)
     (evil-leader/set-key-for-mode 'cider-repl-mode
-      "z" 'cider-switch-to-last-clojure-buffer))
+      "z"  'cider-switch-to-last-clojure-buffer
+      "cs" 'cider-repl-set-ns))
   
   (use-package clj-refactor
     :disabled t
