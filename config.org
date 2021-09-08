@@ -1493,7 +1493,8 @@ settings.
                      path-opt))
              (form (format "%%-%ds  %%-%ds  %%s" nmax path-margin)))
         (format form buf mode (or path ""))))
-    (ivy-set-display-transformer 'ivy-switch-buffer 'sk-ivy-buffer-transformer)
+    (ivy-configure 'ivy-switch-buffer
+      :display-transformer-fn 'sk-ivy-buffer-transformer)
     (ivy-set-actions
      'projectile-switch-project
      '(("d" (lambda (p) (projectile-remove-known-project p)) "delete"))))
@@ -1577,7 +1578,7 @@ settings.
                 (files (directory-files sbin t "\\.sh$"))
                 (cand (alist-get sbin sk-compile-history nil nil #'equal)))
             (dolist (f files)
-              (add-to-list 'files-alist (cons (file-name-nondirectory f) f) t))
+              (push (cons (file-name-nondirectory f) f) files-alist))
             (when cand
               (push (cons (file-name-nondirectory cand) cand) files-alist))
             (delete-dups files-alist))
@@ -1585,8 +1586,7 @@ settings.
   
     (defun sk-compile-action (cmd-alist)
       (let* ((cmd (cdr cmd-alist))
-             (dir (file-name-directory cmd))
-             (cand (alist-get dir sk-compile-history nil nil #'equal)))
+             (dir (file-name-directory cmd)))
         (setf (alist-get dir sk-compile-history nil 'remove #'equal) cmd)
         (compile cmd)))
   
