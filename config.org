@@ -2007,8 +2007,7 @@ settings.
            ("\\.jsx\\'" . js2-jsx-mode))
     :hook (js2-mode . eglot-ensure)
     :config
-    (setq js2-basic-offset 2
-          js2-strict-missing-semi-warning nil)
+    (setq js2-basic-offset 2)
     (add-hook 'js2-mode-hook 'js2-imenu-extras-mode))
   
   (use-package js2-refactor
