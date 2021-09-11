@@ -364,6 +364,28 @@ Various useful functions.
         (if hash
             (substring hash 0 7)
           (substring branch 0 (1- (length branch)))))))
+  
+  (defun sk-ctrl-c-map-to-evil-leader-c-map (mode mode-map)
+    "Change C-c ... key map to <leader> c... key map"
+    (let* (ret
+           (target (alist-get ?\C-c mode-map))
+           (cm (number-sequence ?\C-a ?\C-z))
+           (ks (append cm (number-sequence ?A ?Z) (number-sequence ?a ?z))))
+      (defun ctrl-map-search (elt pre)
+        (if (symbolp elt)
+            (setq ret (append ret (list (cons pre elt))))
+          (dolist (k ks)
+            (let ((nelt (alist-get k elt))
+                  (npre (if (member k cm)
+                            (+ k 96)
+                          k)))
+              (when nelt
+                (ctrl-map-search nelt (append pre (list npre))))))))
+      (ctrl-map-search target (list ?\c))
+      (dolist (e ret)
+        (let ((key (mapconcat 'single-key-description (car e) "")))
+          (evil-leader/set-key-for-mode mode
+            key (cdr e))))))
 #+END_SRC
 
 ** SK-mode-line
@@ -816,22 +838,17 @@ settings.
      org-startup-with-inline-images t
      org-todo-keywords
      '((sequence "TODO(t)" "PROG(p)" "WAIT(w)" "|" "DONE(d)" "KILL(k)")))
+  
+    ;; C-c ... bindings to <leader> c... bindings
+    (sk-ctrl-c-map-to-evil-leader-c-map 'org-mode org-mode-map)
     (evil-leader/set-key-for-mode 'org-mode
-      "cb"  'org-switchb
-      "ce"  'org-export-dispatch
-      "ci"  'org-insert-link
-      "cl"  'org-store-link
-      "cs"  'my-org-capture-image
-      "ct"  'org-todo
-      "cw"  'org-refile
-      "ee"  'org-edit-src-code
-      "ei"  'org-insert-structure-template
-      "tc"  'org-table-create
-      "tl"  'org-tags-view
-      "ts"  'org-set-tags-command
-      "cdd" 'org-deadline
-      "cds" 'org-schedule
-      "cd." 'org-time-stamp)
+      "cb" 'org-switchb
+      "cp" 'my-org-capture-image
+      "c." 'org-time-stamp
+      "ei" 'org-insert-structure-template
+      "tc" 'org-table-create
+      "tl" 'org-tags-view
+      "ts" 'org-set-tags-command)
     (evil-leader/set-key-minor-mode 'org-src-mode
       "ec" 'org-edit-src-exit
       "eq" 'org-edit-src-abort)
@@ -1985,35 +2002,8 @@ settings.
           web-mode-code-indent-offset 2
           web-mode-markup-indent-offset 2
           web-mode-enable-current-element-highlight t)
-    (defun tree-assoc (key tree)
-      (when (consp tree)
-        (cl-destructuring-bind (x . y)  tree
-          (if (eql x key) tree
-            (or (tree-assoc key x) (tree-assoc key y))))))
-    (defmacro code-to-key (code)
-      `(key-description (vector ,code)))
-    (defun cc-map-to-evil-leader-map (mode ori1 ori2 con1 con2)
-      "Find bindings start with ori1 ori2 from mode-map and
-  convert it to corresponding evil-leader map. For example, all
-  bindings of C-c C-e X is converted to leader c e X by below:
-  '(cc-map-to-evil-leader-map ?\C-c ?\C-e c e)'"
-      (let* ((map (symbol-value (intern (concat (symbol-name mode) "-map"))))
-             (cc-maps (thread-last map (tree-assoc ori1) (tree-assoc ori2) cddr)))
-        (dolist (pair cc-maps)
-          (let ((key (car pair))
-                (func (cdr pair)))
-            (evil-leader/set-key-for-mode mode
-              (concat con1 con2 (code-to-key key)) func)))))
-    (cc-map-to-evil-leader-map 'web-mode ?\C-c ?\C-a "c" "a")
-    (cc-map-to-evil-leader-map 'web-mode ?\C-c ?\C-b "c" "b")
-    (cc-map-to-evil-leader-map 'web-mode ?\C-c ?\C-d "c" "d")
-    (cc-map-to-evil-leader-map 'web-mode ?\C-c ?\C-e "c" "e")
-    (cc-map-to-evil-leader-map 'web-mode ?\C-c ?\C-t "c" "t")
-    (evil-leader/set-key-for-mode 'web-mode
-      "cf" 'web-mode-fold-or-unfold
-      "cl" 'web-mode-file-link
-      "cn" 'web-mode-navigate
-      "cw" 'web-mode-whitespaces-show))
+    ;; C-c ... bindings to <leader> c... bindings
+    (sk-ctrl-c-map-to-evil-leader-c-map 'web-mode web-mode-map))
   
   (use-package js2-mode
     :mode (("\\.js\\'" . js2-mode)
