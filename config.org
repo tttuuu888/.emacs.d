@@ -1974,19 +1974,16 @@ settings.
             (call-interactively 'geiser-eval-region)
           (geiser-eval-region back pos)))
       (setq deactivate-mark t))
-    (defun sk-geiser-repl ()
-      (interactive)
-      (geiser-set-scheme)
-      (geiser-mode-switch-to-repl nil))
-    (sk-switch-buffer-repl sk-scheme-buffer-repl-toggle
-      scheme-mode geiser-repl-mode sk-geiser-repl)
     (evil-define-key 'normal geiser-mode-map
       "gh" 'geiser-doc-symbol-at-point)
     (evil-leader/set-key-for-mode 'scheme-mode
+      "z"  'geiser-mode-switch-to-repl
       "eb" 'geiser-eval-buffer
       "ee" 'my-geiser-eval-last-sexp-or-region
       "ef" 'geiser-eval-definition
-      "er" 'geiser-eval-region))
+      "er" 'geiser-eval-region)
+    (evil-leader/set-key-for-mode 'geiser-repl-mode
+      "z"  'switch-to-geiser))
   
   (use-package web-mode
     :mode (("\\.html\\'" . web-mode)
