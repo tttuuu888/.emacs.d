@@ -1616,6 +1616,7 @@ settings.
   (use-package prog-mode
     :ensure nil
     :config
+    (evil-leader/set-key (kbd "<DEL>") 'c-hungry-backspace)
     (evil-define-key 'normal prog-mode-map
       "gd" 'xref-find-definitions
       "gp" 'xref-pop-marker-stack
@@ -1787,16 +1788,11 @@ settings.
     (evil-leader/set-key-for-mode 'sql-interactive-mode
       "l" 'my-comint-history))
   
-  (use-package cc-cmds
+  (use-package cc-mode
     :ensure nil
-    :init
-    (evil-leader/set-key (kbd "<DEL>") 'c-hungry-backspace)
     :config
     (setq c-basic-offset tab-width
           c-default-style "bsd")
-    (bind-keys :map c-mode-base-map
-               ("C-<backspace>" . c-hungry-backspace)
-               ("C-c <DEL>"     . c-hungry-backspace))
     (defvaralias 'c-basic-offset 'tab-width))
   
   (use-package compile
