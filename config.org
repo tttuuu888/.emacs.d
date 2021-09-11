@@ -1789,14 +1789,14 @@ settings.
   
   (use-package cc-cmds
     :ensure nil
-    :bind (:map c-mode-base-map
-            ("C-<backspace>" . c-hungry-backspace)
-            ("C-c <DEL>"     . c-hungry-backspace))
     :init
     (evil-leader/set-key (kbd "<DEL>") 'c-hungry-backspace)
     :config
     (setq c-basic-offset tab-width
           c-default-style "bsd")
+    (bind-keys :map c-mode-base-map
+               ("C-<backspace>" . c-hungry-backspace)
+               ("C-c <DEL>"     . c-hungry-backspace))
     (defvaralias 'c-basic-offset 'tab-width))
   
   (use-package compile
