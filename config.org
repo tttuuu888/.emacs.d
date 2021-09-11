@@ -845,6 +845,7 @@ settings.
       "cb" 'org-switchb
       "cp" 'my-org-capture-image
       "c." 'org-time-stamp
+      "ee" 'org-edit-src-code
       "ei" 'org-insert-structure-template
       "tc" 'org-table-create
       "tl" 'org-tags-view
