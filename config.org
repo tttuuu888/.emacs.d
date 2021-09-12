@@ -367,7 +367,7 @@ Various useful functions.
   
   (defun sk-C-c-map-to-leader-c-map (mode mode-map)
     "Change C-c ... key map to <leader> c... key map"
-    (let* (ret
+    (let* ((ret nil)
            (target (alist-get ?\C-c mode-map))
            (cm (number-sequence ?\C-a ?\C-z))
            (ks (append cm (number-sequence ?A ?Z) (number-sequence ?a ?z))))
@@ -376,16 +376,13 @@ Various useful functions.
             (setq ret (append ret (list (cons pre elt))))
           (dolist (k ks)
             (let ((nelt (alist-get k elt))
-                  (npre (if (member k cm)
-                            (+ k 96)
-                          k)))
+                  (npre (if (member k cm) (+ k 96) k)))
               (when nelt
                 (ctrl-map-search nelt (append pre (list npre))))))))
       (ctrl-map-search target (list ?\c))
       (dolist (e ret)
         (let ((key (mapconcat 'single-key-description (car e) "")))
-          (evil-leader/set-key-for-mode mode
-            key (cdr e))))))
+          (evil-leader/set-key-for-mode mode key (cdr e))))))
 #+END_SRC
 
 ** SK-mode-line
