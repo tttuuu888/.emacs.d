@@ -1968,6 +1968,7 @@ settings.
   (use-package geiser
     :commands sk-geiser-repl
     :config
+    (require 'geiser-mode)
     (setq geiser-chicken-binary "chicken-csi"
           geiser-repl-history-filename
           (expand-file-name ".geiser_history" user-emacs-directory))
@@ -1980,6 +1981,7 @@ settings.
             (call-interactively 'geiser-eval-region)
           (geiser-eval-region back pos)))
       (setq deactivate-mark t))
+    (sk-C-c-map-to-leader-c-map 'scheme-mode geiser-mode-map)
     (evil-define-key 'normal geiser-mode-map
       "gh" 'geiser-doc-symbol-at-point)
     (evil-leader/set-key-for-mode 'scheme-mode
