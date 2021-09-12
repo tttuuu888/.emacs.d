@@ -365,7 +365,7 @@ Various useful functions.
             (substring hash 0 7)
           (substring branch 0 (1- (length branch)))))))
   
-  (defun sk-ctrl-c-map-to-evil-leader-c-map (mode mode-map)
+  (defun sk-C-c-map-to-leader-c-map (mode mode-map)
     "Change C-c ... key map to <leader> c... key map"
     (let* (ret
            (target (alist-get ?\C-c mode-map))
@@ -840,7 +840,7 @@ settings.
      '((sequence "TODO(t)" "PROG(p)" "WAIT(w)" "|" "DONE(d)" "KILL(k)")))
   
     ;; C-c ... bindings to <leader> c... bindings
-    (sk-ctrl-c-map-to-evil-leader-c-map 'org-mode org-mode-map)
+    (sk-C-c-map-to-leader-c-map 'org-mode org-mode-map)
     (evil-leader/set-key-for-mode 'org-mode
       "cb" 'org-switchb
       "cp" 'my-org-capture-image
@@ -2002,7 +2002,7 @@ settings.
           web-mode-markup-indent-offset 2
           web-mode-enable-current-element-highlight t)
     ;; C-c ... bindings to <leader> c... bindings
-    (sk-ctrl-c-map-to-evil-leader-c-map 'web-mode web-mode-map))
+    (sk-C-c-map-to-leader-c-map 'web-mode web-mode-map))
   
   (use-package js2-mode
     :mode (("\\.js\\'" . js2-mode)
