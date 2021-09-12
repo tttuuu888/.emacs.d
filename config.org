@@ -1838,6 +1838,7 @@ settings.
   
   (use-package clojure-mode
     :config
+    (require 'cider)
     (defun my-cider-eval-last-sexp-or-region (&rest _)
       (interactive "p")
       (if (region-active-p)
@@ -1848,6 +1849,8 @@ settings.
             (goto-char (1+ (point))))
           (call-interactively 'cider-eval-last-sexp)))
       (setq deactivate-mark t))
+    (sk-C-c-map-to-leader-c-map 'clojure-mode cider-mode-map)
+    (sk-C-c-map-to-leader-c-map 'clojurescript-mode cider-mode-map)
     (dolist (m (list clojure-mode-map clojurescript-mode-map))
       (evil-define-key* 'normal m
         "gd"  'cider-find-dwim
@@ -1925,6 +1928,7 @@ settings.
     (defun my-sly-mrepl ()
       (interactive)
       (call-interactively (if (sly-connected-p) 'sly-mrepl 'sly)))
+    (sk-C-c-map-to-leader-c-map 'lisp-mode sly-mode-map)
     (evil-leader/set-key-minor-mode 'sly-mode
       "z"   'my-sly-mrepl
       "cb"  'sly-compile-file
