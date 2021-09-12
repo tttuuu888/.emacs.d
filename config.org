@@ -1692,8 +1692,10 @@ settings.
       (comint-send-input))
     (evil-leader/set-key-for-mode 'inferior-python-mode
       "l"  'my-comint-history
+      "cd" 'python-describe-at-point
       "ch" 'my-python-help-repl)
     (evil-leader/set-key-for-mode 'python-mode
+      "cd" 'python-describe-at-point
       "eb" 'python-shell-send-buffer
       "ee" 'my-python-shell-send-line-or-region
       "ef" 'python-shell-send-defun
