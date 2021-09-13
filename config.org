@@ -838,6 +838,7 @@ settings.
     ;; C-c ... bindings to <leader> c... bindings
     (sk-C-c-map-to-leader-c-map 'org-mode org-mode-map)
     (evil-leader/set-key-for-mode 'org-mode
+      "c <SPC>" 'org-table-blank-field
       "cb" 'org-switchb
       "cp" 'my-org-capture-image
       "c." 'org-time-stamp
