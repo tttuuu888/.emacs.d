@@ -773,6 +773,8 @@ settings.
     (evil-leader/set-key
       "na" 'org-agenda)
     :config
+    (require 'ox)
+    (require 'ox-beamer)
     (setq
      my-org-path "~/Dropbox/org/"
      my-org-note (expand-file-name "notes.org" my-org-path)
