@@ -1989,6 +1989,7 @@ settings.
           (geiser-eval-region back pos)))
       (setq deactivate-mark t))
     (sk-C-c-map-to-leader-c-map 'scheme-mode geiser-mode-map)
+    (sk-C-c-map-to-leader-c-map 'geiser-repl-mode geiser-repl-mode-map)
     (evil-define-key 'normal geiser-mode-map
       "gh" 'geiser-doc-symbol-at-point)
     (evil-leader/set-key-for-mode 'scheme-mode
