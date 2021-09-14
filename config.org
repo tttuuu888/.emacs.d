@@ -676,11 +676,10 @@ settings.
                  '((lambda () (< large-file-warning-threshold (buffer-size)))
                    . fundamental-mode))
     :config
+    (require 'dired-x)
     (setq dired-listing-switches "-alh --group-directories-first"
           dired-omit-extensions '("~")
           dired-omit-files (rx bol (or "#" ".")))
-  
-    (require 'dired-x)
     (add-hook 'dired-mode-hook 'dired-omit-mode)
   
     (evil-set-initial-state 'dired-mode 'emacs)
@@ -788,6 +787,7 @@ settings.
                                 (plantuml . t)
                                 (python . t)
                                 (shell . t))
+  
      org-blank-before-new-entry '((heading . nil)
                                   (plain-list-item . nil))
      org-confirm-babel-evaluate nil
@@ -2136,6 +2136,7 @@ settings.
   
   (use-package eglot
     :config
+    (require 'projectile)
     (setq my-eglot-projects (make-hash-table :test 'equal)
           eglot-autoshutdown t
           eglot-server-programs
@@ -2144,7 +2145,6 @@ settings.
                      . (eglot-pyright . ("pyright-langserver" "--stdio")))
                     ((rust-mode) "rust-analyzer"))
                   eglot-server-programs))
-    (require 'projectile)
     (defun my-projectile-project-find (dir)
       (let ((root (projectile-project-root dir)))
         (and root (cons 'transient root))))
