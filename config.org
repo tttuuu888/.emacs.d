@@ -1992,6 +1992,8 @@ settings.
     (sk-C-c-map-to-leader-c-map 'geiser-repl-mode geiser-repl-mode-map)
     (evil-define-key 'normal geiser-mode-map
       "gh" 'geiser-doc-symbol-at-point)
+    (evil-define-key 'normal geiser-repl-mode-map
+      (kbd "<return>") 'my-comint-return)
     (evil-leader/set-key-for-mode 'scheme-mode
       "z"  'geiser-mode-switch-to-repl
       "eb" 'geiser-eval-buffer
@@ -1999,6 +2001,7 @@ settings.
       "ef" 'geiser-eval-definition
       "er" 'geiser-eval-region)
     (evil-leader/set-key-for-mode 'geiser-repl-mode
+      "l" 'my-comint-history
       "z"  'switch-to-geiser))
   
   (use-package web-mode
