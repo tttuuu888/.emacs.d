@@ -1279,9 +1279,15 @@ settings.
   
   (use-package wgrep
     :commands wgrep-change-to-wgrep-mode
-    :bind (:map helm-git-grep-mode-map
+    :bind (:map helm-git-grep-map
             ("C-c C-e" . wgrep-change-to-wgrep-mode)
-            ("C-c C-s" . wgrep-save-all-buffers)))
+            ("C-c C-s" . wgrep-save-all-buffers))
+    :config
+    (evil-leader/set-key-for-mode 'helm-git-grep-mode
+      "ce" 'wgrep-change-to-wgrep-mode
+      "cs" 'wgrep-save-all-buffers
+      "ck" 'wgrep-abort-changes)
+    (advice-add 'wgrep-change-to-wgrep-mode :after 'evil-normal-state))
   
   (use-package helm
     :bind (("M-y"     . helm-show-kill-ring)
