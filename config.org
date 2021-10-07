@@ -576,6 +576,8 @@ settings.
     (define-key evil-outer-text-objects-map "j" 'evil-a-curly)
     (define-key evil-inner-text-objects-map "f" 'evil-inner-c-func)
     (define-key evil-outer-text-objects-map "f" 'evil-a-c-func)
+    (define-key evil-inner-text-objects-map "k" 'evil-inner-angle)
+    (define-key evil-outer-text-objects-map "k" 'evil-an-angle)
     (evil-swap-key evil-motion-state-map "j" "gj")
     (evil-swap-key evil-motion-state-map "k" "gk")
     (evil-global-set-key 'normal "U" 'undo-at-here)
