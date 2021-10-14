@@ -1596,7 +1596,9 @@ settings.
                 (files (directory-files sbin t "\\.sh$"))
                 (cand (alist-get sbin sk-compile-history nil nil #'equal)))
             (dolist (f files)
-              (add-to-list 'files-alist (cons (file-name-nondirectory f) f) t))
+              (setq files-alist
+                    (nconc files-alist
+                           (list (cons (file-name-nondirectory f) f)))))
             (when cand
               (push (cons (file-name-nondirectory cand) cand) files-alist))
             (delete-dups files-alist))
