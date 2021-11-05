@@ -541,9 +541,8 @@ settings.
               (lambda () (when buffer-read-only (read-only-mode -1))))
     (defun evil-reload-file ()
       (interactive)
-      (let ((p (point)))
-        (find-alternate-file (buffer-file-name))
-        (goto-char p)))
+      (revert-buffer :ignore-auto :noconfirm)
+      (message "Buffer is reverted."))
     (defun evil-paste-pgvy ()
       "Paste and restore visual block and yank."
       (interactive)
