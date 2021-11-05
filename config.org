@@ -365,6 +365,17 @@ Various useful functions.
             (substring hash 0 7)
           (substring branch 0 (1- (length branch)))))))
   
+  ;;; sk-vc-mode for sk-mode-line
+  (defvar sk-vc-mode nil)
+  (put 'sk-vc-mode 'risky-local-variable t)
+  (make-variable-buffer-local 'sk-vc-mode)
+  (put 'sk-vc-mode 'permanent-local t)
+  
+  (defun sk-vc-refresh-state ()
+    (setq sk-vc-mode (git-branch-of-file (buffer-file-name))))
+  
+  (add-hook 'find-file-hook #'sk-vc-refresh-state)
+  
   (defun sk-C-c-map-to-leader-c-map (mode mode-map)
     "Change C-c ... key map to <leader> c... key map"
     (let* ((ret nil)
@@ -400,10 +411,7 @@ Simple mode line setting function.
                                (concat " " (upcase (symbol-name evil-state)))))
                (buffer-info (concat " %* %I " current-input-method-title))
                (buffer-name (propertize " %b " 'face 'mode-line-emphasis))
-               (git-branch (and buffer-file-name
-                                (not (file-remote-p default-directory))
-                                (git-branch-of-file buffer-file-name)))
-               (vc-info (and git-branch (concat " (" git-branch ") ")))
+               (vc-info (and sk-vc-mode (concat " (" sk-vc-mode ") ")))
                (mode-and-vc (propertize
                              (concat " "
                                      (format-mode-line mode-name)
@@ -1075,7 +1083,9 @@ settings.
   
   (use-package autorevert
     :ensure nil
-    :hook (find-file . global-auto-revert-mode))
+    :hook (find-file . global-auto-revert-mode)
+    :config
+    (setq auto-revert-check-vc-info t))
   
   (use-package view
     :ensure nil
@@ -1164,7 +1174,12 @@ settings.
     :ensure nil
     :custom
     (vc-follow-symlinks nil)
-    (vc-handled-backends nil))
+    (vc-handled-backends nil)
+    :init
+    (defalias 'vc-refresh-state 'sk-vc-refresh-state)
+    (defun sk-vc-refresh-state ()
+      (setq sk-vc-mode (git-branch-of-file (buffer-file-name))))
+    (add-hook 'find-file-hook #'sk-vc-refresh-state))
   
   (use-package tex-mode
     :ensure nil
