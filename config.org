@@ -365,17 +365,6 @@ Various useful functions.
             (substring hash 0 7)
           (substring branch 0 (1- (length branch)))))))
   
-  ;;; sk-vc-mode for sk-mode-line
-  (defvar sk-vc-mode nil)
-  (put 'sk-vc-mode 'risky-local-variable t)
-  (make-variable-buffer-local 'sk-vc-mode)
-  (put 'sk-vc-mode 'permanent-local t)
-  
-  (defun sk-vc-refresh-state ()
-    (setq sk-vc-mode (git-branch-of-file (buffer-file-name))))
-  
-  (add-hook 'find-file-hook #'sk-vc-refresh-state)
-  
   (defun sk-C-c-map-to-leader-c-map (mode mode-map)
     "Change C-c ... key map to <leader> c... key map"
     (let* ((ret nil)
@@ -400,6 +389,18 @@ Various useful functions.
 Simple mode line setting function.
 
 #+BEGIN_SRC emacs-lisp
+  ;;; sk-vc-mode for sk-mode-line
+  (defvar sk-vc-mode nil)
+  (put 'sk-vc-mode 'risky-local-variable t)
+  (make-variable-buffer-local 'sk-vc-mode)
+  (put 'sk-vc-mode 'permanent-local t)
+  
+  (defun sk-vc-refresh-state ()
+    (setq sk-vc-mode (git-branch-of-file (buffer-file-name))))
+  
+  (add-hook 'find-file-hook #'sk-vc-refresh-state)
+  
+  ;;; sk-mode-line
   (defun sk-mode-line ()
     (set-face-attribute 'mode-line nil :box nil)
     (set-face-attribute 'mode-line-inactive nil :box nil)
