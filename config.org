@@ -1080,7 +1080,7 @@ settings.
     (setq tramp-auto-save-directory "/tmp/tramp/"
           tramp-chunksize 2000
           tramp-completion-reread-directory-timeout nil
-          tramp-histfile-override t
+          tramp-histfile-override "/dev/null"
           tramp-verbose 1)
     ;; TRAMP respect PATH variable on remote machine.
     (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
