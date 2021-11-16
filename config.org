@@ -2218,7 +2218,9 @@ settings.
   
   (use-package lua-mode)
   
-  (use-package cmake-mode)
+  (use-package cmake-mode
+    :config
+    (setq cmake-tab-width 4))
   
   (use-package gnuplot)
   
