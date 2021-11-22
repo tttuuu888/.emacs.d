@@ -1499,13 +1499,16 @@ settings.
     (defun sk-ivy-buffer-transformer (str)
       (let* ((nmax 35)
              (buf (get-buffer str))
-             (buf-len (length str))
+             (buf-name (if (>= (length str) (+ nmax 2))
+                           (concat (substring str 0 (- nmax 2)) "..")
+                         str))
+             (buf-len (length buf-name))
              (buf-dir (buffer-local-value 'default-directory buf))
              (buf-mode (buffer-local-value 'major-mode buf))
              (mode (capitalize
                     (string-remove-suffix "-mode" (symbol-name buf-mode))))
              (max-path-len
-              (max 0 (- (frame-width) (+ nmax 30) (max 0 (- buf-len nmax)))))
+              (max 0 (min 100 (- (frame-width) (+ nmax 30) (max 0 (- buf-len nmax))))))
              (path-dir (abbreviate-file-name (or buf-dir "~/")))
              (path-file (when-let ((name (buffer-file-name buf)))
                           (abbreviate-file-name name)))
@@ -1529,7 +1532,7 @@ settings.
                                                          path-mod))
                      path-opt))
              (form (format "%%-%ds  %%-%ds  %%s" nmax path-margin)))
-        (format form buf mode (or path ""))))
+        (format form buf-name mode (or path ""))))
     (ivy-configure 'ivy-switch-buffer
       :display-transformer-fn 'sk-ivy-buffer-transformer)
     (ivy-set-actions
