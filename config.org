@@ -43,7 +43,7 @@ start up to use of updated =package-archives=.
 #+BEGIN_SRC emacs-lisp
   (unless package--activated
     (package-initialize))
-  
+
   (setq package-archives
         '(("gnu"   . "https://elpa.gnu.org/packages/")
           ("melpa" . "https://melpa.org/packages/")))
@@ -146,7 +146,7 @@ Enable dark theme.
 ** Font setting
 #+BEGIN_SRC emacs-lisp
   (defvar sk-font "D2Coding")
-  
+
   (when (display-graphic-p)
     (set-fontset-font t 'unicode "Unifont")
     (set-fontset-font t '(#x10000 . #xFFFFF) "Unifont Upper")
@@ -181,17 +181,17 @@ Various useful functions.
       (goto-char start)
       (beginning-of-line)
       (insert pre "\n")))
-  
+
   (defun izero-insert (start end)
     "Wrap a region with #if 0 and #endif."
     (interactive "r")
     (sharp-ifdef-insert start end "#if 0"))
-  
+
   (defun idef-insert (start end in)
     "Wrap a region with #ifdef and #endif."
     (interactive "r\nsDefine : ")
     (sharp-ifdef-insert start end (concat "#ifdef " in)))
-  
+
   (defun find-file-in-tree (dir filename &optional return-include-file)
     "Find file FILENAME up to home or root folder."
     (let ((file (expand-file-name filename dir))
@@ -203,14 +203,14 @@ Various useful functions.
              (if return-include-file file dir))
             (parent (find-file-in-tree parent filename return-include-file))
             (t nil))))
-  
+
   (defun sk-sbin-dired ()
     (interactive)
     (let ((sbin (find-file-in-tree default-directory ".sbin" t)))
       (if sbin
           (dired sbin)
         (message "Folder .sbin not found."))))
-  
+
   (defun sk-clang-complete-make ()
     "Generate .clang_complete file."
     (interactive)
@@ -218,30 +218,30 @@ Various useful functions.
           (includes (shell-command-to-string
                      "find -type f -name '*.h' -printf '-I%h\n' | sort -u")))
       (write-region includes nil file)))
-  
+
   (defun insert-date ()
     "Insert date at point."
     (interactive)
     (insert (format-time-string "%Y-%m-%d %A")))
-  
+
   (defun insert-date-and-time ()
     "Insert date and time at point."
     (interactive)
     (insert (format-time-string "%Y-%m-%d %a %p %l:%M")))
-  
+
   (defun nuke-all-buffers ()
     "kill all buffers, leaving *scratch* only"
     (interactive)
     (mapc #'kill-buffer (buffer-list))
     (delete-other-windows))
-  
+
   (defun hide-ctrl-M ()
     "Hides the disturbing '^M' showing up in files containing mixed
   UNIX and DOS line endings."
     (interactive)
     (setq buffer-display-table (make-display-table))
     (aset buffer-display-table ?\^M []))
-  
+
   (defun move-line (n)
     "Move the current line up or down by N lines."
     (interactive "p")
@@ -253,7 +253,7 @@ Various useful functions.
       ;; restore point to original column in moved line
       (forward-line -1)
       (forward-char col)))
-  
+
   (defun transpose-windows ()
     "Swap positions of 2 windows."
     (interactive)
@@ -261,7 +261,7 @@ Various useful functions.
           (buffer2 (window-buffer (select-window (next-window)))))
       (switch-to-buffer buffer1)
       (switch-to-buffer-other-window buffer2)))
-  
+
   (defun buffer-save-or-load (num &optional restore)
     (if restore
         (progn
@@ -269,11 +269,11 @@ Various useful functions.
           (message "Windows are Restored by F%d" num))
       (window-configuration-to-register num)
       (message "Windows are saved to F%d" num)))
-  
+
   (defun tmux-running-p ()
     "Check if tmux is currently running or not."
     (zerop (call-process "tmux" nil nil nil "has-session")))
-  
+
   (defun tmux-new-pane-here ()
     "Open tmux pane of the current path."
     (interactive)
@@ -281,7 +281,7 @@ Various useful functions.
         (message "Tmux is not running!")
       (call-process "tmux" nil nil nil "new-window")
       (message "New tmux pane is opened.")))
-  
+
   (defun get-week-form (&optional offset date)
     "Create a string with the week number and the date range of the
   week. OFFSET is a integer number indicating offset from
@@ -301,15 +301,15 @@ Various useful functions.
            (start (format "%s%2d일" month-of-monday (nth 1 monday)))
            (end (format "%s%2d일" month-of-friday (nth 1 friday))))
       (format "%2d주차  %s ~ %s" week-number start end)))
-  
+
   (defun sk-insert-current-week-form ()
     (interactive)
     (insert (get-week-form)))
-  
+
   (defun sk-insert-next-week-form ()
     (interactive)
     (insert (get-week-form 7)))
-  
+
   (defmacro sk-switch-buffer-repl (name mode repl run-repl &optional nobind)
     "Create NAME function which switch between a file of MODE and a
   REPL. Open REPL with RUN-REPL function if REPL is not yet
@@ -333,7 +333,7 @@ Various useful functions.
                 (when (get-buffer last-mode)
                   (pop-to-buffer last-mode)))
                (t nil)))))
-  
+
   (let ((cnt 0))
     (defmacro sk-defer-init (&rest body)
       "Defer BODY until the very first command after init."
@@ -345,7 +345,7 @@ Various useful functions.
              (remove-hook 'pre-command-hook ',name)
              (unintern ',name nil))
            (add-hook 'pre-command-hook #',name)))))
-  
+
   (defun git-tracked-file-p (&optional file-name)
     (let ((file (or file-name buffer-file-name)))
       (and file
@@ -353,7 +353,7 @@ Various useful functions.
            (zerop (process-file "git" nil nil nil
                                 "ls-files" "--error-unmatch"
                                 (file-name-nondirectory file))))))
-  
+
   (defun git-branch-of-file (file)
     (when (git-tracked-file-p file)
       (let* ((default-directory (file-name-directory file))
@@ -363,7 +363,7 @@ Various useful functions.
         (if hash
             (substring hash 0 7)
           (substring branch 0 (1- (length branch)))))))
-  
+
   (defun sk-C-c-map-to-leader-c-map (mode mode-map)
     "Change C-c ... key map to <leader> c... key map"
     (let* ((ret nil)
@@ -393,12 +393,12 @@ Simple mode line setting function.
   (put 'sk-vc-mode 'risky-local-variable t)
   (make-variable-buffer-local 'sk-vc-mode)
   (put 'sk-vc-mode 'permanent-local t)
-  
+
   (defun sk-vc-refresh-state ()
     (setq sk-vc-mode (git-branch-of-file (buffer-file-name))))
-  
+
   (add-hook 'find-file-hook #'sk-vc-refresh-state)
-  
+
   ;;; sk-mode-line
   (defun sk-mode-line ()
     (set-face-attribute 'mode-line nil :box nil)
@@ -447,7 +447,7 @@ Install =use-package= if not exists. Set some default settings for
   (unless (package-installed-p 'use-package)
     (package-refresh-contents)
     (package-install 'use-package))
-  
+
   (setq use-package-always-defer t
         use-package-always-ensure t
         use-package-enable-imenu-support t)
@@ -515,7 +515,7 @@ settings.
               def (pop bindings))))
     (setq evil-leader/no-prefix-mode-rx
           '("magit-.*-mode" "gnus-.*-mode" "package-.*-mode" "dired-mode")))
-  
+
   (use-package evil
     :bind (:map evil-insert-state-map
             ("C-k" . kill-line)
@@ -595,18 +595,18 @@ settings.
     (evil-global-set-key 'motion "$" 'end-of-line)
     (dolist (m '(image-mode diff-mode special-mode))
       (evil-set-initial-state m 'emacs)))
-  
+
   (use-package evil-anzu
     :demand t
     :after anzu)
-  
+
   (use-package evil-visualstar
     :bind (:map evil-visual-state-map
             ("n" . evil-visualstar/begin-search-forward)
             ("N" . evil-visualstar/begin-search-backward))
     :config
     (global-evil-visualstar-mode))
-  
+
   (use-package evil-surround
     :init
     (sk-defer-init (global-evil-surround-mode 1))
@@ -619,7 +619,7 @@ settings.
                             (?k . ("<" . ">")))))
     (evil-define-key 'visual evil-surround-mode-map
       "gs" 'evil-surround-region))
-  
+
   (use-package evil-commentary
     :init
     (sk-defer-init (evil-commentary-mode 1)))
@@ -634,7 +634,7 @@ settings.
     :config
     (defun my-sql-mode-hook ()
       (add-to-list 'company-backends 'company-sql)))
-  
+
   ;;; Built-in packages
   (use-package korea-util
     :ensure nil
@@ -642,7 +642,7 @@ settings.
     :init
     (setq default-korean-keyboard "3")
     (setup-korean-environment-internal))
-  
+
   (use-package recentf
     :ensure nil
     :hook (find-file . recentf-mode)
@@ -650,7 +650,7 @@ settings.
     :config
     (add-to-list 'recentf-exclude
                  (expand-file-name "elpa/.*" emacs-config-dir)))
-  
+
   (use-package calendar
     :ensure nil
     :bind (:map calendar-mode-map
@@ -670,7 +670,7 @@ settings.
                     (if dayname (concat " " dayname) "")))
           diary-file "~/Dropbox/org/diary")
     (evil-set-initial-state 'calendar-mode 'emacs))
-  
+
   (use-package dired
     :ensure nil
     :bind (:map dired-mode-map
@@ -693,7 +693,7 @@ settings.
           dired-omit-extensions '("~")
           dired-omit-files (rx bol (or "#" ".")))
     (add-hook 'dired-mode-hook 'dired-omit-mode)
-  
+
     (evil-set-initial-state 'dired-mode 'emacs)
     (evil-leader/set-key-for-mode 'dired-mode
       "cy" 'my-dired-copy-path            ; copy current folder path
@@ -701,25 +701,25 @@ settings.
       "ee" 'wdired-change-to-wdired-mode
       "ec" 'wdired-finish-edit
       "eq" 'wdired-exit)
-  
+
     (defun my-dired-copy-path ()
       (interactive)
       (let ((path (expand-file-name default-directory)))
         (kill-new path)
         (message "Copied path : %s" path)))
-  
+
     (defun my-dired-copy-filepath ()
       (interactive)
       (let ((path (dired-filename-at-point)))
         (kill-new path)
         (message "Copied path : %s" path)))
-  
+
     (defun dired-visit-file-or-dir ()
       (interactive)
       (if (file-directory-p (dired-get-filename nil t))
           (dired-find-alternate-file)
         (dired-find-file-other-window)))
-  
+
     (defun dired-up-and-close-dir (n)
       (interactive "p")
       (let* ((buf (get-buffer (buffer-name)))
@@ -731,7 +731,7 @@ settings.
         (dired dest)
         (dired-goto-file curr)
         (kill-buffer buf)))
-  
+
     (defun ora-dired-rsync ()
       (interactive)
       (let* ((dest (read-file-name "Rsync to: " (dired-dwim-target-directory)))
@@ -756,7 +756,7 @@ settings.
         (async-shell-command cmd "*rsync*")
         (other-window 1)
         (view-mode)))
-  
+
     (defun my-dired-pdf-size-down ()
       (interactive)
       (let ((display-buffer-alist
@@ -771,7 +771,7 @@ settings.
             "-dPDFSETTINGS=/printer -dNOPAUSE -dQUIET -dBATCH -dPrinted=false "
             "-sOutputFile=" temp " " file " && "
             "mv " temp " " file))))))
-  
+
   (use-package org
     :ensure nil
     :bind (:map org-mode-map
@@ -801,7 +801,7 @@ settings.
                                 (plantuml . t)
                                 (python . t)
                                 (shell . t))
-  
+
      org-blank-before-new-entry '((heading . nil)
                                   (plain-list-item . nil))
      org-confirm-babel-evaluate nil
@@ -849,7 +849,7 @@ settings.
      org-startup-with-inline-images t
      org-todo-keywords
      '((sequence "TODO(t)" "PROG(p)" "WAIT(w)" "|" "DONE(d)" "KILL(k)")))
-  
+
     (evil-leader/set-key-for-mode 'org-mode
       "c <SPC>" 'org-table-blank-field
       "cb"  'org-switchb
@@ -887,12 +887,12 @@ settings.
     (evil-declare-motion 'org-down-element)
     (evil-declare-motion 'org-forward-element)
     (evil-declare-motion 'org-backward-element)
-  
+
     (dolist (mode '("js" "javascript"))
       (add-to-list 'org-src-lang-modes `(,mode . js2)))
     (dolist (mode '("css" "html" "vue" "web"))
       (add-to-list 'org-src-lang-modes `(,mode . web)))
-  
+
     (org-babel-do-load-languages 'org-babel-load-languages
                                  org-babel-load-languages)
     (defun my-org-tab (arg)
@@ -943,7 +943,7 @@ settings.
           (insert (concat "[[file:" img "]]")))))
     (add-hook 'org-babel-after-execute-hook 'my-org-inline-image-hook)
     (add-hook 'org-export-before-processing-hook 'my-org-before-process-hook))
-  
+
   (use-package ibuffer
     :ensure nil
     :bind ("C-x C-b" . ibuffer)
@@ -985,7 +985,7 @@ settings.
               (lambda ()
                 (ibuffer-auto-mode 1)
                 (ibuffer-switch-to-saved-filter-groups "home"))))
-  
+
   (use-package shell
     :ensure nil
     :init
@@ -994,7 +994,7 @@ settings.
     :config
     (evil-leader/set-key-for-mode 'shell-mode
       "l"  'my-comint-history))
-  
+
   (use-package eshell
     :ensure nil
     :hook (eshell-mode . my-eshell-setup)
@@ -1027,7 +1027,7 @@ settings.
         (kbd "RET") 'my-comint-return))
     (evil-leader/set-key-for-mode 'eshell-mode
       "l"  'my-eshell-history))
-  
+
   (use-package term
     :ensure nil
     :custom-face
@@ -1039,17 +1039,17 @@ settings.
       (interactive)
       (term-send-raw-string "\e"))
     (define-key term-raw-map (kbd "<escape>") 'term-send-esc))
-  
+
   (use-package paren
     :ensure nil
     :init
     (sk-defer-init (show-paren-mode 1)))
-  
+
   (use-package hl-line
     :ensure nil
     :init
     (sk-defer-init (global-hl-line-mode 1)))
-  
+
   (use-package ansi-color
     :ensure nil
     :hook (compilation-filter . my-ansi-colorize-buffer)
@@ -1060,7 +1060,7 @@ settings.
     (defun my-ansi-colorize-buffer ()
       (let ((buffer-read-only nil))
         (ansi-color-apply-on-region (point-min) (point-max)))))
-  
+
   (use-package display-line-numbers
     :ensure nil
     :custom-face
@@ -1072,7 +1072,7 @@ settings.
     (setq-default display-line-numbers-width 3
                   display-line-numbers-type 'visual
                   display-line-numbers-current-absolute nil))
-  
+
   (use-package tramp
     :ensure nil
     :config
@@ -1082,16 +1082,16 @@ settings.
           tramp-verbose 1)
     ;; TRAMP respect PATH variable on remote machine.
     (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
-  
+
   (use-package autorevert
     :ensure nil
     :custom
     (auto-revert-check-vc-info t))
-  
+
   (use-package view
     :ensure nil
     :hook (view-mode . evil-motion-state))
-  
+
   (use-package flymake
     :ensure nil
     :config
@@ -1100,7 +1100,7 @@ settings.
       "]e" 'flymake-goto-next-error
       "[e" 'flymake-goto-prev-error)
     (add-hook 'flymake-mode-hook (lambda () (evil-normalize-keymaps))))
-  
+
   (use-package comint
     :ensure nil
     :commands my-comint-history
@@ -1122,12 +1122,12 @@ settings.
       "gj" 'comint-next-prompt
       "gk" 'comint-previous-prompt
       (kbd "RET") 'my-comint-return))
-  
+
   (use-package package
     :ensure nil
     :init
     (sk-defer-init (package-read-all-archive-contents)))
-  
+
   (use-package ediff
     :ensure nil
     :custom-face
@@ -1150,12 +1150,12 @@ settings.
     :config
     (setq ediff-split-window-function 'split-window-horizontally
           ediff-window-setup-function 'ediff-setup-windows-plain))
-  
+
   (use-package eldoc
     :ensure nil
     :config
     (setq eldoc-echo-area-use-multiline-p 1))
-  
+
   (use-package help-mode
     :ensure nil
     :config
@@ -1164,13 +1164,13 @@ settings.
       "[g" 'help-go-back
       "]g" 'help-go-forward
       (kbd "<tab>") 'forward-button))
-  
+
   (use-package smerge-mode
     :ensure nil
     :custom-face
     (smerge-refined-added ((((background light)) (:background "grey"))
                            (((background dark)) (:background "gray35")))))
-  
+
   (use-package vc
     :ensure nil
     :custom
@@ -1181,7 +1181,7 @@ settings.
     (defun sk-vc-refresh-state ()
       (setq sk-vc-mode (git-branch-of-file (buffer-file-name))))
     (add-hook 'find-file-hook #'sk-vc-refresh-state))
-  
+
   (use-package tex-mode
     :ensure nil
     :config
@@ -1233,12 +1233,12 @@ settings.
         (when (or (evil-insert-state-p) (evil-visual-state-p))
           (evil-normal-state))
         (call-interactively 'other-window))))
-  
+
   (use-package package-loading-notifier
     :custom  (package-loading-notifier-packages '(helm org magit yasnippet))
     :init
     (package-loading-notifier-mode 1))
-  
+
   (use-package company
     :init
     (sk-defer-init (global-company-mode 1))
@@ -1260,35 +1260,35 @@ settings.
     (evil-define-key 'insert company-mode-map
       (kbd "M-/") 'my-company-yas-expand
       (kbd "TAB") 'company-indent-or-complete-common))
-  
+
   (use-package company-irony
     :demand t
     :after irony
     :config
     (add-to-list 'company-backends 'company-irony))
-  
+
   (use-package company-irony-c-headers
     :demand t
     :after irony
     :config
     (add-to-list 'company-backends 'company-irony-c-headers))
-  
+
   (use-package company-web
     :demand t
     :after web-mode)
-  
+
   (use-package company-go
     :demand t
     :after go-mode
     :config
     (add-to-list 'company-backends 'company-go))
-  
+
   (use-package company-ghc
     :demand t
     :after haskell-mode
     :config
     (add-to-list 'company-backends 'company-ghc))
-  
+
   (use-package undo-tree
     :init
     (sk-defer-init (global-undo-tree-mode 1))
@@ -1297,7 +1297,7 @@ settings.
     (evil-set-initial-state 'undo-tree-visualizer-mode 'emacs)
     (evil-leader/set-key
       "xu" 'undo-tree-visualize))
-  
+
   (use-package wgrep
     :commands wgrep-change-to-wgrep-mode
     :bind (:map helm-git-grep-map
@@ -1309,7 +1309,7 @@ settings.
       "cs" 'wgrep-save-all-buffers
       "ck" 'wgrep-abort-changes)
     (advice-add 'wgrep-change-to-wgrep-mode :after 'evil-normal-state))
-  
+
   (use-package helm
     :bind (("M-y"     . helm-show-kill-ring)
            ("C-x C-r" . helm-recentf)
@@ -1332,7 +1332,7 @@ settings.
     (advice-add 'helm-occur-goto-line :after
                 (lambda (_) (when which-function-mode
                               (which-func-update)))))
-  
+
   (use-package helm-ag
     :commands (helm-ag-project-or-here helm-ag-here)
     :init
@@ -1351,12 +1351,12 @@ settings.
     (defun helm-ag-here ()
       (interactive)
       (helm-do-ag default-directory)))
-  
+
   (use-package helm-git-grep
     :init
     (evil-leader/set-key
       "p" 'helm-git-grep-at-point))
-  
+
   (use-package projectile
     :commands (my-project-root-or-dir
                sk-add-known-project
@@ -1386,11 +1386,11 @@ settings.
           (write-region "" nil pfile)))
       (projectile-add-known-project project-root))
     (defalias 'sk-remove-known-project 'projectile-remove-known-project))
-  
+
   (use-package markdown-mode)
-  
+
   (use-package markdown-toc)
-  
+
   (use-package ox-reveal
     :demand t
     :after org
@@ -1399,7 +1399,7 @@ settings.
           org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js"
           org-reveal-title-slide "<h2>%t</h2><h4>%a&nbsp(%e)</h4>"
           org-reveal-transition "none"))
-  
+
   (use-package magit
     :bind ("<f12>" . magit-status)
     :hook (with-editor-mode . evil-normal-state)
@@ -1416,37 +1416,37 @@ settings.
     (evil-make-overriding-map magit-blame-read-only-mode-map 'normal)
     (add-hook 'magit-blame-mode-hook 'evil-normalize-keymaps)
     (add-hook 'with-editor-mode-hook 'flyspell-mode))
-  
+
   (use-package expand-region
     :bind (("C-="   . er/expand-region))
     :init
     (evil-leader/set-key
       "=" 'er/expand-region))
-  
+
   (use-package smex)
-  
+
   (use-package anzu
     :init
     (sk-defer-init (global-anzu-mode 1))
     :config
     (setq anzu-search-threshold 1000
           anzu-replace-threshold 1000))
-  
+
   (use-package htmlize
     :demand t
     :after org)
-  
+
   (use-package korean-holidays
     :init
     (setq calendar-holidays korean-holidays))
-  
+
   (use-package fzf
     :bind (("C-c j h" . fzf-here))
     :config
     (defun fzf-here ()
       (interactive)
       (fzf/start default-directory #'fzf/action-find-file)))
-  
+
   (use-package yasnippet
     :commands yas-expand yas-minor-mode-on
     :config
@@ -1458,11 +1458,11 @@ settings.
     (let ((my-yasnippet-dir (expand-file-name "snippets/" emacs-etc-dir)))
       (add-to-list 'yas-snippet-dirs my-yasnippet-dir)
       (yas-load-directory my-yasnippet-dir t)))
-  
+
   (use-package yasnippet-snippets
     :demand t
     :after yasnippet)
-  
+
   (use-package ivy
     :bind (("C-x b"    . ivy-switch-buffer)
            :map minibuffer-inactive-mode-map
@@ -1535,14 +1535,14 @@ settings.
     (ivy-set-actions
      'projectile-switch-project
      '(("d" (lambda (p) (projectile-remove-known-project p)) "delete"))))
-  
+
   (use-package ivy-yasnippet
     :init
     (evil-leader/set-key "/" 'ivy-yasnippet)
     :config
     (advice-add 'ivy-yasnippet :before 'yas-minor-mode-on)
     (advice-add 'ivy-yasnippet :after 'evil-insert-state))
-  
+
   (use-package ivy-posframe
     :bind (:map ivy-posframe-mode-map
             ("M-y" . yank-pop))
@@ -1559,9 +1559,9 @@ settings.
             (ivy-yasnippet   . ivy-display-function-fallback)
             (swiper          . ivy-display-function-fallback)
             (t               . ivy-posframe-display-at-frame-center))))
-  
+
   (use-package posframe)
-  
+
   (use-package counsel
     :commands (counsel-fzf-here
                counsel--browse-history
@@ -1608,7 +1608,7 @@ settings.
      '(("d" (lambda (x) (ring-remove comint-input-ring
                                      (ring-member comint-input-ring (car x))))
         "delete")))
-  
+
     (defun sk-compile-candidates ()
       (if-let ((sbin (find-file-in-tree default-directory ".sbin" t)))
           (let ((files-alist)
@@ -1622,13 +1622,13 @@ settings.
               (push (cons (file-name-nondirectory cand) cand) files-alist))
             (delete-dups files-alist))
         (error "Couldn't find .sbin folder")))
-  
+
     (defun sk-compile-action (cmd-alist)
       (let* ((cmd (cdr cmd-alist))
              (dir (file-name-directory cmd)))
         (setf (alist-get dir sk-compile-history nil 'remove #'equal) cmd)
         (compile cmd)))
-  
+
     (defun sk-compile (&optional dir)
       (interactive)
       (ivy-read "Compile script: "
@@ -1637,13 +1637,13 @@ settings.
                 :action  #'sk-compile-action
                 :keymap counsel-compile-map
                 :caller 'sk-compile)))
-  
+
   (use-package which-key
     :init
     (sk-defer-init (which-key-mode 1)))
-  
+
   (use-package auctex)
-  
+
   (use-package graphviz-dot-mode)
 #+END_SRC
 * Development packages - built-in
@@ -1659,7 +1659,7 @@ settings.
       "g[" 'xref-pop-marker-stack)
     (add-hook 'before-save-hook (lambda () (when (derived-mode-p 'prog-mode)
                                              (delete-trailing-whitespace)))))
-  
+
   (use-package elec-pair
     :ensure nil
     :hook (prog-mode . electric-pair-mode)
@@ -1672,7 +1672,7 @@ settings.
           (delete-char 1)
         (forward-char))
       (backward-delete-char-untabify arg killp)))
-  
+
   (use-package octave
     :ensure nil
     :mode ("\\.m\\'" . octave-mode)
@@ -1684,7 +1684,7 @@ settings.
       "ee" 'octave-send-line
       "ef" 'octave-send-defun
       "er" 'octave-send-region))
-  
+
   (use-package python
     :ensure nil
     :hook (python-mode . my-python-mode-hook)
@@ -1735,7 +1735,7 @@ settings.
       "ee" 'my-python-shell-send-line-or-region
       "ef" 'python-shell-send-defun
       "er" 'python-shell-send-region))
-  
+
   (use-package xref
     :ensure nil
     :commands xref-find-reference-here
@@ -1748,7 +1748,7 @@ settings.
     (defun xref-find-reference-here ()
       (interactive)
       (xref-find-references (thing-at-point 'symbol))))
-  
+
   (use-package gdb-mi
     :ensure nil
     :init
@@ -1783,11 +1783,11 @@ settings.
       "at" 'gud-tbreak
       "au" 'gud-until
       "aw" 'gud-watch))
-  
+
   (use-package make-mode
     :ensure nil
     :mode ("Makefile.*" . makefile-gmake-mode))
-  
+
   (use-package which-func
     :ensure nil
     :hook ((c-mode-common python-mode js-mode) . my-which-function-setup)
@@ -1797,11 +1797,11 @@ settings.
     (defun my-which-function-setup ()
       (which-function-mode)
       (setq-local header-line-format 'which-func-format)))
-  
+
   (use-package sh-script
     :ensure nil
     :hook (sh-mode . (lambda () (sh-electric-here-document-mode -1))))
-  
+
   (use-package elisp-mode
     :ensure nil
     :config
@@ -1818,20 +1818,20 @@ settings.
       "gh" 'my-describe-symbol-at-point)
     (evil-define-key 'normal lisp-interaction-mode-map
       "gh" 'my-describe-symbol-at-point))
-  
+
   (use-package sql
     :ensure nil
     :config
     (evil-leader/set-key-for-mode 'sql-interactive-mode
       "l" 'my-comint-history))
-  
+
   (use-package cc-mode
     :ensure nil
     :config
     (setq c-basic-offset tab-width
           c-default-style "bsd")
     (defvaralias 'c-basic-offset 'tab-width))
-  
+
   (use-package compile
     :ensure nil
     :config
@@ -1846,12 +1846,12 @@ settings.
 #+BEGIN_SRC emacs-lisp
   (use-package ggtags
     :hook ((c-mode-common asm-mode) . ggtags-mode))
-  
+
   (use-package irony
     :hook ((c++-mode c-mode objc-mode) . irony-mode)
     :config
     (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
-  
+
   (use-package paredit
     :hook ((clojure-mode cider-repl-mode emacs-lisp-mode geiser-repl-mode
                          lisp-mode scheme-mode sly-mrepl-mode)
@@ -1873,7 +1873,7 @@ settings.
       "k"  'evil-paredit-kill)
     (evil-define-key 'insert paredit-mode-map
       (kbd "C-k") 'paredit-kill))
-  
+
   (use-package clojure-mode
     :config
     (require 'cider)
@@ -1919,7 +1919,7 @@ settings.
         "ett" 'cider-test-run-test
         "evv" 'cider-eval-sexp-at-point
         "evx" 'cider-eval-last-sexp-and-replace)))
-  
+
   (use-package cider
     :config
     (evil-set-initial-state 'cider-auto-test-mode           'emacs)
@@ -1947,11 +1947,11 @@ settings.
     (evil-leader/set-key-for-mode 'cider-repl-mode
       "z"  'cider-switch-to-last-clojure-buffer
       "cs" 'cider-repl-set-ns))
-  
+
   (use-package clj-refactor
     :disabled t
     :mode ("\\.clj\\'" . clojure-mode))
-  
+
   (use-package sly
     :init
     (setq inferior-lisp-program "sbcl")
@@ -2000,9 +2000,9 @@ settings.
       (kbd "RET") 'my-comint-return)
     (evil-define-minor-mode-key 'normal 'sly-popup-buffer-mode
       "q"  'quit-window))
-  
+
   (use-package geiser-chicken)
-  
+
   (use-package geiser
     :commands sk-geiser-repl
     :config
@@ -2034,7 +2034,7 @@ settings.
     (evil-leader/set-key-for-mode 'geiser-repl-mode
       "l" 'my-comint-history
       "z"  'switch-to-geiser))
-  
+
   (use-package web-mode
     :mode (("\\.html\\'" . web-mode)
            ("\\.ejs\\'" . web-mode)
@@ -2048,7 +2048,7 @@ settings.
           web-mode-enable-current-element-highlight t)
     ;; C-c ... bindings to <leader> c... bindings
     (sk-C-c-map-to-leader-c-map 'web-mode web-mode-map))
-  
+
   (use-package js2-mode
     :mode (("\\.js\\'" . js2-mode)
            ("\\.jsx\\'" . js2-jsx-mode))
@@ -2056,12 +2056,12 @@ settings.
     :config
     (setq js2-basic-offset 2)
     (add-hook 'js2-mode-hook 'js2-imenu-extras-mode))
-  
+
   (use-package js2-refactor
     :disabled t
     :config
     (js2r-add-keybindings-with-prefix "C-c C-n"))
-  
+
   (use-package rjsx-mode
     :hook (find-file-hook
            . (lambda ()
@@ -2070,10 +2070,10 @@ settings.
                     (rjsx-mode))))
     :init
     (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode)))
-  
+
   (use-package emmet-mode
     :hook ((web-mode js2-mode css-mode) . emmet-mode))
-  
+
   (use-package go-mode
     :hook (go-mode . eglot-ensure)
     :config
@@ -2084,9 +2084,9 @@ settings.
       (setq-local compile-command
                   "go build -v && go test -v && go vet"))
     (add-hook 'go-mode-hook 'my-go-code-hook))
-  
+
   (use-package format-all)
-  
+
   (use-package plantuml-mode
     :mode ("\\.puml\\'" . plantuml-mode)
     :bind (:map plantuml-mode-map
@@ -2102,7 +2102,7 @@ settings.
       (set-process-sentinel
        (start-process "plantuml" nil "plantuml" (buffer-file-name))
        (lambda (&rest _) (message "PlantUML process is done")))))
-  
+
   (use-package haskell-mode
     :hook (haskell-mode . my-haskell-mode-hook)
     :bind (:map haskell-mode-map
@@ -2153,7 +2153,7 @@ settings.
     (evil-leader/set-key-for-mode 'haskell-interactive-mode
       "l" 'my-haskell-prompt-history
       "z" 'haskell-interactive-switch-back))
-  
+
   (use-package restclient
     :mode ("\\.rest\\'" . restclient-mode)
     :hook (restclient-mode . my-restclient-mode-hook)
@@ -2175,7 +2175,7 @@ settings.
       "gk" 'restclient-jump-prev)
     (evil-define-minor-mode-key 'normal 'restclient-response-mode
       "q"  'quit-window))
-  
+
   (use-package eglot
     :config
     (require 'projectile)
@@ -2202,7 +2202,7 @@ settings.
              :json-false)))))
     (evil-define-minor-mode-key 'normal 'eglot--managed-mode
       "gh" 'eldoc-doc-buffer))
-  
+
   (use-package rust-mode
     :hook (rust-mode . eglot-ensure)
     :config
@@ -2214,17 +2214,17 @@ settings.
       "Test using `cargo test -- --nocapture`"
       (interactive)
       (rust--compile "%s test -- --nocapture" rust-cargo-bin)))
-  
+
   (use-package lua-mode)
-  
+
   (use-package cmake-mode
     :config
     (setq cmake-tab-width 4))
-  
+
   (use-package gnuplot)
-  
+
   (use-package yaml-mode)
-  
+
   (use-package eros
     :init (sk-defer-init (eros-mode 1)))
 #+END_SRC
@@ -2233,5 +2233,5 @@ settings.
 Make =config.el= available to load by =require=.
 
 #+BEGIN_SRC emacs-lisp
-(provide 'config)
+  (provide 'config)
 #+END_SRC
