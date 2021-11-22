@@ -46,8 +46,7 @@ start up to use of updated =package-archives=.
   
   (setq package-archives
         '(("gnu"   . "https://elpa.gnu.org/packages/")
-          ("melpa" . "https://melpa.org/packages/")
-          ("org"   . "https://orgmode.org/elpa/")))
+          ("melpa" . "https://melpa.org/packages/")))
 #+END_SRC
 
 ** User-emacs-directory setting
