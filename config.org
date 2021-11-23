@@ -1085,8 +1085,9 @@ settings.
 
   (use-package autorevert
     :ensure nil
-    :custom
-    (auto-revert-check-vc-info t))
+    :hook (find-file . global-auto-revert-mode)
+    :config
+    (setq auto-revert-check-vc-info t))
 
   (use-package view
     :ensure nil
