@@ -1846,6 +1846,35 @@ settings.
             (setq-local scroll-conservatively 10000
                         scroll-step 1)))
     (evil-add-hjkl-bindings compilation-mode-map))
+
+  (use-package scheme
+    :ensure nil
+    :config
+    (setq scheme-program-name "chicken-csi")
+    (require 'cmuscheme)
+    (sk-switch-buffer-repl sk-scheme-buffer-repl-toggle
+      scheme-mode inferior-scheme-mode run-scheme)
+    (defun my-scheme-eval-last-sexp-or-region (n)
+      (interactive "p")
+      (let* ((evil-execute-in-emacs-state-buffer t)
+             (pos (min (1+ (point)) (point-max)))
+             (back (save-excursion (goto-char pos) (backward-sexp) (point))))
+        (if (region-active-p)
+            (call-interactively 'scheme-send-region)
+          (scheme-send-region back pos)))
+      (setq deactivate-mark t))
+    (defun scheme-send-buffer ()
+      (interactive)
+      (scheme-send-region (point-min) (point-max)))
+    (evil-define-key 'normal inferior-scheme-mode
+      (kbd "<return>") 'my-comint-return)
+    (evil-leader/set-key-for-mode 'scheme-mode
+      "eb" 'scheme-send-buffer
+      "ee" 'my-scheme-eval-last-sexp-or-region
+      "ef" 'scheme-send-definition
+      "er" 'scheme-send-region)
+    (evil-leader/set-key-for-mode 'inferior-scheme-mode
+      "l" 'my-comint-history))
 #+END_SRC
 * Development packages - external
 #+BEGIN_SRC emacs-lisp
@@ -2005,40 +2034,6 @@ settings.
       (kbd "RET") 'my-comint-return)
     (evil-define-minor-mode-key 'normal 'sly-popup-buffer-mode
       "q"  'quit-window))
-
-  (use-package geiser-chicken)
-
-  (use-package geiser
-    :commands sk-geiser-repl
-    :config
-    (require 'geiser-mode)
-    (setq geiser-chicken-binary "chicken-csi"
-          geiser-repl-history-filename
-          (expand-file-name ".geiser_history" user-emacs-directory))
-    (defun my-geiser-eval-last-sexp-or-region (n)
-      (interactive "p")
-      (let* ((evil-execute-in-emacs-state-buffer t)
-             (pos (min (1+ (point)) (point-max)))
-             (back (save-excursion (goto-char pos) (backward-sexp) (point))))
-        (if (region-active-p)
-            (call-interactively 'geiser-eval-region)
-          (geiser-eval-region back pos)))
-      (setq deactivate-mark t))
-    (sk-C-c-map-to-leader-c-map 'scheme-mode geiser-mode-map)
-    (sk-C-c-map-to-leader-c-map 'geiser-repl-mode geiser-repl-mode-map)
-    (evil-define-key 'normal geiser-mode-map
-      "gh" 'geiser-doc-symbol-at-point)
-    (evil-define-key 'normal geiser-repl-mode-map
-      (kbd "<return>") 'my-comint-return)
-    (evil-leader/set-key-for-mode 'scheme-mode
-      "z"  'geiser-mode-switch-to-repl
-      "eb" 'geiser-eval-buffer
-      "ee" 'my-geiser-eval-last-sexp-or-region
-      "ef" 'geiser-eval-definition
-      "er" 'geiser-eval-region)
-    (evil-leader/set-key-for-mode 'geiser-repl-mode
-      "l" 'my-comint-history
-      "z"  'switch-to-geiser))
 
   (use-package web-mode
     :mode (("\\.html\\'" . web-mode)
