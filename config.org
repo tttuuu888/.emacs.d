@@ -1795,13 +1795,15 @@ settings.
 
   (use-package which-func
     :ensure nil
-    :hook ((c-mode-common python-mode js-mode) . my-which-function-setup)
+    :hook (prog-mode . my-which-function-setup)
     :custom-face (which-func ((t :inherit font-lock-function-name-face)))
     :config
-    (setq which-func-unknown "N/A")
+    (setq which-func-unknown "N/A"
+          which-func-update-timer nil)
     (defun my-which-function-setup ()
-      (which-function-mode)
-      (setq-local header-line-format 'which-func-format)))
+      (unless (equal major-mode 'lisp-interaction-mode)
+        (which-function-mode)
+        (setq-local header-line-format 'which-func-format))))
 
   (use-package sh-script
     :ensure nil
