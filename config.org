@@ -382,6 +382,23 @@ Various useful functions.
       (dolist (e ret)
         (let ((key (mapconcat 'single-key-description (car e) "")))
           (evil-leader/set-key-for-mode mode key (cdr e))))))
+
+  (defun sk-project-root (&optional dir)
+    (let ((dir (or dir default-directory))
+          (found nil)
+          (checks '(".git" ".projectile")))
+      (cl-loop for c in checks
+               until found
+               do (when-let ((root (find-file-in-tree dir c)))
+                    (setq found root)))
+      (if found found dir)))
+
+  (defun sk-set-dir-to-project ()
+    "Set current directory to the project root directory."
+    (interactive)
+    (unless (file-exists-p ".projectile")
+      (write-region "" nil ".projectile"))
+    (message (concat default-directory " is set to the project root directory.")))
 #+END_SRC
 
 ** SK-mode-line
@@ -1387,7 +1404,8 @@ settings.
         (unless (file-exists-p pfile)
           (write-region "" nil pfile)))
       (projectile-add-known-project project-root))
-    (defalias 'sk-remove-known-project 'projectile-remove-known-project))
+    (defalias 'sk-remove-known-project 'projectile-remove-known-project)
+    (defalias 'projectile-project-root 'sk-project-root))
 
   (use-package markdown-mode)
 
