@@ -1738,7 +1738,6 @@ settings.
   (use-package python
     :ensure nil
     :hook (python-mode . my-python-mode-hook)
-    :commands sk-toggle-python
     :bind (:map python-mode-map
             ("S-<left>"  . python-indent-shift-left)
             ("S-<right>" . python-indent-shift-right))
@@ -1748,14 +1747,6 @@ settings.
     (defun my-python-mode-hook ()
       (setq-local tab-width 4)
       (eglot-ensure))
-    (defun sk-toggle-python ()
-      "Toggle between Python2 and Python3"
-      (interactive)
-      (let ((python (if (equal python-shell-interpreter "python2")
-                        "python"
-                      "python2")))
-        (setq python-shell-interpreter python)
-        (message (concat "Toggled to " python))))
     (sk-switch-buffer-repl sk-python-buffer-repl-toggle
       python-mode inferior-python-mode
       (lambda ()
