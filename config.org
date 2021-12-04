@@ -400,7 +400,7 @@ Various useful functions.
 
   (defun my-find-file-in-git-project (regex)
     (when (zerop (call-process "git" nil nil nil "-C" "." "rev-parse"))
-      (let* ((root (shell-command-to-string "git rev-parse --show-toplevel"))
+      (let* ((root (sk-project-root))
              (default-directory (substring root 0 (1- (length root))))
              (ret (shell-command-to-string
                    (concat "git ls-files|grep -E '" regex "'"))))
@@ -413,8 +413,7 @@ Various useful functions.
     (if-let* ((file (buffer-file-name))
               (ext (when file (file-name-extension file)))
               (dir (file-name-directory file))
-              (root (shell-command-to-string "git rev-parse --show-toplevel"))
-              (root (substring root 0 (1- (length root))))
+              (root (sk-project-root))
               (regex (if (equal ext "h")
                          (concat (file-name-base file) ".(c|cpp)$")
                        (concat (file-name-base file) ".h$")))
@@ -424,8 +423,8 @@ Various useful functions.
           (ivy-read "Switch to: " others
                     :action (lambda (file)
                              (find-file (expand-file-name file root)))
-                    :caller #'sk-find-other-file)))
-    (error "No other file found"))
+                    :caller #'sk-find-other-file))
+      (error "No other file found")))
 #+END_SRC
 
 ** SK-mode-line
