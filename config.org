@@ -404,8 +404,7 @@ Various useful functions.
              (default-directory (substring root 0 (1- (length root))))
              (ret (shell-command-to-string
                    (concat "git ls-files|grep -E '" regex "'"))))
-        (if (string= ret "")
-            nil
+        (unless (string= ret "")
           (split-string (substring ret 0 (1- (length ret))))))))
 
   (defun sk-find-other-file (&optional FLEX-MATCHING)
@@ -425,7 +424,8 @@ Various useful functions.
           (ivy-read "Switch to: " others
                     :action (lambda (file)
                              (find-file (expand-file-name file root)))
-                    :caller #'sk-find-other-file))))
+                    :caller #'sk-find-other-file)))
+    (error "No other file found"))
 #+END_SRC
 
 ** SK-mode-line
