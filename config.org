@@ -399,6 +399,34 @@ Various useful functions.
     (unless (file-exists-p ".projectile")
       (write-region "" nil ".projectile"))
     (message (concat default-directory " is set to the project root directory.")))
+
+  (defun my-find-file-in-git-project (regex)
+    (when (zerop (call-process "git" nil nil nil "-C" "." "rev-parse"))
+      (let* ((root (shell-command-to-string "git rev-parse --show-toplevel"))
+             (default-directory (substring root 0 (1- (length root))))
+             (ret (shell-command-to-string
+                   (concat "git ls-files|grep -E '" regex "'"))))
+        (if (string= ret "")
+            nil
+          (split-string (substring ret 0 (1- (length ret))))))))
+
+  (defun sk-find-other-file (&optional FLEX-MATCHING)
+    (interactive)
+    (if-let* ((file (buffer-file-name))
+              (ext (when file (file-name-extension file)))
+              (dir (file-name-directory file))
+              (root (shell-command-to-string "git rev-parse --show-toplevel"))
+              (root (substring root 0 (1- (length root))))
+              (regex (if (equal ext "h")
+                         (concat (file-name-base file) ".(c|cpp)$")
+                       (concat (file-name-base file) ".h$")))
+              (others (my-find-file-in-git-project regex)))
+        (if (= (length others) 1)
+            (find-file (expand-file-name (car others) root))
+          (ivy-read "Switch to: " others
+                    :action (lambda (file)
+                             (find-file (expand-file-name file root)))
+                    :caller #'sk-find-other-file))))
 #+END_SRC
 
 ** SK-mode-line
@@ -1381,7 +1409,7 @@ settings.
                sk-add-known-project
                sk-remove-known-project)
     :hook (c-mode-common
-           . (lambda () (local-set-key (kbd "M-o") 'projectile-find-other-file)))
+           . (lambda () (local-set-key (kbd "M-o") 'sk-find-other-file)))
     :init
     (evil-leader/set-key
       "jd" 'projectile-find-dir
