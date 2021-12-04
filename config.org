@@ -391,7 +391,7 @@ Various useful functions.
                until found
                do (when-let ((root (find-file-in-tree dir c)))
                     (setq found root)))
-      (file-truename (if found found dir))))
+      (file-truename (or found dir))))
 
   (defun sk-set-dir-to-project ()
     "Set current directory to the project root directory."
