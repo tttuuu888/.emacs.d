@@ -236,8 +236,8 @@ Various useful functions.
     (delete-other-windows))
 
   (defun hide-ctrl-M ()
-    "Hides the disturbing '^M' showing up in files containing mixed
-  UNIX and DOS line endings."
+    "Hides the disturbing '^M' showing up in files containing mixed UNIX and DOS
+  line endings."
     (interactive)
     (setq buffer-display-table (make-display-table))
     (aset buffer-display-table ?\^M []))
@@ -283,10 +283,9 @@ Various useful functions.
       (message "New tmux pane is opened.")))
 
   (defun get-week-form (&optional offset date)
-    "Create a string with the week number and the date range of the
-  week. OFFSET is a integer number indicating offset from
-  today. DATE is a list in a form of (month day year). OFFSET is
-  ignored if DATE is provided."
+    "Create a string with the week number and the date range of the week. OFFSET
+  is a integer number indicating offset from today. DATE is a list in a form
+  of (month day year). OFFSET is ignored if DATE is provided."
     (require 'cal-iso)
     (let* ((d (calendar-absolute-from-gregorian
                (or date (calendar-current-date offset))))
@@ -311,10 +310,9 @@ Various useful functions.
     (insert (get-week-form 7)))
 
   (defmacro sk-switch-buffer-repl (name mode repl run-repl &optional nobind)
-    "Create NAME function which switch between a file of MODE and a
-  REPL. Open REPL with RUN-REPL function if REPL is not yet
-  opened. Evil-Leader z binding will be added to toggle MODE and
-  REPL buffer unless NOBIND is not nil."
+    "Create NAME function which switch between a file of MODE and a REPL. Open
+  REPL with RUN-REPL function if REPL is not yet opened. Evil-Leader z binding
+  will be added to toggle MODE and REPL buffer unless NOBIND is not nil."
     (declare (indent defun))
     `(let ((last-mode "")
            (last-repl ""))
@@ -411,6 +409,7 @@ Various useful functions.
           (split-string (substring ret 0 (1- (length ret))))))))
 
   (defun sk-find-other-file (&optional FLEX-MATCHING)
+    "Switch betwen .c|cpp and .h files. It only works for git projects."
     (interactive)
     (if-let* ((file (buffer-file-name))
               (ext (when file (file-name-extension file)))
@@ -1716,8 +1715,8 @@ settings.
     :hook (prog-mode . electric-pair-mode)
     :config
     (defun electric-pair-delete-pair (arg &optional killp)
-      "Custom pair-delete. Delete a closing braket in case of (|),
-  delete a pair of inner braket in case of ((|))."
+      "Custom pair-delete. Delete a closing braket in case of (|), delete a pair
+  of inner braket in case of ((|))."
       (interactive "*p\nP")
       (if (memq (char-after (1+ (point))) '(?\) ?\" ?\] ?\} ?\$))
           (delete-char 1)
@@ -1871,6 +1870,10 @@ settings.
       "gh" 'my-describe-symbol-at-point)
     (evil-define-key 'normal lisp-interaction-mode-map
       "gh" 'my-describe-symbol-at-point))
+
+  (use-package lisp-mode
+    :ensure nil
+    :custom (emacs-lisp-docstring-fill-column 80))
 
   (use-package sql
     :ensure nil
