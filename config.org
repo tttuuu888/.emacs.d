@@ -1683,6 +1683,10 @@ settings.
      '(("d" (lambda (x) (ring-remove comint-input-ring
                                      (ring-member comint-input-ring (car x))))
         "delete")))
+    (ivy-set-actions
+     'counsel-find-file
+     '(("d" counsel-find-file-delete "delete")
+       ("k" counsel-find-file-mkdir-action "mkdir")))
 
     (defun sk-compile-candidates ()
       (if-let ((sbin (find-file-in-tree default-directory ".sbin" t)))
