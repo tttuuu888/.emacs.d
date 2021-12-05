@@ -398,33 +398,61 @@ Various useful functions.
       (write-region "" nil ".projectile"))
     (message (concat default-directory " is set to the project root directory.")))
 
-  (defun my-find-file-in-git-project (regex)
+  (defun my-find-file-in-git-project (regex root)
     (when (zerop (shell-command "git -C . rev-parse"))
-      (let* ((root (sk-project-root))
-             (default-directory (substring root 0 (1- (length root))))
+      (let* ((default-directory root)
              (ret (shell-command-to-string
                    (concat "git ls-files|grep -E '" regex "'"))))
         (unless (string= ret "")
           (split-string (substring ret 0 (1- (length ret))))))))
 
-  (defun sk-find-other-file (&optional FLEX-MATCHING)
-    "Switch betwen .c|cpp and .h files. It only works for git projects."
-    (interactive)
+  (defun my-find-other-file-git ()
+    "Switch betwen .c|cpp and .h files in git project."
     (if-let* ((file (buffer-file-name))
               (ext (when file (file-name-extension file)))
               (dir (file-name-directory file))
               (root (sk-project-root))
-              (regex (if (equal ext "h")
-                         (concat (file-name-base file) ".(c|cpp)$")
-                       (concat (file-name-base file) ".h$")))
-              (others (my-find-file-in-git-project regex)))
+              (root (substring root 0 (1- (length root))))
+              (regex (cond ((equal ext "h")
+                            (concat "(^|/)" (file-name-base file) ".(c|cpp)$"))
+                           ((member ext '("c" "cpp"))
+                            (concat "(^|/)" (file-name-base file) ".h$"))
+                           (t nil)))
+              (others (my-find-file-in-git-project regex root)))
         (if (= (length others) 1)
             (find-file (expand-file-name (car others) root))
           (ivy-read "Switch to: " others
                     :action (lambda (file)
-                             (find-file (expand-file-name file root)))
-                    :caller #'sk-find-other-file))
-      (error "No other file found")))
+                              (find-file (expand-file-name file root)))
+                    :caller #'sk-find-other-file))))
+
+  (defun my-find-other-file-dir ()
+    "Switch betwen .c|cpp and .h files in same directory"
+    (if-let* ((file (buffer-file-name))
+              (ext (when file (file-name-extension file)))
+              (regex (cond ((equal ext "h")
+                            (concat "^" (file-name-base file) ".(c|cpp)$"))
+                           ((member ext '("c" "cpp"))
+                            (concat "^" (file-name-base file) ".h$"))
+                           (t nil)))
+              (ret (shell-command-to-string
+                    (concat "ls|grep -E '" regex "'")))
+              (others (unless (string= ret "")
+                        (split-string (substring ret 0 (1- (length ret)))))))
+        (if (= (length others) 1)
+            (find-file (car others))
+          (ivy-read "Switch to: " others
+                    :action (lambda (file)
+                              (find-file file))
+                    :caller #'my-find-other-file-dir))))
+
+  (defun sk-find-other-file (&optional FLEX-MATCHING)
+    "Switch betwen .c|cpp and .h files."
+    (interactive)
+    (let ((inhibit-message t))
+      (or (my-find-other-file-dir)
+          (my-find-other-file-git)
+          (error "No other file found"))))
 #+END_SRC
 
 ** SK-mode-line
