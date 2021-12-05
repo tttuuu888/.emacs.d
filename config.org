@@ -399,7 +399,7 @@ Various useful functions.
     (message (concat default-directory " is set to the project root directory.")))
 
   (defun my-find-file-in-git-project (regex)
-    (when (zerop (call-process "git" nil nil nil "-C" "." "rev-parse"))
+    (when (zerop (shell-command "git -C . rev-parse"))
       (let* ((root (sk-project-root))
              (default-directory (substring root 0 (1- (length root))))
              (ret (shell-command-to-string
