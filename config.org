@@ -413,7 +413,6 @@ Various useful functions.
               (base (file-name-base file))
               (dir (file-name-directory file))
               (root (sk-project-root))
-              (root (substring root 0 (1- (length root))))
               (regex (cond ((member ext '("h" "hpp"))
                             (concat "(^|/)" (file-name-base file) ".(c|cpp)$"))
                            ((member ext '("c" "cpp"))
