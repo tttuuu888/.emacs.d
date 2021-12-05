@@ -2131,7 +2131,8 @@ settings.
     (js2r-add-keybindings-with-prefix "C-c C-n"))
 
   (use-package rjsx-mode
-    :hook (find-file-hook
+    :disabled
+    :hook (find-file
            . (lambda ()
                (and (string-match "\\.js\\'" buffer-file-name)
                     (find-file-in-tree default-directory "next.config.js")
