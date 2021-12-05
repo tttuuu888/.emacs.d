@@ -424,7 +424,7 @@ Various useful functions.
           (ivy-read "Switch to: " others
                     :action (lambda (file)
                               (find-file (expand-file-name file root)))
-                    :caller #'sk-find-other-file))))
+                    :caller #'my-find-other-file-git))))
 
   (defun my-find-other-file-dir ()
     "Switch betwen .c|cpp and .h files in same directory"
