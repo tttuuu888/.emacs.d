@@ -450,7 +450,7 @@ Various useful functions.
     (let ((inhibit-message t))
       (or (my-find-other-file-dir)
           (my-find-other-file-git)
-          (error "No other file found"))))
+          (user-error "No other file found"))))
 #+END_SRC
 
 ** SK-mode-line
@@ -639,7 +639,7 @@ settings.
               (p2 (ignore-errors (and (search-forward "{") (evil-jump-item)))))
           (if p2
               (evil-range p1 (1+ p2) type :expanded t)
-            (error "Can't find c function.")))))
+            (user-error "Can't find c function.")))))
     (evil-define-text-object evil-inner-c-func (count &optional beg end type)
       (save-excursion
         (move-end-of-line 1)
@@ -648,7 +648,7 @@ settings.
                (p2 (ignore-errors (and p1 (evil-jump-item)))))
           (if p2
               (evil-range p1 p2 type :expanded t)
-            (error "Can't find c function.")))))
+            (user-error "Can't find c function.")))))
     (define-key evil-inner-text-objects-map "d" 'evil-inner-bracket)
     (define-key evil-outer-text-objects-map "d" 'evil-a-bracket)
     (define-key evil-inner-text-objects-map "j" 'evil-inner-curly)
@@ -1696,7 +1696,7 @@ settings.
             (when cand
               (push (cons (file-name-nondirectory cand) cand) files-alist))
             (delete-dups files-alist))
-        (error "Couldn't find .sbin folder")))
+        (user-error "Couldn't find .sbin folder")))
 
     (defun sk-compile-action (cmd-alist)
       (let* ((cmd (cdr cmd-alist))
