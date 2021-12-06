@@ -1417,7 +1417,7 @@ settings.
     (defun helm-ag-project-or-here ()
       (interactive)
       (helm-do-ag
-       (my-project-root-or-dir)
+       (sk-project-root)
        (car (projectile-parse-dirconfig-file))))
     (defun helm-ag-here ()
       (interactive)
@@ -1429,8 +1429,7 @@ settings.
       "p" 'helm-git-grep-at-point))
 
   (use-package projectile
-    :commands (my-project-root-or-dir
-               sk-add-known-project
+    :commands (sk-add-known-project
                sk-remove-known-project)
     :hook (c-mode-common
            . (lambda () (local-set-key (kbd "M-o") 'sk-find-other-file)))
@@ -1447,8 +1446,6 @@ settings.
           projectile-switch-project-action 'projectile-dired
           projectile-track-known-projects-automatically nil)
     (projectile-mode 1)
-    (defun my-project-root-or-dir ()
-      (or (projectile-project-root) default-directory))
     (defun sk-add-known-project (project-root)
       "Make .projectile file and add the project to known projects list."
       (interactive (list (read-directory-name "Add to known projects: ")))
@@ -1456,8 +1453,7 @@ settings.
         (unless (file-exists-p pfile)
           (write-region "" nil pfile)))
       (projectile-add-known-project project-root))
-    (defalias 'sk-remove-known-project 'projectile-remove-known-project)
-    (defalias 'projectile-project-root 'sk-project-root))
+    (defalias 'sk-remove-known-project 'projectile-remove-known-project))
 
   (use-package markdown-mode)
 
