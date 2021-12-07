@@ -2064,6 +2064,7 @@ settings.
     (evil-set-initial-state 'sly-stickers--replay-mode  'emacs)
     (evil-set-initial-state 'sly-xref-mode              'emacs)
     (evil-set-initial-state 'sly-xref-mode              'emacs)
+    (sk-define-lisp-eval sk-sly-eval sly-eval-region)
     (defun my-sly-mrepl ()
       (interactive)
       (call-interactively (if (sly-connected-p) 'sly-mrepl 'sly)))
@@ -2074,7 +2075,7 @@ settings.
       "cf"  'sly-compile-defun
       "cr"  'sly-compile-region
       "eb"  'sly-eval-buffer
-      "ee"  'sly-eval-last-expression
+      "ee"  'sk-sly-eval
       "ef"  'sly-eval-defun
       "er"  'sly-eval-region
       "es"  'sly-mrepl-sync
