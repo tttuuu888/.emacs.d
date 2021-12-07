@@ -207,6 +207,20 @@ Various useful functions.
                   (pop-to-buffer last-mode)))
                (t nil)))))
 
+  (defmacro sk-define-lisp-eval (name eval-region &optional doc)
+    "Create NAME function to eval sexp of region. This is for evil-mode."
+    (declare (indent defun))
+    `(defun ,name (&rest _)
+       ,@(when doc `(,doc))
+       (interactive "p")
+       (let* ((evil-execute-in-emacs-state-buffer t)
+              (curr (min (1+ (point)) (point-max)))
+              (back (save-excursion (goto-char curr) (backward-sexp) (point))))
+         (if (region-active-p)
+             (call-interactively ',eval-region)
+           (,eval-region back curr)))
+       (setq deactivate-mark t)))
+
 
   ;;; SK functions
   (defun sharp-ifdef-insert (start end pre)
@@ -1924,15 +1938,7 @@ settings.
     (require 'cmuscheme)
     (sk-switch-buffer-repl sk-scheme-buffer-repl-toggle
       scheme-mode inferior-scheme-mode run-scheme)
-    (defun my-scheme-eval-last-sexp-or-region (n)
-      (interactive "p")
-      (let* ((evil-execute-in-emacs-state-buffer t)
-             (pos (min (1+ (point)) (point-max)))
-             (back (save-excursion (goto-char pos) (backward-sexp) (point))))
-        (if (region-active-p)
-            (call-interactively 'scheme-send-region)
-          (scheme-send-region back pos)))
-      (setq deactivate-mark t))
+    (sk-define-lisp-eval sk-scheme-eval scheme-send-region)
     (defun scheme-send-buffer ()
       (interactive)
       (scheme-send-region (point-min) (point-max)))
@@ -1940,7 +1946,7 @@ settings.
       (kbd "<return>") 'my-comint-return)
     (evil-leader/set-key-for-mode 'scheme-mode
       "eb" 'scheme-send-buffer
-      "ee" 'my-scheme-eval-last-sexp-or-region
+      "ee" 'sk-scheme-eval
       "ef" 'scheme-send-definition
       "er" 'scheme-send-region)
     (evil-leader/set-key-for-mode 'inferior-scheme-mode
@@ -1981,16 +1987,7 @@ settings.
   (use-package clojure-mode
     :config
     (require 'cider)
-    (defun my-cider-eval-last-sexp-or-region (&rest _)
-      (interactive "p")
-      (if (region-active-p)
-          (call-interactively 'cider-eval-region)
-        (save-excursion
-          (when (member (clojure-char-at-point)
-                        '("\)" "\}" "\]" "\""))
-            (goto-char (1+ (point))))
-          (call-interactively 'cider-eval-last-sexp)))
-      (setq deactivate-mark t))
+    (sk-define-lisp-eval sk-cider-eval cider-eval-region)
     (sk-C-c-map-to-leader-c-map 'clojure-mode cider-mode-map)
     (sk-C-c-map-to-leader-c-map 'clojurescript-mode cider-mode-map)
     (dolist (m (list clojure-mode-map clojurescript-mode-map))
@@ -2007,7 +2004,7 @@ settings.
         "z"   'cider-switch-to-repl-buffer
         "cj"  'cider
         "eb"  'cider-eval-buffer
-        "ee"  'my-cider-eval-last-sexp-or-region
+        "ee"  'sk-cider-eval
         "ef"  'cider-eval-defun-at-point
         "er"  'cider-eval-region
         "epc" 'cider-pprint-eval-last-sexp-to-comment
