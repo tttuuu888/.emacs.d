@@ -171,6 +171,44 @@ M-up,down,left,right keys for moving to windows.
 Various useful functions.
 
 #+BEGIN_SRC emacs-lisp
+  ;;; SK macros
+  (let ((cnt 0))
+    (defmacro sk-defer-init (&rest body)
+      "Defer BODY until the very first command after init."
+      (declare (indent defun))
+      (let ((name (intern (format "sk-defer-init-%d" (setq cnt (1+ cnt))))))
+        `(progn
+           (defun ,name ()
+             ,@body
+             (remove-hook 'pre-command-hook ',name)
+             (unintern ',name nil))
+           (add-hook 'pre-command-hook #',name)))))
+
+  (defmacro sk-switch-buffer-repl (name mode repl run-repl &optional nobind)
+    "Create NAME function which switch between a file of MODE and a REPL. Open
+  REPL with RUN-REPL function if REPL is not yet opened. Evil-Leader z binding
+  will be added to toggle MODE and REPL buffer unless NOBIND is not nil."
+    (declare (indent defun))
+    `(let ((last-mode "")
+           (last-repl ""))
+       (unless ,nobind
+         (evil-leader/set-key-for-mode ',mode "z" ',name)
+         (evil-leader/set-key-for-mode ',repl "z" ',name))
+       (defun ,name ()
+         (interactive)
+         (cond ((equal major-mode ',mode)
+                (setq last-mode (buffer-name))
+                (if (get-buffer last-repl)
+                    (pop-to-buffer last-repl)
+                  (call-interactively ',run-repl)))
+               ((equal major-mode ',repl)
+                (setq last-repl (buffer-name))
+                (when (get-buffer last-mode)
+                  (pop-to-buffer last-mode)))
+               (t nil)))))
+
+
+  ;;; SK functions
   (defun sharp-ifdef-insert (start end pre)
     (save-excursion
       (goto-char (1- end))
@@ -308,41 +346,6 @@ Various useful functions.
   (defun sk-insert-next-week-form ()
     (interactive)
     (insert (get-week-form 7)))
-
-  (defmacro sk-switch-buffer-repl (name mode repl run-repl &optional nobind)
-    "Create NAME function which switch between a file of MODE and a REPL. Open
-  REPL with RUN-REPL function if REPL is not yet opened. Evil-Leader z binding
-  will be added to toggle MODE and REPL buffer unless NOBIND is not nil."
-    (declare (indent defun))
-    `(let ((last-mode "")
-           (last-repl ""))
-       (unless ,nobind
-         (evil-leader/set-key-for-mode ',mode "z" ',name)
-         (evil-leader/set-key-for-mode ',repl "z" ',name))
-       (defun ,name ()
-         (interactive)
-         (cond ((equal major-mode ',mode)
-                (setq last-mode (buffer-name))
-                (if (get-buffer last-repl)
-                    (pop-to-buffer last-repl)
-                  (call-interactively ',run-repl)))
-               ((equal major-mode ',repl)
-                (setq last-repl (buffer-name))
-                (when (get-buffer last-mode)
-                  (pop-to-buffer last-mode)))
-               (t nil)))))
-
-  (let ((cnt 0))
-    (defmacro sk-defer-init (&rest body)
-      "Defer BODY until the very first command after init."
-      (declare (indent defun))
-      (let ((name (intern (format "sk-defer-init-%d" (setq cnt (1+ cnt))))))
-        `(progn
-           (defun ,name ()
-             ,@body
-             (remove-hook 'pre-command-hook ',name)
-             (unintern ',name nil))
-           (add-hook 'pre-command-hook #',name)))))
 
   (defun git-tracked-file-p (&optional file-name)
     (let ((file (or file-name buffer-file-name)))
