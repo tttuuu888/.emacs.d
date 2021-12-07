@@ -677,7 +677,7 @@ settings.
     (evil-swap-key evil-motion-state-map "j" "gj")
     (evil-swap-key evil-motion-state-map "k" "gk")
     (evil-global-set-key 'normal "U" 'undo-at-here)
-    (evil-global-set-key 'normal "Y" (kbd "y$"))
+    (evil-global-set-key 'motion "Y" (kbd "y$"))
     (evil-global-set-key 'motion "$" 'end-of-line)
     (dolist (m '(image-mode diff-mode special-mode))
       (evil-set-initial-state m 'emacs)))
