@@ -1418,7 +1418,7 @@ settings.
       (interactive)
       (helm-do-ag
        (sk-project-root)
-       (car (projectile-parse-dirconfig-file))))
+       (thing-at-point 'symbol)))
     (defun helm-ag-here ()
       (interactive)
       (helm-do-ag default-directory)))
