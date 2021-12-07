@@ -1164,7 +1164,7 @@ settings.
     :config
     (setq tramp-auto-save-directory "/tmp/tramp/"
           tramp-chunksize 2000
-          tramp-completion-reread-directory-timeout nil
+          remote-file-name-inhibit-cache nil
           tramp-verbose 1)
     ;; TRAMP respect PATH variable on remote machine.
     (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
