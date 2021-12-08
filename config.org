@@ -1674,14 +1674,15 @@ settings.
       "hv"    'counsel-describe-variable
       "hf"    'counsel-describe-function
       "nx"    'counsel-org-capture
-      "jh"    'counsel-fzf-here
-      "jo"    'counsel-fzf
+      "jh"    'my-counsel-fzf-here
+      "jo"    'my-counsel-fzf
       "sb"    'my-counsel-switch-shell-buffer)
     :config
     (setq ivy-initial-inputs-alist nil
           ivy-height-alist '((t . 15))
           sk-compile-history nil)
-    (defun counsel-fzf-here ()
+    (defun my-counsel-fzf-here ()
+      "Fzf on current directory."
       (interactive)
       (counsel-fzf nil default-directory))
     (defun my-counsel-switch-shell-buffer ()
@@ -1692,6 +1693,10 @@ settings.
                         (counsel--buffers-with-mode #'eshell-mode))
                 :action #'counsel--switch-to-shell
                 :caller 'ivy-switch-buffer))
+    (defun my-counsel-fzf ()
+      "Fzf on project root."
+      (interactive)
+      (counsel-fzf nil (sk-project-root)))
     (ivy-set-actions
      'counsel-shell-history
      '(("d" (lambda (x) (ring-remove comint-input-ring
