@@ -468,6 +468,16 @@ Various useful functions.
       (or (my-find-other-file-dir)
           (my-find-other-file-git)
           (user-error "No other file found"))))
+
+  (defun async-shell-command-callback (cmd callback &rest args)
+    (let ((callback callback)
+          (args args))
+      (set-process-sentinel
+       (start-file-process "Async" nil shell-file-name shell-command-switch cmd)
+       (lambda (process signal)
+         (when (memq (process-status process) '(exit signal))
+           (apply callback args))))
+      nil))
 #+END_SRC
 
 ** SK-mode-line
