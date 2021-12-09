@@ -779,6 +779,7 @@ settings.
     (setq dired-listing-switches "-alh --group-directories-first"
           dired-omit-extensions '("~")
           dired-omit-files (rx bol (or "#" ".")))
+    (add-to-list 'dired-guess-shell-alist-user '("\\.zst\\'" "tar xvf"))
     (add-hook 'dired-mode-hook 'dired-omit-mode)
 
     (evil-set-initial-state 'dired-mode 'emacs)
