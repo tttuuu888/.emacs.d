@@ -781,6 +781,8 @@ settings.
           dired-omit-extensions '("~")
           dired-omit-files (rx bol (or "#" ".")))
     (add-to-list 'dired-guess-shell-alist-user '("\\.zst\\'" "tar xvf"))
+    (add-to-list 'display-buffer-alist
+                 '("*Async Shell Command*" display-buffer-no-window))
     (add-hook 'dired-mode-hook 'dired-omit-mode)
 
     (evil-set-initial-state 'dired-mode 'emacs)
@@ -848,9 +850,7 @@ settings.
 
     (defun my-dired-pdf-size-down ()
       (interactive)
-      (let ((display-buffer-alist
-             '(("\\*Async Shell Command\\*.*" display-buffer-no-window)))
-            (file (dired-filename-at-point))
+      (let ((file (dired-filename-at-point))
             (temp (make-temp-file ".temp" nil ".pdf")))
         (if (not (equal (file-name-extension file) "pdf"))
             (message "Not a PDF file.")
