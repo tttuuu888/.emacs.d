@@ -772,10 +772,10 @@ settings.
     :ensure nil
     :bind (:map dired-mode-map
             ("M-o"   . dired-omit-mode)
+            ("c"     . my-dired-compress)
             ("j"     . dired-next-line)
             ("k"     . dired-previous-line)
             ("r"     . ora-dired-rsync)
-            ("Z"     . my-dired-compress)
             ("/"     . swiper)
             ("^"     . dired-up-and-close-dir)
             ("bp"    . my-dired-pdf-size-down)
@@ -786,10 +786,12 @@ settings.
                  '((lambda () (< large-file-warning-threshold (buffer-size)))
                    . fundamental-mode))
     :config
+    (require 'dired-aux)
     (require 'dired-x)
     (setq dired-listing-switches "-alh --group-directories-first"
           dired-omit-extensions '("~")
           dired-omit-files (rx bol (or "#" ".")))
+    (add-to-list 'dired-compress-files-alist '("\\.zst\\'" . "tar -acf %o %i"))
     (add-to-list 'dired-guess-shell-alist-user '("\\.zst\\'" "tar xvf"))
     (add-to-list 'display-buffer-alist
                  '("*Async Shell Command*" display-buffer-no-window))
@@ -870,14 +872,18 @@ settings.
             "-dPDFSETTINGS=/printer -dNOPAUSE -dQUIET -dBATCH -dPrinted=false "
             "-sOutputFile=" temp " " file " && "
             "mv " temp " " file)))))
+
     (defun my-dired-compress ()
+      "Compress files asynchronously."
       (interactive)
       (let* ((defaults (dired-dwim-target-defaults nil nil))
              (files (mapcar #'file-name-nondirectory (dired-get-marked-files)))
              (minibuffer-default defaults)
-             (inital-name (file-name-nondirectory
-                           (if (file-directory-p (dired-get-filename nil t))
-                               (dired-get-filename nil t)
+             (inital-name (if (equal (length files) 1)
+                              (if (dired-nondirectory-p (car files))
+                                  (file-name-base (car files))
+                                (file-name-nondirectory (car files)))
+                            (file-name-nondirectory
                              (directory-file-name default-directory))))
              (inital-name (if (or (string-empty-p inital-name)
                                   (string= inital-name "~"))
@@ -891,7 +897,13 @@ settings.
         (pcase ext
           (`"zip" (setq cmd "zip -r ")))
         (when ext
-          (async-shell-command (concat cmd name " " (string-join files " "))))))
+          (async-shell-command-callback
+           (concat cmd name " " (string-join files " "))
+           (lambda (file)
+             (dired-add-file file ?Z)
+             (message "Compress fils done."))
+           (expand-file-name name default-directory)))))
+
     (defun my-dired-do-copy ()
       "Copy files asynchronously."
       (interactive)
