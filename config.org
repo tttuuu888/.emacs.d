@@ -773,6 +773,7 @@ settings.
     :bind (:map dired-mode-map
             ("M-o"   . dired-omit-mode)
             ("c"     . my-dired-compress)
+            ("C"     . my-dired-do-copy)
             ("j"     . dired-next-line)
             ("k"     . dired-previous-line)
             ("r"     . ora-dired-rsync)
@@ -909,7 +910,6 @@ settings.
       (interactive)
       (let* ((defaults (dired-dwim-target-defaults nil nil))
              (files (dired-get-marked-files))
-             (minibuffer-default defaults)
              (target
               (expand-file-name
                (minibuffer-with-setup-hook
