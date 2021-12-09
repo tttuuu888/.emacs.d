@@ -765,6 +765,7 @@ settings.
             ("j"     . dired-next-line)
             ("k"     . dired-previous-line)
             ("r"     . ora-dired-rsync)
+            ("Z"     . my-dired-compress)
             ("/"     . swiper)
             ("^"     . dired-up-and-close-dir)
             ("bp"    . my-dired-pdf-size-down)
@@ -858,7 +859,29 @@ settings.
             "gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 "
             "-dPDFSETTINGS=/printer -dNOPAUSE -dQUIET -dBATCH -dPrinted=false "
             "-sOutputFile=" temp " " file " && "
-            "mv " temp " " file))))))
+            "mv " temp " " file)))))
+    (defun my-dired-compress ()
+      (interactive)
+      (let* ((defaults (dired-dwim-target-defaults nil nil))
+             (files (mapcar #'file-name-nondirectory (dired-get-marked-files)))
+             (minibuffer-default defaults)
+             (inital-name (file-name-nondirectory
+                           (if (file-directory-p (dired-get-filename nil t))
+                               (dired-get-filename nil t)
+                             (directory-file-name default-directory))))
+             (inital-name (if (or (string-empty-p inital-name)
+                                  (string= inital-name "~"))
+                              "default"
+                            inital-name))
+             (name (ivy-read "Compress file name: " nil
+                             :initial-input
+                             (concat inital-name ".zip")))
+             (ext (file-name-extension name))
+             (cmd "tar acvf "))
+        (pcase ext
+          (`"zip" (setq cmd "zip -r ")))
+        (when ext
+          (async-shell-command (concat cmd name " " (string-join files " ")))))))
 
   (use-package org
     :ensure nil
