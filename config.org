@@ -896,7 +896,12 @@ settings.
              (ext (file-name-extension name))
              (cmd "tar acvf "))
         (pcase ext
-          (`"zip" (setq cmd "zip -r ")))
+          (`"zip" (setq cmd "zip -r "))
+          (`"7z" (setq cmd "7z a "))
+          (`"7zs" (setq ext "7z"
+                        cmd (concat "7z a -mhe=on -p"
+                                    (password-read "Password: ")
+                                    " "))))
         (when ext
           (async-shell-command-callback
            (concat cmd name " " (string-join files " "))
