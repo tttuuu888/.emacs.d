@@ -923,20 +923,25 @@ settings.
                      (setq minibuffer-default defaults))
                  (dired-mark-read-file-name
                   "Copy to: " default-directory 'copy nil files nil))))
-             (cmd (if (string-prefix-p "/ssh" target) "scp -rf " "cp -rf "))
+             (remote (or (string-prefix-p "/ssh" default-directory)
+                         (string-prefix-p "/ssh" target)))
              (target-files
               (if (not (directory-name-p target))
                   (list target)
                 (mapcar
                  (lambda (f) (expand-file-name (file-name-nondirectory f) target))
-                 files)))
-             (target (string-remove-prefix "/ssh:" target)))
-        (async-shell-command-callback
-         (concat cmd (string-join files " ") " " target)
-         (lambda (target-files)
-           (mapc (lambda (f) (dired-add-file f ?C)) target-files)
-           (message "Copy files done."))
-         target-files))))
+                 files))))
+        (if (not remote)
+            (async-shell-command-callback
+             (concat "cp -rf " (string-join files " ") " " target)
+             (lambda (target-files)
+               (mapc
+                (lambda (f) (dired-add-file f ?C)) target-files)
+               (message "Copy files done."))
+             target-files)
+          (mapc (lambda (f) (copy-file f target t)) files)
+          (mapc (lambda (f) (dired-add-file f ?C)) target-files)
+          (message "Copy files done.")))))
 
   (use-package org
     :ensure nil
