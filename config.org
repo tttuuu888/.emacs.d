@@ -838,8 +838,18 @@ settings.
 
     (defun ora-dired-rsync ()
       (interactive)
-      (let* ((dest (read-file-name "Rsync to: " (dired-dwim-target-directory)))
+      (let* ((defaults (dired-dwim-target-defaults nil nil))
              (files (dired-get-marked-files nil current-prefix-arg))
+             (minibuffer-default defaults)
+             (dest
+              (expand-file-name
+               (minibuffer-with-setup-hook
+                   (lambda ()
+                     (set (make-local-variable 'minibuffer-default-add-function)
+                          nil)
+                     (setq minibuffer-default defaults))
+                 (dired-mark-read-file-name
+                  "Rsync to: " default-directory 'copy nil files nil))))
              (regex (rx bol "/" (or "ssh" "scp") (? any) ":"))
              (prefix (cond ((string-match-p regex dest)
                             (replace-regexp-in-string regex "" dest))
