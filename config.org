@@ -935,8 +935,8 @@ settings.
                      (setq minibuffer-default defaults))
                  (dired-mark-read-file-name
                   "Copy to: " default-directory 'copy nil files nil))))
-             (remote (or (string-prefix-p "/ssh" default-directory)
-                         (string-prefix-p "/ssh" target)))
+             (remote (or (file-remote-p default-directory)
+                         (file-remote-p target)))
              (target-files
               (if (not (directory-name-p target))
                   (list target)
