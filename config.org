@@ -1820,6 +1820,10 @@ settings.
   (use-package auctex)
 
   (use-package graphviz-dot-mode)
+
+  (use-package async
+    :init
+    (sk-defer-init (async-bytecomp-package-mode 1)))
 #+END_SRC
 * Development packages - built-in
 #+BEGIN_SRC emacs-lisp
