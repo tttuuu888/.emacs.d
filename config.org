@@ -864,7 +864,7 @@ settings.
                               "\"" (replace-regexp-in-string regex "" f) "\"" ))
                            files " ")
                           " \"" prefix "\""))
-             (remote-p (string-match-p regex default-directory))
+             (remote-p (file-remote-p default-directory))
              (default-directory (if remote-p "~/" default-directory)))
         ;; Run rsync in home folder if remote-p.
         ;; Available for local to local, local to remote, remote to local.
