@@ -774,9 +774,11 @@ settings.
             ("M-o"   . dired-omit-mode)
             ("c"     . my-dired-compress)
             ("C"     . my-dired-do-copy)
+            ("D"     . my-dired-do-delete)
             ("j"     . dired-next-line)
             ("k"     . dired-previous-line)
             ("r"     . ora-dired-rsync)
+            ("x"     . my-dired-do-flagged-delete)
             ("/"     . swiper)
             ("^"     . dired-up-and-close-dir)
             ("bp"    . my-dired-pdf-size-down)
@@ -951,7 +953,57 @@ settings.
              target-files)
           (mapc (lambda (f) (copy-file f target t)) files)
           (mapc (lambda (f) (dired-add-file f ?C)) target-files)
-          (message "Copy files done.")))))
+          (message "Copy files done."))))
+
+    (defun my-dired-do-delete ()
+      "Delete files asynchronously."
+      (interactive)
+      (let* ((remote (file-remote-p default-directory))
+             (files (dired-get-marked-files)))
+        (when (and files
+                   (dired-mark-pop-up
+                    " *Deletions*" 'delete files #'yes-or-no-p "Delete files? "))
+          (if (not remote)
+              (async-shell-command-callback
+               (concat "rm -rf " (string-join files " "))
+               (lambda (files)
+                 (mapc (lambda (f) (dired-delete-entry f)) files)
+                 (message "Delete files done."))
+               files)
+            (mapc (lambda (f)
+                    (if (file-accessible-directory-p f)
+                        (delete-directory f t)
+                      (delete-file f)))
+                  files)
+            (mapc (lambda (f) (dired-delete-entry f)) files)
+            (message "Delete files done.")))))
+
+    (defun my-dired-do-flagged-delete ()
+      "Delete files flagged for deletion asynchronously."
+      (interactive)
+      (let* ((remote (file-remote-p default-directory))
+             (dired-marker-char dired-del-marker)
+             (regexp (dired-marker-regexp))
+             (marks (save-excursion (goto-char (point-min))
+                           (re-search-forward regexp nil t)))
+             (files (when marks (dired-get-marked-files))))
+        (when (and files
+                   (dired-mark-pop-up
+                    " *Deletions*" 'delete files #'yes-or-no-p "Delete files? "))
+          (if (not remote)
+              (async-shell-command-callback
+               (concat "rm -rf " (string-join files " "))
+               (lambda (files)
+                 (mapc (lambda (f) (dired-delete-entry f)) files)
+                 (message "Delete files done."))
+               files)
+            (mapc (lambda (f)
+                    (if (file-accessible-directory-p f)
+                        (delete-directory f t)
+                      (delete-file f)))
+                  files)
+            (mapc (lambda (f) (dired-delete-entry f)) files)
+            (message "Delete files done."))))))
 
   (use-package org
     :ensure nil
