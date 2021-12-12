@@ -855,28 +855,29 @@ settings.
              (src-remote-p (file-remote-p default-directory))
              (dst-remote-p (file-remote-p dest))
              (regex (rx bol "/" (or "ssh" "scp") (? any) ":"))
-             (prefix (cond ((string-match-p regex dest)
-                            (replace-regexp-in-string regex "" dest))
-                           ((string-match-p ".@.*:" dest) dest)
-                           (t (expand-file-name dest))))
+             (target (if dst-remote-p
+                         (replace-regexp-in-string regex "" dest)
+                       dest))
              (cmd (concat "rsync -ahs"
                           (when (or src-remote-p dst-remote-p) "z")
                           " --info=progress2 "
                           (mapconcat
                            (lambda (f)
                              (concat
-                              "\"" (replace-regexp-in-string regex "" f) "\"" ))
+                              "\""
+                              (if (or (not src-remote-p)
+                                      (and src-remote-p dst-remote-p))
+                                  (file-local-name f)
+                                (replace-regexp-in-string regex "" f))
+                              "\"" ))
                            files " ")
-                          " \"" prefix "\""))
-             (default-directory (if src-remote-p "~/" default-directory)))
-        ;; Run rsync in home folder if remote-p.
-        ;; Available for local to local, local to remote, remote to local.
-        ;; Remote to remote is not available.
-        (if (and src-remote-p dst-remote-p)
-            (user-error "Remote to remote is not supported.")
-          (async-shell-command cmd "*rsync*")
-          (with-current-buffer "*rsync*"
-            (view-mode)))))
+                          " \"" target "\""))
+             (default-directory (if (and src-remote-p (not dst-remote-p))
+                                    "~/"
+                                  default-directory)))
+        (async-shell-command cmd "*rsync*")
+        (with-current-buffer "*rsync*"
+          (view-mode))))
 
     (defun my-dired-pdf-size-down ()
       (interactive)
