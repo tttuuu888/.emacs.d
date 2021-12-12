@@ -852,26 +852,31 @@ settings.
                      (setq minibuffer-default defaults))
                  (dired-mark-read-file-name
                   "Rsync to: " default-directory 'copy nil files nil))))
+             (src-remote-p (file-remote-p default-directory))
+             (dst-remote-p (file-remote-p dest))
              (regex (rx bol "/" (or "ssh" "scp") (? any) ":"))
              (prefix (cond ((string-match-p regex dest)
                             (replace-regexp-in-string regex "" dest))
                            ((string-match-p ".@.*:" dest) dest)
                            (t (expand-file-name dest))))
-             (cmd (concat "rsync -ahrsvzP "
+             (cmd (concat "rsync -ahs"
+                          (when (or src-remote-p dst-remote-p) "z")
+                          " --info=progress2 "
                           (mapconcat
                            (lambda (f)
                              (concat
                               "\"" (replace-regexp-in-string regex "" f) "\"" ))
                            files " ")
                           " \"" prefix "\""))
-             (remote-p (file-remote-p default-directory))
-             (default-directory (if remote-p "~/" default-directory)))
+             (default-directory (if src-remote-p "~/" default-directory)))
         ;; Run rsync in home folder if remote-p.
         ;; Available for local to local, local to remote, remote to local.
         ;; Remote to remote is not available.
-        (async-shell-command cmd "*rsync*")
-        (other-window 1)
-        (view-mode)))
+        (if (and src-remote-p dst-remote-p)
+            (user-error "Remote to remote is not supported.")
+          (async-shell-command cmd "*rsync*")
+          (with-current-buffer "*rsync*"
+            (view-mode)))))
 
     (defun my-dired-pdf-size-down ()
       (interactive)
