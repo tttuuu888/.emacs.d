@@ -851,9 +851,7 @@ settings.
 
     (defun ora-dired-rsync ()
       (interactive)
-      (let* ((defaults (dired-dwim-target-defaults nil nil))
-             (files (dired-get-marked-files nil current-prefix-arg))
-             (minibuffer-default defaults)
+      (let* ((files (dired-get-marked-files nil current-prefix-arg))
              (dest (my-dired-get-target "Rsync to: " files))
              (src-remote-p (file-remote-p default-directory))
              (dst-remote-p (file-remote-p dest))
@@ -899,8 +897,8 @@ settings.
       "Compress files asynchronously."
       (interactive)
       (let* ((defaults (dired-dwim-target-defaults nil nil))
-             (files (mapcar #'file-name-nondirectory (dired-get-marked-files)))
              (minibuffer-default defaults)
+             (files (mapcar #'file-name-nondirectory (dired-get-marked-files)))
              (inital-name (if (equal (length files) 1)
                               (if (dired-nondirectory-p (car files))
                                   (file-name-base (car files))
@@ -933,8 +931,7 @@ settings.
     (defun my-dired-do-copy ()
       "Copy files asynchronously."
       (interactive)
-      (let* ((defaults (dired-dwim-target-defaults nil nil))
-             (files (dired-get-marked-files))
+      (let* ((files (dired-get-marked-files))
              (target (my-dired-get-target "Copy to: " files))
              (remote (or (file-remote-p default-directory)
                          (file-remote-p target)))
