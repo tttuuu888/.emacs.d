@@ -838,20 +838,23 @@ settings.
         (dired-goto-file curr)
         (kill-buffer buf)))
 
+    (defun my-dired-get-target (prompt files)
+      (let ((defaults (dired-dwim-target-defaults nil nil)))
+        (expand-file-name
+         (minibuffer-with-setup-hook
+             (lambda ()
+               (set (make-local-variable 'minibuffer-default-add-function)
+                    nil)
+               (setq minibuffer-default defaults))
+           (dired-mark-read-file-name
+            prompt default-directory 'copy nil files nil)))))
+
     (defun ora-dired-rsync ()
       (interactive)
       (let* ((defaults (dired-dwim-target-defaults nil nil))
              (files (dired-get-marked-files nil current-prefix-arg))
              (minibuffer-default defaults)
-             (dest
-              (expand-file-name
-               (minibuffer-with-setup-hook
-                   (lambda ()
-                     (set (make-local-variable 'minibuffer-default-add-function)
-                          nil)
-                     (setq minibuffer-default defaults))
-                 (dired-mark-read-file-name
-                  "Rsync to: " default-directory 'copy nil files nil))))
+             (dest (my-dired-get-target "Rsync to: " files))
              (src-remote-p (file-remote-p default-directory))
              (dst-remote-p (file-remote-p dest))
              (regex (rx bol "/" (or "ssh" "scp") (? any) ":"))
@@ -932,15 +935,7 @@ settings.
       (interactive)
       (let* ((defaults (dired-dwim-target-defaults nil nil))
              (files (dired-get-marked-files))
-             (target
-              (expand-file-name
-               (minibuffer-with-setup-hook
-                   (lambda ()
-                     (set (make-local-variable 'minibuffer-default-add-function)
-                          nil)
-                     (setq minibuffer-default defaults))
-                 (dired-mark-read-file-name
-                  "Copy to: " default-directory 'copy nil files nil))))
+             (target (my-dired-get-target "Copy to: " files))
              (remote (or (file-remote-p default-directory)
                          (file-remote-p target)))
              (target-files
