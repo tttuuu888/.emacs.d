@@ -777,7 +777,7 @@ settings.
             ("D"     . my-dired-do-delete)
             ("j"     . dired-next-line)
             ("k"     . dired-previous-line)
-            ("r"     . ora-dired-rsync)
+            ("r"     . my-dired-rsync)
             ("x"     . my-dired-do-flagged-delete)
             ("/"     . swiper)
             ("^"     . dired-up-and-close-dir)
@@ -849,7 +849,7 @@ settings.
            (dired-mark-read-file-name
             prompt default-directory 'copy nil files nil)))))
 
-    (defun ora-dired-rsync ()
+    (defun my-dired-rsync ()
       (interactive)
       (let* ((files (dired-get-marked-files nil current-prefix-arg))
              (dest (my-dired-get-target "Rsync to: " files))
