@@ -852,6 +852,7 @@ settings.
     (defun my-dired-rsync ()
       (interactive)
       (let* ((files (dired-get-marked-files nil current-prefix-arg))
+             (source (mapcar #'shell-quote-argument files))
              (regex (rx bol "/" (or "ssh" "scp") (? any) ":"))
              (target (my-dired-get-target "Rsync to: " files))
              (src-remote-p (file-remote-p default-directory))
@@ -867,7 +868,7 @@ settings.
                            (and src-remote-p dst-remote-p))
                        #'file-local-name
                      (lambda (f) (replace-regexp-in-string regex "" f)))
-                   files " "))
+                   source " "))
              (dst (concat " " (shell-quote-argument target)))
              (default-directory (if (and src-remote-p (not dst-remote-p))
                                     "~/"
@@ -878,7 +879,7 @@ settings.
 
     (defun my-dired-pdf-size-down ()
       (interactive)
-      (let ((file (dired-filename-at-point))
+      (let ((file (shell-quote-argument (dired-get-filename)))
             (temp (make-temp-file ".temp" nil ".pdf")))
         (if (not (equal (file-name-extension file) "pdf"))
             (message "Not a PDF file.")
@@ -895,6 +896,7 @@ settings.
       (let* ((defaults (dired-dwim-target-defaults nil nil))
              (minibuffer-default defaults)
              (files (mapcar #'file-name-nondirectory (dired-get-marked-files)))
+             (source (mapcar #'shell-quote-argument files))
              (inital-name (if (equal (length files) 1)
                               (if (dired-nondirectory-p (car files))
                                   (file-name-base (car files))
@@ -908,6 +910,7 @@ settings.
              (name (ivy-read "Compress file name: " nil
                              :initial-input
                              (concat inital-name ".zip")))
+             (target (shell-quote-argument name))
              (ext (file-name-extension name))
              (cmd (pcase ext
                     ("zip" "zip -r ")
@@ -918,7 +921,7 @@ settings.
                     (_ "tar acvf "))))
         (when ext
           (async-shell-command-callback
-           (concat cmd name " " (string-join files " "))
+           (concat cmd target " " (string-join source " "))
            (lambda (file)
              (dired-add-file file ?Z)
              (message "Compress files done."))
@@ -928,7 +931,9 @@ settings.
       "Copy files asynchronously."
       (interactive)
       (let* ((files (dired-get-marked-files))
+             (source (mapcar #'shell-quote-argument files))
              (target (my-dired-get-target "Copy to: " files))
+             (dst (shell-quote-argument target))
              (remote (or (file-remote-p default-directory)
                          (file-remote-p target)))
              (target-files
@@ -939,7 +944,7 @@ settings.
                  files))))
         (if (not remote)
             (async-shell-command-callback
-             (concat "cp -rf " (string-join files " ") " " target)
+             (concat "cp -rf " (string-join source " ") " " dst)
              (lambda (target-files)
                (mapc
                 (lambda (f) (dired-add-file f ?C)) target-files)
@@ -953,13 +958,14 @@ settings.
       "Delete files asynchronously."
       (interactive)
       (let* ((remote (file-remote-p default-directory))
-             (files (dired-get-marked-files)))
+             (files (dired-get-marked-files))
+             (source (mapcar #'shell-quote-argument files)))
         (when (and files
                    (dired-mark-pop-up
                     " *Deletions*" 'delete files #'yes-or-no-p "Delete files? "))
           (if (not remote)
               (async-shell-command-callback
-               (concat "rm -rf " (string-join files " "))
+               (concat "rm -rf " (string-join source " "))
                (lambda (files)
                  (mapc (lambda (f) (dired-delete-entry f)) files)
                  (message "Delete files done."))
@@ -980,13 +986,14 @@ settings.
              (regexp (dired-marker-regexp))
              (marks (save-excursion (goto-char (point-min))
                            (re-search-forward regexp nil t)))
-             (files (when marks (dired-get-marked-files))))
+             (files (when marks (dired-get-marked-files)))
+             (source (mapcar #'shell-quote-argument files)))
         (when (and files
                    (dired-mark-pop-up
                     " *Deletions*" 'delete files #'yes-or-no-p "Delete files? "))
           (if (not remote)
               (async-shell-command-callback
-               (concat "rm -rf " (string-join files " "))
+               (concat "rm -rf " (string-join source " "))
                (lambda (files)
                  (mapc (lambda (f) (dired-delete-entry f)) files)
                  (message "Delete files done."))
