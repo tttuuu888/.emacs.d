@@ -478,6 +478,12 @@ Various useful functions.
          (when (memq (process-status process) '(exit signal))
            (apply callback args))))
       nil))
+
+  (defun shell-quote-remote-file (file)
+    (let* ((local-name (file-local-name file))
+           (domain (string-remove-suffix local-name file))
+           (name (shell-quote-argument local-name)))
+      (concat domain name)))
 #+END_SRC
 
 ** SK-mode-line
@@ -852,7 +858,7 @@ settings.
     (defun my-dired-rsync ()
       (interactive)
       (let* ((files (dired-get-marked-files nil current-prefix-arg))
-             (source (mapcar #'shell-quote-argument files))
+             (source (mapcar #'shell-quote-remote-file files))
              (regex (rx bol "/" (or "ssh" "scp") (? any) ":"))
              (target (my-dired-get-target "Rsync to: " files))
              (src-remote-p (file-remote-p default-directory))
@@ -869,7 +875,7 @@ settings.
                        #'file-local-name
                      (lambda (f) (replace-regexp-in-string regex "" f)))
                    source " "))
-             (dst (concat " " (shell-quote-argument target)))
+             (dst (concat " " (shell-quote-remote-file target)))
              (default-directory (if (and src-remote-p (not dst-remote-p))
                                     "~/"
                                   default-directory)))
