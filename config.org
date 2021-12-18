@@ -641,6 +641,15 @@ settings.
     (push '("*eldoc*" . emacs) evil-buffer-regexps)
     (add-hook 'evil-insert-state-entry-hook
               (lambda () (when buffer-read-only (read-only-mode -1))))
+    (add-hook 'isearch-mode-hook
+              (lambda (&rest _)
+                (remove-hook 'input-method-activate-hook
+                             'evil-activate-input-method t)))
+    (add-hook 'isearch-mode-end-hook
+              (lambda (&rest _)
+                (deactivate-input-method)
+                (add-hook 'input-method-activate-hook
+                          'evil-activate-input-method nil t)))
     (defun evil-reload-file ()
       (interactive)
       (let ((p (point)))
