@@ -1572,8 +1572,7 @@ settings.
           helm-split-window-default-side 'right
           helm-show-completion-display-function nil)
     (advice-add 'helm-occur-goto-line :after
-                (lambda (_) (when which-function-mode
-                              (which-func-update)))))
+                (lambda (&rest _) (which-func-update))))
 
   (use-package helm-ag
     :commands (helm-ag-project-or-here helm-ag-here)
@@ -1585,6 +1584,8 @@ settings.
     (setq helm-ag-insert-at-point 'symbol
           helm-ag-base-command "ag --nocolor --nogroup --follow"
           helm-ag-use-grep-ignore-list t)
+    (advice-add 'helm-ag--persistent-action :after
+                (lambda (&rest _) (which-func-update)))
     (defun helm-ag-project-or-here ()
       (interactive)
       (helm-do-ag
@@ -1597,7 +1598,10 @@ settings.
   (use-package helm-git-grep
     :init
     (evil-leader/set-key
-      "p" 'helm-git-grep-at-point))
+      "p" 'helm-git-grep-at-point)
+    :config
+    (advice-add 'helm-git-grep-persistent-action :after
+                (lambda (&rest _) (which-func-update))))
 
   (use-package projectile
     :commands (sk-add-known-project
