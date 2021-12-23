@@ -961,12 +961,17 @@ settings.
             (async-shell-command-callback
              (concat "cp -rf " (string-join source " ") " " dst)
              (lambda (target-files)
-               (mapc
-                (lambda (f) (dired-add-file f ?C)) target-files)
+               (mapc (lambda (f)
+                       (dired-remove-file f)
+                       (dired-add-file f ?C))
+                     target-files)
                (message "Copy files done."))
              target-files)
           (mapc (lambda (f) (copy-file f target t)) files)
-          (mapc (lambda (f) (dired-add-file f ?C)) target-files)
+          (mapc (lambda (f)
+                  (dired-remove-file f)
+                  (dired-add-file f ?C))
+                target-files)
           (message "Copy files done."))))
 
     (defun my-dired-do-delete ()
