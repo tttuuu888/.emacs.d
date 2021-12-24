@@ -808,7 +808,8 @@ settings.
     (require 'dired-x)
     (setq dired-listing-switches "-alh --group-directories-first"
           dired-omit-extensions '("~")
-          dired-omit-files (rx bol (or "#" ".")))
+          dired-omit-files (rx bol (or "#" "."))
+          dired-omit-verbose nil)
     (add-to-list 'dired-compress-files-alist '("\\.zst\\'" . "tar -acf %o %i"))
     (add-to-list 'dired-guess-shell-alist-user '("\\.zst\\'" "tar xvf"))
     (add-to-list 'display-buffer-alist
