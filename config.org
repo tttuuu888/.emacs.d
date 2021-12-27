@@ -2133,6 +2133,11 @@ settings.
       "er" 'scheme-send-region)
     (evil-leader/set-key-for-mode 'inferior-scheme-mode
       "l" 'my-comint-history))
+
+  (use-package project
+    :ensure nil
+    :config
+    (setq project-find-functions '(sk-project-root)))
 #+END_SRC
 * Development packages - external
 #+BEGIN_SRC emacs-lisp
