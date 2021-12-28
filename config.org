@@ -398,7 +398,7 @@ Various useful functions.
         (let ((key (mapconcat 'single-key-description (car e) "")))
           (evil-leader/set-key-for-mode mode key (cdr e))))))
 
-  (defun sk-project-root (&optional dir)
+  (defun sk-project-root (&optional dir strict)
     (let ((dir (or dir default-directory))
           (found nil)
           (checks '(".git" ".projectile")))
@@ -406,7 +406,13 @@ Various useful functions.
                until found
                do (when-let ((root (find-file-in-tree dir c)))
                     (setq found root)))
-      (file-truename (or found dir))))
+      (if strict
+          (and found (file-truename found))
+        (file-truename (or found dir)))))
+
+  (defun sk-project-try-vc (dir)
+    (let ((root (sk-project-root dir)))
+      (and root (cons 'transient root))))
 
   (defun sk-set-dir-to-project ()
     "Set current directory to the project root directory."
@@ -2137,7 +2143,7 @@ settings.
   (use-package project
     :ensure nil
     :config
-    (setq project-find-functions '(sk-project-root)))
+    (setq project-find-functions '(sk-project-try-vc)))
 #+END_SRC
 * Development packages - external
 #+BEGIN_SRC emacs-lisp
@@ -2443,9 +2449,6 @@ settings.
                      . (eglot-pyright . ("pyright-langserver" "--stdio")))
                     ((rust-mode) "rust-analyzer"))
                   eglot-server-programs))
-    (defun my-projectile-project-find (dir)
-      (let ((root (projectile-project-root dir)))
-        (and root (cons 'transient root))))
     (defclass eglot-pyright (eglot-lsp-server) ()
       :documentation "MS pyright Language Server.")
     (cl-defmethod eglot-client-capabilities ((server eglot-pyright))
@@ -2453,7 +2456,7 @@ settings.
       `(:workspace
         (:didChangeWatchedFiles
          (:dynamicRegistration
-          ,(if (my-projectile-project-find default-directory)
+          ,(if (sk-project-try-vc default-directory)
                t
              :json-false)))))
     (evil-define-minor-mode-key 'normal 'eglot--managed-mode
