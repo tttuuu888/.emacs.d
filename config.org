@@ -1573,11 +1573,11 @@ settings.
     :config
     (add-to-list 'company-backends 'company-go))
 
-  (use-package company-ghc
+  (use-package company-ghci
     :demand t
     :after haskell-mode
     :config
-    (add-to-list 'company-backends 'company-ghc))
+    (add-to-list 'company-backends 'company-ghci))
 
   (use-package undo-tree
     :init
