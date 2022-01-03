@@ -2468,8 +2468,7 @@ settings.
   (use-package eglot
     :config
     (require 'projectile)
-    (setq my-eglot-projects (make-hash-table :test 'equal)
-          eglot-autoshutdown t
+    (setq eglot-autoshutdown t
           eglot-server-programs
           (append '(((c++-mode c-mode) "ccls")
                     (python-mode
