@@ -411,7 +411,7 @@ Various useful functions.
         (file-truename (or found dir)))))
 
   (defun sk-project-try-vc (dir)
-    (let ((root (sk-project-root dir)))
+    (let ((root (sk-project-root dir t)))
       (and root (cons 'transient root))))
 
   (defun sk-set-dir-to-project ()
