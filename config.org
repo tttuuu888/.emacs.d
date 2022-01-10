@@ -523,6 +523,14 @@ Various useful functions.
 Simple mode line setting function.
 
 #+BEGIN_SRC emacs-lisp
+  ;;; mode-line face setting
+  (custom-set-faces
+   '(mode-line
+     ((t (:background "grey75" :foreground "black"))))
+   '(mode-line-inactive
+     ((((background light)) (:foreground "grey20" :background "grey90" :box nil))
+      (((background dark)) (:foreground "grey80" :background "grey30" :box nil)))))
+
   ;;; sk-vc-mode for sk-mode-line
   (defvar sk-vc-mode nil)
   (put 'sk-vc-mode 'risky-local-variable t)
@@ -536,8 +544,6 @@ Simple mode line setting function.
 
   ;;; sk-mode-line
   (defun sk-mode-line ()
-    (set-face-attribute 'mode-line nil :box nil)
-    (set-face-attribute 'mode-line-inactive nil :box nil)
     (setq-default
      mode-line-format
      '("%e"
