@@ -1341,15 +1341,11 @@ settings.
 
   (use-package hl-line
     :ensure nil
+    :custom-face
+    (hl-line ((((background light)) :background "darkseagreen2" :extend t)
+               (((background dark)) :background "gray18" :extend t)))
     :init
-    (sk-defer-init (global-hl-line-mode 1))
-    :config
-    (defface sk-hl-line
-      '((((background light)) :background "darkseagreen2")
-        (((background dark)) :background "gray18"))
-      "SK hl-line face"
-      :group 'hl-line-mode)
-    (set-face-attribute 'hl-line nil :inherit 'sk-hl-line))
+    (sk-defer-init (global-hl-line-mode 1)))
 
   (use-package ansi-color
     :ensure nil
