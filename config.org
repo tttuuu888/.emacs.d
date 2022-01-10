@@ -1346,7 +1346,7 @@ settings.
     :config
     (defface sk-hl-line
       '((((background light)) :background "darkseagreen2")
-        (((background dark)) :background "gray20"))
+        (((background dark)) :background "gray18"))
       "SK hl-line face"
       :group 'hl-line-mode)
     (set-face-attribute 'hl-line nil :inherit 'sk-hl-line))
