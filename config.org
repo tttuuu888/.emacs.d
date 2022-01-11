@@ -2192,7 +2192,15 @@ settings.
 * Development packages - external
 #+BEGIN_SRC emacs-lisp
   (use-package ggtags
-    :hook ((c-mode-common asm-mode) . ggtags-mode))
+    :hook ((c-mode-common asm-mode) . ggtags-mode)
+    :commands (sk-create-ggtags)
+    :config
+    (defun sk-create-ggtags (root)
+      (interactive "DRoot directory: ")
+      (let ((default-directory root))
+        (async-shell-command-callback
+         "gtags"
+         (lambda () (message (concat "GTAGS generated in " default-directory)))))))
 
   (use-package irony
     :hook ((c++-mode c-mode objc-mode) . irony-mode)
