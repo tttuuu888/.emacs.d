@@ -792,7 +792,9 @@ settings.
   ;;; Built-in packages
   (use-package korea-util
     :ensure nil
-    :bind ("C-\\" . toggle-korean-input-method)
+    :bind (("C-\\" . toggle-korean-input-method)
+           :map isearch-mode-map
+           ("C-\\" . isearch-toggle-korean-input-method))
     :init
     (setq default-korean-keyboard "3")
     (setup-korean-environment-internal))
