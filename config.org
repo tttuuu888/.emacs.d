@@ -1897,6 +1897,7 @@ settings.
       "f"     'counsel-find-file
       "o"     'counsel-git
       "r"     'counsel-recentf
+      "ha"    'counsel-describe-face
       "hb"    'counsel-descbinds
       "hv"    'counsel-describe-variable
       "hf"    'counsel-describe-function
