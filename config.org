@@ -1848,7 +1848,7 @@ settings.
         (format form buf-name mode (or path ""))))
     (ivy-configure 'ivy-switch-buffer
       :display-transformer-fn 'sk-ivy-buffer-transformer)
-    (ivy-set-actions
+    (ivy-add-actions
      'projectile-switch-project
      '(("d" (lambda (p) (projectile-remove-known-project p)) "delete"))))
 
@@ -1925,12 +1925,12 @@ settings.
       "Fzf on project root."
       (interactive)
       (counsel-fzf nil (sk-project-root)))
-    (ivy-set-actions
+    (ivy-add-actions
      'counsel-shell-history
      '(("d" (lambda (x) (ring-remove comint-input-ring
                                      (ring-member comint-input-ring (car x))))
         "delete")))
-    (ivy-set-actions
+    (ivy-add-actions
      'counsel-find-file
      '(("d" counsel-find-file-delete "delete")
        ("k" counsel-find-file-mkdir-action "mkdir")))
