@@ -1909,6 +1909,19 @@ settings.
     (setq ivy-initial-inputs-alist nil
           ivy-height-alist '((t . 15))
           sk-compile-history nil)
+    (ivy-add-actions
+     'counsel-shell-history
+     '(("d" (lambda (x) (ring-remove comint-input-ring
+                                     (ring-member comint-input-ring (car x))))
+        "delete")))
+    (ivy-add-actions
+     'counsel-find-file
+     '(("d" counsel-find-file-delete "delete")
+       ("k" counsel-find-file-mkdir-action "mkdir")))
+    (ivy-add-actions
+     'ivy-switch-buffer
+     '(("d" ivy--kill-buffer-action "delete")))
+
     (defun my-counsel-fzf-here ()
       "Fzf on current directory."
       (interactive)
@@ -1925,15 +1938,6 @@ settings.
       "Fzf on project root."
       (interactive)
       (counsel-fzf nil (sk-project-root)))
-    (ivy-add-actions
-     'counsel-shell-history
-     '(("d" (lambda (x) (ring-remove comint-input-ring
-                                     (ring-member comint-input-ring (car x))))
-        "delete")))
-    (ivy-add-actions
-     'counsel-find-file
-     '(("d" counsel-find-file-delete "delete")
-       ("k" counsel-find-file-mkdir-action "mkdir")))
 
     (defun sk-compile-candidates ()
       (if-let ((sbin (find-file-in-tree default-directory ".sbin" t)))
