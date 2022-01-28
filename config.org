@@ -531,19 +531,10 @@ Simple mode line setting function.
    '(mode-line
      ((t (:background "grey75" :foreground "black"))))
    '(mode-line-inactive
-     ((((background light)) (:foreground "grey20" :background "grey90" :box nil))
-      (((background dark)) (:foreground "grey80" :background "grey30" :box nil)))))
-
-  ;;; sk-vc-mode for sk-mode-line
-  (defvar sk-vc-mode nil)
-  (put 'sk-vc-mode 'risky-local-variable t)
-  (make-variable-buffer-local 'sk-vc-mode)
-  (put 'sk-vc-mode 'permanent-local t)
-
-  (defun sk-vc-refresh-state ()
-    (setq sk-vc-mode (git-branch-of-file (buffer-file-name))))
-
-  (add-hook 'find-file-hook #'sk-vc-refresh-state)
+     ((((background light))
+       (:foreground "grey20" :background "grey90" :box nil))
+      (((background dark))
+       (:foreground "grey80" :background "grey30" :box nil)))))
 
   ;;; sk-mode-line
   (defun sk-mode-line ()
@@ -1489,10 +1480,15 @@ settings.
     (vc-follow-symlinks nil)
     (vc-handled-backends nil)
     :init
-    (defalias 'vc-refresh-state 'sk-vc-refresh-state)
+    (defvar sk-vc-mode nil)
+    (put 'sk-vc-mode 'risky-local-variable t)
+    (make-variable-buffer-local 'sk-vc-mode)
+    (put 'sk-vc-mode 'permanent-local t)
+    (add-hook 'find-file-hook #'sk-vc-refresh-state)
     (defun sk-vc-refresh-state ()
       (setq sk-vc-mode (git-branch-of-file (buffer-file-name))))
-    (add-hook 'find-file-hook #'sk-vc-refresh-state))
+    :config
+    (remove-hook 'find-file-hook #'vc-refresh-state))
 
   (use-package tex-mode
     :ensure nil
