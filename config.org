@@ -1512,15 +1512,6 @@ settings.
   (use-package bind-key
     :init
     (bind-keys*
-     ("<mouse-1>"        . nil)
-     ("<mouse-3>"        . nil)
-     ("<down-mouse-1>"   . nil)
-     ("<down-mouse-3>"   . nil)
-     ("<drag-mouse-1>"   . nil)
-     ("<drag-mouse-3>"   . nil)
-     ("<C-down-mouse-1>" . nil)
-     ("<M-down-mouse-1>" . nil)
-     ("<S-down-mouse-1>" . nil)
      ("C-c <escape>"     . keyboard-quit)
      ("C-x <escape>"     . keyboard-quit)
      ("M-,"              . my-other-window)
