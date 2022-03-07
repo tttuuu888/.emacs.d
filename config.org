@@ -221,6 +221,24 @@ Various useful functions.
            (,eval-region back curr)))
        (setq deactivate-mark t)))
 
+  (defmacro html-head-css (&rest body)
+    (declare (indent defun))
+    `(concat
+      "<style type=\"text/css\">\n"
+      "<!--/*--><![CDATA[/*><!--*/\n"
+      ,@body
+      "/*]]>*/-->\n"
+      "</style>\n"))
+
+  (defmacro html-head-js (&rest body)
+    (declare (indent defun))
+    `(concat
+      "<script type=\"text/javascript\">\n"
+      "<!--/*--><![CDATA[/*><!--*/\n"
+      ,@body
+      "/*]]>*/-->\n"
+      "</script>\n"))
+
 
   ;;; SK functions
   (defun sharp-ifdef-insert (start end pre)
@@ -1200,19 +1218,16 @@ settings.
         (setq-local org-html-head-include-default-style nil
                     org-html-head
                     (concat
-                     "<style type=\"text/css\">\n"
-                     "<!--/*--><![CDATA[/*><!--*/\n"
-                     (file-to-string (expand-file-name "org.css" emacs-etc-dir))
-                     (apply #'format
-                            "\n.src {background-color: %s; color: %s;}\n"
-                            (mapcar
-                             (lambda (x)
-                               (apply #'color-rgb-to-hex
-                                      (append (color-name-to-rgb x) '(2))))
-                             (list (face-background 'default)
-                                   (face-foreground 'default))))
-                     "/*]]>*/-->\n"
-                     "</style>\n")))
+                     (html-head-css
+                       (file-to-string (expand-file-name "org.css" emacs-etc-dir))
+                       (apply #'format
+                              "\n.src {background-color: %s; color: %s;}\n"
+                              (mapcar
+                               (lambda (x)
+                                 (apply #'color-rgb-to-hex
+                                        (append (color-name-to-rgb x) '(2))))
+                               (list (face-background 'default)
+                                     (face-foreground 'default))))))))
        ((eq exporter 'latex)
         (setq-local org-export-with-section-numbers t
                     org-export-with-toc 2))))
