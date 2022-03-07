@@ -1060,7 +1060,7 @@ settings.
              (dired-marker-char dired-del-marker)
              (regexp (dired-marker-regexp))
              (marks (save-excursion (goto-char (point-min))
-                           (re-search-forward regexp nil t)))
+                                    (re-search-forward regexp nil t)))
              (files (when marks (dired-get-marked-files)))
              (source (mapcar #'shell-quote-argument files)))
         (when (and files
@@ -1349,7 +1349,7 @@ settings.
     :ensure nil
     :custom-face
     (hl-line ((((background light)) :background "darkseagreen2" :extend t)
-               (((background dark)) :background "gray18" :extend t)))
+              (((background dark)) :background "gray18" :extend t)))
     :init
     (sk-defer-init (global-hl-line-mode 1)))
 
