@@ -520,6 +520,15 @@ Various useful functions.
            (domain (string-remove-suffix local-name file))
            (name (shell-quote-argument local-name)))
       (concat domain name)))
+
+  (defun file-to-string (file &optional online)
+    (let* ((target (if online (url-file-local-copy file) file))
+           (content (ignore-errors
+                      (with-temp-buffer
+                        (insert-file-contents target)
+                        (buffer-string)))))
+      (when online (delete-file target))
+      (or content "")))
 #+END_SRC
 
 ** SK-mode-line
@@ -1193,10 +1202,7 @@ settings.
                     (concat
                      "<style type=\"text/css\">\n"
                      "<!--/*--><![CDATA[/*><!--*/\n"
-                     (with-temp-buffer
-                       (insert-file-contents
-                        (expand-file-name "org.css" emacs-etc-dir))
-                       (buffer-string))
+                     (file-to-string (expand-file-name "org.css" emacs-etc-dir))
                      (apply #'format
                             "\n.src {background-color: %s; color: %s;}\n"
                             (mapcar
