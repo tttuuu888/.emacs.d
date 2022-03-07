@@ -1238,13 +1238,11 @@ settings.
           ibuffer-default-sorting-mode 'major-mode
           ibuffer-saved-filter-groups
           '(("home"
-             ("Emacs-config" (or (filename . ".emacs")
-                                 (filename . ".emacs.d")
-                                 (filename . "emacs-config")))
+             ("Emacs-config" (filename . ".emacs.d"))
              ("Org / MD" (or (mode . org-mode)
                              (mode . markdown-mode)
                              (filename . "OrgMode")))
-             ("Magit" (mode . magit-status-mode))
+             ("Magit" (name . "^Magit"))
              ("Code" (derived-mode . prog-mode))
              ("Shell" (or (mode . shell-mode)
                           (mode . eshell-mode)))
