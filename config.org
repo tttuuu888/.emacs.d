@@ -1237,7 +1237,9 @@ settings.
                        (file-name-base (buffer-file-name))
                      (buffer-name))
                    "_" (format-time-string "%y%m%d") "_"))
-             (img (concat "imgs/"(make-temp-name pre) ".png")))
+             (img (concat "imgs/"
+                          (completing-read "Enter image name: " nil)
+                          ".png")))
         (unless (file-exists-p "imgs")
           (make-directory "imgs"))
         (call-process "import" nil nil nil img)
