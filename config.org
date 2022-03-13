@@ -1096,6 +1096,7 @@ settings.
     :config
     (require 'ox)
     (require 'ox-beamer)
+    (require 'counsel)
     (setq
      my-org-path "~/Dropbox/org/"
      my-org-note (expand-file-name "notes.org" my-org-path)
@@ -1232,16 +1233,12 @@ settings.
                     org-export-with-toc 2))))
     (defun my-org-capture-image ()
       (interactive)
-      (let* ((pre (concat
-                   (if (buffer-file-name)
-                       (file-name-base (buffer-file-name))
-                     (buffer-name))
-                   "_" (format-time-string "%y%m%d") "_"))
-             (img (concat "imgs/"
-                          (completing-read "Enter image name: " nil)
-                          ".png")))
-        (unless (file-exists-p "imgs")
-          (make-directory "imgs"))
+      (let* ((img (file-relative-name
+                   (counsel--find-file-1 "Image file name: " nil nil nil)
+                   default-directory))
+             (dir (file-name-directory img)))
+        (unless (file-exists-p dir)
+          (make-directory dir t))
         (call-process "import" nil nil nil img)
         (when (file-exists-p img)
           (insert (concat "[[file:" img "]]")))))
