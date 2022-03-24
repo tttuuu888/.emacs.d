@@ -1991,9 +1991,9 @@ settings.
     (evil-leader/set-key (kbd "<DEL>") 'c-hungry-backspace)
     (evil-define-key 'normal prog-mode-map
       "gd" 'xref-find-definitions
-      "gp" 'xref-pop-marker-stack
+      "gp" 'xref-go-back
       "gr" 'xref-find-reference-here
-      "g[" 'xref-pop-marker-stack)
+      "g[" 'xref-go-back)
     (add-hook 'before-save-hook (lambda () (when (derived-mode-p 'prog-mode)
                                              (delete-trailing-whitespace)))))
 
