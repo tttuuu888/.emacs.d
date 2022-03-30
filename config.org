@@ -1289,6 +1289,7 @@ settings.
     :ensure nil
     :init
     (evil-leader/set-key
+      "sc" 'shell-command
       "ss" 'shell)
     :config
     (evil-leader/set-key-for-mode 'shell-mode
