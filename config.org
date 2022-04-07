@@ -160,13 +160,6 @@ Use =y-or-n= instead of =yes-or-no=.
   (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
-** M-up, M-down, M-left, and M-right keys.
-M-up,down,left,right keys for moving to windows.
-
-#+BEGIN_SRC emacs-lisp
-  (windmove-default-keybindings 'meta)
-#+END_SRC
-
 ** SK-utils
 Various useful functions.
 
