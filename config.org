@@ -844,8 +844,7 @@ settings.
             ("/"     . swiper)
             ("^"     . dired-up-and-close-dir)
             ("bp"    . my-dired-pdf-size-down)
-            ("<DEL>" . dired-up-and-close-dir)
-            ("<RET>" . dired-visit-file-or-dir))
+            ("<DEL>" . dired-up-and-close-dir))
     :init
     (add-to-list 'magic-mode-alist
                  '((lambda () (< large-file-warning-threshold (buffer-size)))
@@ -853,7 +852,8 @@ settings.
     :config
     (require 'dired-aux)
     (require 'dired-x)
-    (setq dired-listing-switches "-alh --group-directories-first"
+    (setq dired-kill-when-opening-new-dired-buffer t
+          dired-listing-switches "-alh --group-directories-first"
           dired-omit-extensions '("~")
           dired-omit-files (rx bol (or "#" "."))
           dired-omit-verbose nil)
@@ -882,12 +882,6 @@ settings.
       (let ((path (dired-filename-at-point)))
         (kill-new path)
         (message "Copied path : %s" path)))
-
-    (defun dired-visit-file-or-dir ()
-      (interactive)
-      (if (file-directory-p (dired-get-filename nil t))
-          (dired-find-alternate-file)
-        (dired-find-file-other-window)))
 
     (defun dired-up-and-close-dir (n)
       (interactive "p")
