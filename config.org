@@ -2118,7 +2118,9 @@ settings.
 
   (use-package sh-script
     :ensure nil
-    :hook (sh-mode . (lambda () (sh-electric-here-document-mode -1))))
+    :hook (sh-mode . (lambda () (sh-electric-here-document-mode -1)))
+    :init
+    (add-to-list 'auto-mode-alist '("\\.te\\'" . sh-mode)))
 
   (use-package elisp-mode
     :ensure nil
@@ -2149,6 +2151,8 @@ settings.
 
   (use-package cc-mode
     :ensure nil
+    :init
+    (add-to-list 'auto-mode-alist '("\\.hal\\'" . c++-mode))
     :config
     (setq c-basic-offset tab-width
           c-default-style "bsd")
