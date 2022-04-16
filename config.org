@@ -2542,6 +2542,8 @@ settings.
 
   (use-package eros
     :init (sk-defer-init (eros-mode 1)))
+
+  (use-package dts-mode)
 #+END_SRC
 * End
 ** Provide a feature
