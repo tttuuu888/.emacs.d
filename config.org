@@ -105,7 +105,8 @@ Instead of using =custom.el=, insert the contents of the file directly here.
    '(split-width-threshold 140)
    '(tab-always-indent 'complete)
    '(tab-width 4)
-   '(use-file-dialog nil))
+   '(use-file-dialog nil)
+   '(use-short-answers t))
 #+END_SRC
 
 ** User information
@@ -153,13 +154,6 @@ Enable dark theme.
     (set-fontset-font t 'hangul sk-font)
     (set-face-attribute 'fixed-pitch nil :family sk-font))
 #+END_SRC
-** Yes-or-no -> y-or-n
-Use =y-or-n= instead of =yes-or-no=.
-
-#+BEGIN_SRC emacs-lisp
-  (fset 'yes-or-no-p 'y-or-n-p)
-#+END_SRC
-
 ** SK-utils
 Various useful functions.
 
