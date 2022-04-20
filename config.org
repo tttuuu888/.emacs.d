@@ -2114,6 +2114,7 @@ settings.
     :ensure nil
     :hook (sh-mode . (lambda () (sh-electric-here-document-mode -1)))
     :init
+    (add-to-list 'auto-mode-alist '("\\.envrc\\'" . sh-mode))
     (add-to-list 'auto-mode-alist '("\\.te\\'" . sh-mode)))
 
   (use-package elisp-mode
