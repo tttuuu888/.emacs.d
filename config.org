@@ -1414,6 +1414,22 @@ settings.
     :init
     (sk-defer-init (package-read-all-archive-contents)))
 
+  (use-package diff-mode
+    :ensure nil
+    :config
+    (sk-C-c-map-to-leader-c-map 'diff-mode diff-mode-map)
+    (evil-set-initial-state 'diff-mode 'motion)
+    (evil-define-key 'motion diff-mode-map
+      "a" 'diff-apply-hunk
+      "b" 'diff-refine-hunk
+      "c" 'diff-goto-source
+      "n" 'diff-hunk-next
+      "p" 'diff-hunk-prev
+      "s" 'diff-split-hunk
+      "t" 'diff-test-hunk
+      "u" 'evil-undo
+      "w" 'diff-ignore-whitespace-hunk))
+
   (use-package ediff
     :ensure nil
     :custom-face
