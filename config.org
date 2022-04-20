@@ -273,7 +273,7 @@ Various useful functions.
     (interactive)
     (let ((file "./.clang_complete")
           (includes (shell-command-to-string
-                     "find -type f -name '*.h' -printf '-I%h\n' | sort -u")))
+                     "find -L -type f -name '*.h' -printf '-I%h\n' | sort -u")))
       (write-region includes nil file)))
 
   (defun insert-date ()
