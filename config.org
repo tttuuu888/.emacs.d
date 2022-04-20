@@ -249,21 +249,21 @@ Various useful functions.
     (interactive "r\nsDefine : ")
     (sharp-ifdef-insert start end (concat "#ifdef " in)))
 
-  (defun find-file-in-tree (dir filename &optional return-include-file)
-    "Find file FILENAME up to home or root folder."
+  (defun find-file-in-tree (dir filename &optional return-only-dir)
+    "Find file FILENAME up to root folder."
     (let ((file (expand-file-name filename dir))
           (parent (file-name-directory (directory-file-name dir))))
       (cond ((equal dir parent) nil)
             ((file-exists-p file)
-             (when (file-directory-p file)
-               (setq file (file-name-as-directory file)))
-             (if return-include-file file dir))
-            (parent (find-file-in-tree parent filename return-include-file))
+             (cond (return-only-dir dir)
+                   ((file-directory-p file) (file-name-as-directory file))
+                   (t file)))
+            (parent (find-file-in-tree parent filename return-only-dir))
             (t nil))))
 
   (defun sk-sbin-dired ()
     (interactive)
-    (let ((sbin (find-file-in-tree default-directory ".sbin" t)))
+    (let ((sbin (find-file-in-tree default-directory ".sbin")))
       (if sbin
           (dired sbin)
         (message "Folder .sbin not found."))))
@@ -409,7 +409,7 @@ Various useful functions.
           (checks '(".git" ".projectile")))
       (cl-loop for c in checks
                until found
-               do (when-let ((root (find-file-in-tree dir c)))
+               do (when-let ((root (find-file-in-tree dir c t)))
                     (setq found root)))
       (if strict
           (and found (file-truename found))
@@ -1925,7 +1925,7 @@ settings.
       (counsel-fzf nil (sk-project-root)))
 
     (defun sk-compile-candidates ()
-      (if-let ((sbin (find-file-in-tree default-directory ".sbin" t)))
+      (if-let ((sbin (find-file-in-tree default-directory ".sbin")))
           (let ((files-alist)
                 (files (directory-files sbin t "\\.sh$"))
                 (cand (alist-get sbin sk-compile-history nil nil #'equal)))
@@ -2379,7 +2379,7 @@ settings.
     :hook (find-file
            . (lambda ()
                (and (string-match "\\.js\\'" buffer-file-name)
-                    (find-file-in-tree default-directory "next.config.js")
+                    (find-file-in-tree default-directory "next.config.js" t)
                     (rjsx-mode))))
     :init
     (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode)))
