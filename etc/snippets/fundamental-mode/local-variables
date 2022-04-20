@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: local-variables
+# key: lvs
+# --
+${1:`(if comment-start (string-clean-whitespace comment-start) "#")`} Local Variables:
+$1 mode: ${2:`(string-remove-suffix "-mode" (symbol-name major-mode))`}
+$1 comment-start: "$1 "
+$1 End:
+$0
