@@ -1615,10 +1615,11 @@ settings.
             ("C-c C-e" . wgrep-change-to-wgrep-mode)
             ("C-c C-s" . wgrep-save-all-buffers))
     :config
-    (evil-leader/set-key-for-mode 'helm-git-grep-mode
-      "ce" 'wgrep-change-to-wgrep-mode
-      "cs" 'wgrep-save-all-buffers
-      "ck" 'wgrep-abort-changes)
+    (dolist (mode '(helm-git-grep-mode helm-ag-mode))
+      (evil-leader/set-key-for-mode mode
+        "ce" 'wgrep-change-to-wgrep-mode
+        "cs" 'wgrep-save-all-buffers
+        "ck" 'wgrep-abort-changes))
     (advice-add 'wgrep-change-to-wgrep-mode :after 'evil-normal-state))
 
   (use-package helm
