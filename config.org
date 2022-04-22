@@ -2165,6 +2165,7 @@ settings.
     :ensure nil
     :init
     (add-to-list 'auto-mode-alist '("\\.hal\\'" . c++-mode))
+    (add-to-list 'auto-mode-alist '("\\.aidl\\'" . java-mode))
     :config
     (setq c-basic-offset tab-width
           c-default-style "bsd")
