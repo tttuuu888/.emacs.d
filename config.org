@@ -1755,6 +1755,9 @@ settings.
 
   (use-package fzf
     :bind (("C-c j h" . fzf-here))
+    :init
+    (evil-leader/set-key
+      "jf" 'fzf-here)
     :config
     (defun fzf-here ()
       (interactive)
