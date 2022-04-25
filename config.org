@@ -2166,9 +2166,8 @@ settings.
 
   (use-package cc-mode
     :ensure nil
-    :init
-    (add-to-list 'auto-mode-alist '("\\.hal\\'" . c++-mode))
-    (add-to-list 'auto-mode-alist '("\\.aidl\\'" . java-mode))
+    :mode (("\\.aidl\\'" . java-mode)
+           ("\\.hal\\'" . c++-mode))
     :config
     (setq c-basic-offset tab-width
           c-default-style "bsd")
@@ -2398,13 +2397,12 @@ settings.
 
   (use-package rjsx-mode
     :disabled
+    :mode ("components\\/.*\\.js\\'" . rjsx-mode)
     :hook (find-file
            . (lambda ()
                (and (string-match "\\.js\\'" buffer-file-name)
                     (find-file-in-tree default-directory "next.config.js" t)
-                    (rjsx-mode))))
-    :init
-    (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode)))
+                    (rjsx-mode)))))
 
   (use-package emmet-mode
     :hook ((web-mode js2-mode css-mode) . emmet-mode))
