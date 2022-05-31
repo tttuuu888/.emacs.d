@@ -1911,9 +1911,7 @@ settings.
       "jo"    'my-counsel-fzf
       "sb"    'my-counsel-switch-shell-buffer)
     :config
-    (setq ivy-initial-inputs-alist nil
-          ivy-height-alist '((t . 15))
-          sk-compile-history nil)
+    (setq sk-compile-history nil)
     (ivy-add-actions
      'counsel-shell-history
      '(("d" (lambda (x) (ring-remove comint-input-ring
