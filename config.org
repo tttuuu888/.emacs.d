@@ -744,7 +744,7 @@ settings.
     (evil-global-set-key 'normal "Y" (kbd "y$"))
     (evil-global-set-key 'motion "Y" (kbd "y$"))
     (evil-global-set-key 'motion "$" 'end-of-line)
-    (dolist (m '(image-mode diff-mode special-mode))
+    (dolist (m '(image-mode special-mode))
       (evil-set-initial-state m 'emacs)))
 
   (use-package evil-anzu
