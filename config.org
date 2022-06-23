@@ -1418,7 +1418,6 @@ settings.
     :ensure nil
     :config
     (sk-C-c-map-to-leader-c-map 'diff-mode diff-mode-map)
-    (evil-set-initial-state 'diff-mode 'motion)
     (evil-define-key 'motion diff-mode-map
       "a" 'diff-apply-hunk
       "b" 'diff-refine-hunk
