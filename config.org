@@ -1141,6 +1141,8 @@ settings.
      org-todo-keywords
      '((sequence "TODO(t)" "PROG(p)" "WAIT(w)" "|" "DONE(d)" "KILL(k)")))
 
+    (add-to-list 'safe-local-variable-values '(org-html-inline-images . embed))
+
     (evil-leader/set-key-for-mode 'org-mode
       "c <SPC>" 'org-table-blank-field
       "cb"  'org-switchb
@@ -1224,7 +1226,22 @@ settings.
         (when (file-exists-p img)
           (insert (concat "[[file:" img "]]")))))
     (add-hook 'org-babel-after-execute-hook 'my-org-inline-image-hook)
-    (add-hook 'org-export-before-processing-hook 'my-org-before-process-hook))
+    (add-hook 'org-export-before-processing-hook 'my-org-before-process-hook)
+
+    (defun org-html--embed-image (source attributes info)
+      (format "<img src=\"data:image/%s;base64,%s\"%s />"
+              (or (file-name-extension source) "")
+              (base64-encode-string
+               (with-temp-buffer
+                 (insert-file-contents-literally source)
+                 (buffer-string)))
+              (file-name-nondirectory source)))
+    (advice-add 'org-html--format-image :around
+                (lambda (func source attributes info)
+                  (if (not (equal 'embed (plist-get info :html-inline-images)))
+                      (apply func (list source attributes info))
+                    (apply #'org-html--embed-image
+                           (list source attributes info))))))
 
   (use-package ibuffer
     :ensure nil
