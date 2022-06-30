@@ -29,9 +29,7 @@
 
 (defun get-proper-process-number ()
   (let* ((ret (shell-command-to-string "grep processor /proc/cpuinfo"))
-         (num (if (equal ret "")
-                  min-number-of-process
-                (* 2 (1+ (string-to-number (car (last (split-string ret)))))))))
+         (num (* 2 (1+ (string-to-number (car (last (split-string ret))))))))
     (max num min-number-of-process)))
 
 (defun package-archives-init ()
