@@ -1251,8 +1251,8 @@ settings.
       "xb" 'ibuffer)
     :config
     (setq ibuffer-expert t
-          ibuffer-sorting-mode 'alphabetic
-          ibuffer-default-sorting-mode 'major-mode
+          ibuffer-sorting-mode 'ibuffer-do-sort-by-filename/process
+          ibuffer-default-sorting-mode 'filename/process
           ibuffer-saved-filter-groups
           '(("home"
              ("Emacs-config" (filename . ".emacs.d"))
