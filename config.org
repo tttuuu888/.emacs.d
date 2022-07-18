@@ -2239,7 +2239,9 @@ settings.
   (use-package irony
     :hook ((c++-mode c-mode objc-mode) . irony-mode)
     :config
-    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+    (setq irony-cdb-compilation-databases
+          '(irony-cdb-clang-complete irony-cdb-libclang)))
 
   (use-package paredit
     :hook ((clojure-mode cider-repl-mode emacs-lisp-mode geiser-repl-mode
