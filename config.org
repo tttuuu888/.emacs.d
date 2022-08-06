@@ -2069,6 +2069,11 @@ settings.
       (move-end-of-line 1)
       (insert ")")
       (comint-send-input))
+    (defun my-python-send-line-to-repl ()
+      (interactive)
+      (let ((process (python-shell-get-process-or-error)))
+        (comint-send-string process (thing-at-point 'line)))
+      (move-beginning-of-line 2))
     (evil-leader/set-key-for-mode 'inferior-python-mode
       "l"  'my-comint-history
       "cd" 'python-describe-at-point
@@ -2078,7 +2083,8 @@ settings.
       "eb" 'python-shell-send-buffer
       "ee" 'my-python-shell-send-line-or-region
       "ef" 'python-shell-send-defun
-      "er" 'python-shell-send-region))
+      "er" 'python-shell-send-region
+      "es" 'my-python-send-line-to-repl))
 
   (use-package xref
     :ensure nil
