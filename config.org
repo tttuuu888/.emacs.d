@@ -1535,23 +1535,23 @@ settings.
   (use-package bind-key
     :init
     (bind-keys*
-     ("C-c <escape>"     . keyboard-quit)
-     ("C-x <escape>"     . keyboard-quit)
-     ("M-,"              . my-other-window)
-     ("M-<f5>"           . sk-sbin-dired)
-     ("C-M-,"            . transpose-windows)
-     ("M-S-<up>"         . (lambda (&optional arg)
-                             (interactive "p")
-                             (move-line (- (or arg 1)))))
-     ("M-S-<down>"       . (lambda (&optional arg)
-                             (interactive "p")
-                             (move-line (or arg 1))))
-     ("<f7>"             . (lambda () (interactive) (buffer-save-or-load 7 t)))
-     ("<f8>"             . (lambda () (interactive) (buffer-save-or-load 8 t)))
-     ("C-<f7>"           . (lambda () (interactive) (buffer-save-or-load 7)))
-     ("C-<f8>"           . (lambda () (interactive) (buffer-save-or-load 8)))
+     ("C-c <escape>" . keyboard-quit)
+     ("C-x <escape>" . keyboard-quit)
+     ("M-,"          . my-other-window)
+     ("M-<f5>"       . sk-sbin-dired)
+     ("C-M-,"        . transpose-windows)
+     ("M-S-<up>"     . (lambda (&optional arg)
+                         (interactive "p")
+                         (move-line (- (or arg 1)))))
+     ("M-S-<down>"   . (lambda (&optional arg)
+                         (interactive "p")
+                         (move-line (or arg 1))))
+     ("<f7>"         . (lambda () (interactive) (buffer-save-or-load 7 t)))
+     ("<f8>"         . (lambda () (interactive) (buffer-save-or-load 8 t)))
+     ("C-<f7>"       . (lambda () (interactive) (buffer-save-or-load 7)))
+     ("C-<f8>"       . (lambda () (interactive) (buffer-save-or-load 8)))
      :map minibuffer-local-map
-     ("<escape>"         . minibuffer-keyboard-quit))
+     ("<escape>"     . minibuffer-keyboard-quit))
     (defun my-other-window ()
       (interactive)
       (if (minibufferp)
@@ -2089,9 +2089,11 @@ settings.
   (use-package xref
     :ensure nil
     :commands xref-find-reference-here
-    :bind (:map xref--xref-buffer-mode-map
-            ("<return>" . xref-quit-and-goto-xref)
-            ("<RET>"    . xref-quit-and-goto-xref))
+    :bind (("M-,"      . my-other-window)
+           :map xref--xref-buffer-mode-map
+           ("M-,"      . my-other-window)
+           ("<return>" . xref-quit-and-goto-xref)
+           ("<RET>"    . xref-quit-and-goto-xref))
     :config
     (remove-hook 'xref-backend-functions #'etags--xref-backend)
     (evil-set-initial-state 'xref--xref-buffer-mode 'emacs)
@@ -2309,6 +2311,10 @@ settings.
         "evx" 'cider-eval-last-sexp-and-replace)))
 
   (use-package cider
+    :bind (:map cider-mode-map
+            ("M-," . my-other-window)
+            :map cider-repl-mode-map
+            ("M-," . my-other-window))
     :config
     (evil-set-initial-state 'cider-auto-test-mode           'emacs)
     (evil-set-initial-state 'cider-browse-ns-mode           'emacs)
@@ -2343,6 +2349,8 @@ settings.
   (use-package sly
     :init
     (setq inferior-lisp-program "sbcl")
+    :bind (:map sly-mode-map
+            ("M-," . my-other-window))
     :config
     (setq sly-mrepl-history-file-name
           (expand-file-name ".sly-mrepl-history" user-emacs-directory))
