@@ -418,19 +418,27 @@ Various useful functions.
         (unless (string= ret "")
           (split-string (substring ret 0 (1- (length ret))))))))
 
-  (defun my-find-other-file-git ()
-    "Switch betwen .c|cpp and .h files in git project."
+  (defun my-find-file-in-dir (regex &optional dir)
+    (let* ((default-directory (or dir default-directory))
+           (ret (shell-command-to-string (concat "ls|grep -E '" regex "'"))))
+      (unless (string= ret "")
+        (split-string (substring ret 0 (1- (length ret)))))))
+
+  (defun my-find-other-file ()
+    "Switch betwen .c|.cpp and .h|.hpp files in project."
     (if-let* ((file (buffer-file-name))
               (ext (when file (file-name-extension file)))
               (base (file-name-base file))
               (dir (file-name-directory file))
-              (root (projectile-project-root))
+              (root default-directory)
               (regex (cond ((member ext '("h" "hpp"))
                             (concat "(^|/)" (file-name-base file) ".(c|cpp)$"))
                            ((member ext '("c" "cpp"))
                             (concat "(^|/)" (file-name-base file) ".(h|hpp)$"))
                            (t nil)))
-              (others (my-find-file-in-git-project regex root)))
+              (others (or (my-find-file-in-dir regex)
+                          (and (setq root (projectile-project-root))
+                               (my-find-file-in-git-project regex root)))))
         (if (= (length others) 1)
             (find-file (expand-file-name (car others) root))
           (ivy-read "Switch to: " others
@@ -438,30 +446,11 @@ Various useful functions.
                               (find-file (expand-file-name file root)))
                     :caller #'my-find-other-file-git))))
 
-  (defun my-find-other-file-dir ()
-    "Switch betwen .c|cpp and .h files in same directory"
-    (if-let* ((file (buffer-file-name))
-              (ext (when file (file-name-extension file)))
-              (base (file-name-base file))
-              (fs (cond ((member ext '("h" "hpp"))
-                         (mapcar (lambda (f) (concat base f)) '(".c" ".cpp")))
-                        ((member ext '("c" "cpp"))
-                         (mapcar (lambda (f) (concat base f)) '(".h" ".hpp")))
-                        (t nil)))
-              (others (seq-filter #'file-exists-p fs)))
-        (if (= (length others) 1)
-            (find-file (car others))
-          (ivy-read "Switch to: " others
-                    :action (lambda (file)
-                              (find-file file))
-                    :caller #'my-find-other-file-dir))))
-
   (defun sk-find-other-file (&optional FLEX-MATCHING)
-    "Switch betwen .c|cpp and .h files."
+    "Switch betwen .c|.cpp and .h|.hpp files."
     (interactive)
     (let ((inhibit-message t))
-      (or (my-find-other-file-dir)
-          (my-find-other-file-git)
+      (or (my-find-other-file)
           (user-error "No other file found"))))
 
   (defun sk-add-c-header-declaration ()
