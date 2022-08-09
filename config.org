@@ -2242,7 +2242,11 @@ settings.
       (let ((default-directory root))
         (async-shell-command-callback
          "gtags"
-         (lambda () (message (concat "GTAGS generated in " default-directory)))))))
+         (lambda () (message (concat "GTAGS generated in " default-directory))))))
+    (advice-add 'move-to-column :around
+                (lambda (func column &rest r)
+                  (let ((col (max column 0)))
+                    (apply func col r)))))
 
   (use-package irony
     :hook ((c++-mode c-mode objc-mode) . irony-mode)
