@@ -403,22 +403,6 @@ Various useful functions.
         (let ((key (mapconcat 'single-key-description (car e) "")))
           (evil-leader/set-key-for-mode mode key (cdr e))))))
 
-  (defun sk-project-root (&optional dir strict)
-    (let ((dir (or dir default-directory))
-          (found nil)
-          (checks '(".git" ".projectile")))
-      (cl-loop for c in checks
-               until found
-               do (when-let ((root (find-file-in-tree dir c t)))
-                    (setq found root)))
-      (if strict
-          (and found (file-truename found))
-        (file-truename (or found dir)))))
-
-  (defun sk-project-try-vc (dir)
-    (let ((root (sk-project-root dir t)))
-      (and root (cons 'transient root))))
-
   (defun sk-set-dir-to-project ()
     "Set current directory to the project root directory."
     (interactive)
@@ -440,7 +424,7 @@ Various useful functions.
               (ext (when file (file-name-extension file)))
               (base (file-name-base file))
               (dir (file-name-directory file))
-              (root (sk-project-root))
+              (root (projectile-project-root))
               (regex (cond ((member ext '("h" "hpp"))
                             (concat "(^|/)" (file-name-base file) ".(c|cpp)$"))
                            ((member ext '("c" "cpp"))
@@ -1675,7 +1659,7 @@ settings.
     (defun helm-ag-project-or-here ()
       (interactive)
       (helm-do-ag
-       (sk-project-root)
+       (projectile-project-root)
        (thing-at-point 'symbol)))
     (defun helm-ag-here ()
       (interactive)
@@ -1690,7 +1674,8 @@ settings.
                 (lambda (&rest _) (which-func-update))))
 
   (use-package projectile
-    :commands (sk-add-known-project
+    :commands (projectile-project-root
+               sk-add-known-project
                sk-remove-known-project)
     :hook (c-mode-common
            . (lambda () (local-set-key (kbd "M-o") 'sk-find-other-file)))
@@ -1703,6 +1688,7 @@ settings.
       "jS" 'projectile-save-project-buffers)
     :config
     (setq projectile-completion-system 'ivy
+          projectile-project-root-functions '(projectile-root-bottom-up)
           projectile-require-project-root nil
           projectile-switch-project-action 'projectile-dired
           projectile-track-known-projects-automatically nil)
@@ -1956,7 +1942,7 @@ settings.
     (defun my-counsel-fzf ()
       "Fzf on project root."
       (interactive)
-      (counsel-fzf nil (sk-project-root)))
+      (counsel-fzf nil (projectile-project-root)))
 
     (defun sk-compile-candidates ()
       (if-let ((sbin (find-file-in-tree default-directory ".sbin")))
@@ -2229,7 +2215,9 @@ settings.
   (use-package project
     :ensure nil
     :config
-    (setq project-find-functions '(sk-project-try-vc)))
+    (setq project-find-functions '(projectile-project-root))
+    (cl-defmethod project-root (&rest r)
+      (projectile-project-root)))
 #+END_SRC
 * Development packages - external
 #+BEGIN_SRC emacs-lisp
@@ -2560,7 +2548,7 @@ settings.
       `(:workspace
         (:didChangeWatchedFiles
          (:dynamicRegistration
-          ,(if (sk-project-try-vc default-directory)
+          ,(if (projectile-project-root default-directory)
                t
              :json-false)))))
     (evil-define-minor-mode-key 'normal 'eglot--managed-mode
