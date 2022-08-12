@@ -1512,6 +1512,7 @@ settings.
 #+BEGIN_SRC emacs-lisp
   (use-package bind-key
     :init
+    (override-global-mode)
     (bind-keys*
      ("C-c <escape>" . keyboard-quit)
      ("C-x <escape>" . keyboard-quit)
@@ -2069,9 +2070,7 @@ settings.
   (use-package xref
     :ensure nil
     :commands xref-find-reference-here
-    :bind (("M-,"      . my-other-window)
-           :map xref--xref-buffer-mode-map
-           ("M-,"      . my-other-window)
+    :bind (:map xref--xref-buffer-mode-map
            ("<return>" . xref-quit-and-goto-xref)
            ("<RET>"    . xref-quit-and-goto-xref))
     :config
@@ -2297,10 +2296,6 @@ settings.
         "evx" 'cider-eval-last-sexp-and-replace)))
 
   (use-package cider
-    :bind (:map cider-mode-map
-            ("M-," . my-other-window)
-            :map cider-repl-mode-map
-            ("M-," . my-other-window))
     :config
     (evil-set-initial-state 'cider-auto-test-mode           'emacs)
     (evil-set-initial-state 'cider-browse-ns-mode           'emacs)
@@ -2335,8 +2330,6 @@ settings.
   (use-package sly
     :init
     (setq inferior-lisp-program "sbcl")
-    :bind (:map sly-mode-map
-            ("M-," . my-other-window))
     :config
     (setq sly-mrepl-history-file-name
           (expand-file-name ".sly-mrepl-history" user-emacs-directory))
