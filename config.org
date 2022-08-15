@@ -536,7 +536,7 @@ Simple mode line setting function.
        (:eval
         (let* ((evil-info (and (featurep 'evil) evil-mode
                                (concat " " (upcase (symbol-name evil-state)))))
-               (buffer-info (concat " %* %I " current-input-method-title))
+               (buffer-info " %* ")
                (buffer-name (propertize " %b " 'face 'mode-line-emphasis))
                (vc-info (and sk-vc-mode (concat " (" sk-vc-mode ") ")))
                (mode-and-vc (propertize
@@ -545,10 +545,13 @@ Simple mode line setting function.
                                      vc-info
                                      " ")
                              'face 'mode-line-inactive))
+               (input-name (propertize (concat current-input-method-title " ")
+                                       'face 'mode-line-inactive))
                (line-info (format-mode-line " %l,%3c  "))
                (pos-info (format-mode-line "%p%% "))
-               (right-info (concat line-info pos-info))
-               (right-length (length right-info))
+               (right-length (+ (string-width input-name)
+                                (length line-info)
+                                (length pos-info)))
                (center-fill (propertize
                              " "
                              'face 'mode-line-inactive
@@ -558,7 +561,7 @@ Simple mode line setting function.
                                          ,right-length))))))
           (concat evil-info buffer-info buffer-name mode-and-vc
                   center-fill
-                  right-info))))))
+                  input-name line-info pos-info))))))
 #+END_SRC
 
 Enable =sk-mode-line=.
