@@ -837,6 +837,7 @@ settings.
     (add-to-list 'display-buffer-alist
                  '("*Async Shell Command*" display-buffer-no-window))
     (add-hook 'dired-mode-hook 'dired-omit-mode)
+    (add-hook 'wdired-mode-hook 'turn-on-undo-tree-mode)
 
     (evil-set-initial-state 'dired-mode 'emacs)
     (evil-leader/set-key-for-mode 'dired-mode
