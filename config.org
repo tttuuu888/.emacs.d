@@ -272,8 +272,11 @@ Various useful functions.
     "Generate .clang_complete file."
     (interactive)
     (let ((file "./.clang_complete")
-          (includes (shell-command-to-string
-                     "find -L -type f -name '*.h' -printf '-I%h\n' | sort -u")))
+          (includes
+           (shell-command-to-string
+            (concat
+             "find -L -type f -name '*.h' -not -path '*/.*' -printf '-I%h\\n'"
+             "| sort -u"))))
       (write-region includes nil file)))
 
   (defun insert-date ()
