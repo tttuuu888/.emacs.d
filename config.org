@@ -1367,7 +1367,8 @@ settings.
           tramp-chunksize 2000
           tramp-verbose 1)
     ;; TRAMP respect PATH variable on remote machine.
-    (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
+    (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
+    (add-to-list 'tramp-remote-process-environment "HISTFILE=/dev/null"))
 
   (use-package autorevert
     :ensure nil
