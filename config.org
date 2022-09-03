@@ -822,6 +822,7 @@ settings.
             ("/"     . swiper)
             ("^"     . dired-up-and-close-dir)
             ("bp"    . my-dired-pdf-size-down)
+            ("bx"    . my-dired-open-extern)
             ("<DEL>" . dired-up-and-close-dir))
     :init
     (add-to-list 'magic-mode-alist
@@ -1045,7 +1046,13 @@ settings.
                       (delete-file f)))
                   files)
             (mapc (lambda (f) (dired-delete-entry f)) files)
-            (message "Delete files done."))))))
+            (message "Delete files done.")))))
+
+    (defun my-dired-open-extern ()
+      "Open file with an external program."
+      (interactive)
+      (call-process "xdg-open" nil nil nil
+                    (shell-quote-argument (dired-get-filename)))))
 
   (use-package org
     :ensure nil
