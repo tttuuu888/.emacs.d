@@ -23,14 +23,9 @@
 
 ;;; Code:
 
-(defvar min-number-of-process 4)
+(defvar pinstall-process-number 8)
 
 (defconst pinstall-file load-file-name)
-
-(defun get-proper-process-number ()
-  (let* ((ret (shell-command-to-string "grep processor /proc/cpuinfo"))
-         (num (* 2 (1+ (string-to-number (car (last (split-string ret))))))))
-    (max num min-number-of-process)))
 
 (defun package-archives-init ()
   (setq package-archives
@@ -135,7 +130,7 @@
     (packages-installed-p remained-packages)))
 
 (defun async-install-packages (package-list)
-  (let* ((process-number (get-proper-process-number))
+  (let* ((process-number pinstall-process-number)
          (default-args-len (1+ (/ (length package-list) process-number)))
          (remained-packages package-list)
          (output-buffer (generate-new-buffer "*install-packages*"))
