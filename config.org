@@ -1527,7 +1527,6 @@ settings.
 #+BEGIN_SRC emacs-lisp
   (use-package bind-key
     :init
-    (override-global-mode)
     (bind-keys*
      ("C-c <escape>" . keyboard-quit)
      ("C-x <escape>" . keyboard-quit)
