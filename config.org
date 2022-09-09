@@ -30,7 +30,6 @@ performed.
 
 #+BEGIN_SRC emacs-lisp
   (when (member "-init" command-line-args)
-    (delete "-init" command-line-args)
     (require 'pinstall "~/.emacs.d/etc/pinstall.el")
     (pinstall-init))
 #+END_SRC

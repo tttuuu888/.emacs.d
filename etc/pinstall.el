@@ -187,6 +187,7 @@
 
 ;;;###autoload
 (defun pinstall-init ()
+  (delete "-init" command-line-args)
   (let ((output-buffer (generate-new-buffer "*Init*")))
     (switch-to-buffer output-buffer)
     (call-process "emacs" nil  output-buffer t
