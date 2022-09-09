@@ -109,9 +109,12 @@
         (pkg-dirs (directory-files package-user-dir)))
     (dolist (pkg pkg-list)
       (let ((directory
-             (car (seq-filter
-                   (lambda (x) (string= pkg (car (split-string x "-[0-9]"))))
-                   pkg-dirs))))
+             (car
+              (seq-filter
+               (lambda (x)
+                 (and (file-directory-p (expand-file-name x package-user-dir))
+                      (string= pkg (car (split-string x "-[0-9]")))))
+               pkg-dirs))))
         (when (and directory
                    (seq-filter
                     (lambda (f) (string-match "\.elc$" f))
