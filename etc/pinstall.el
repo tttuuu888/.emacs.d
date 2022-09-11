@@ -165,9 +165,7 @@
   (delete "-install" command-line-args)
   (package-archives-init)
   (dolist (pkg command-line-args-left)
-    (dotimes (try-count 2)
-      (print (format "try %s for %s" try-count pkg))
-      (package-install (intern pkg) t))))
+    (package-install (intern pkg) t)))
 
 
 (add-to-list 'command-switch-alist '("-install" . install-function))
