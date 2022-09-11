@@ -1,4 +1,4 @@
-;;; pinstall.el --- Parallel package install script
+;;; pinstall.el --- Parallel package install script -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2019 SeungKi Kim
 
@@ -25,6 +25,8 @@
 
 (defvar pinstall-process-number 8)
 
+(defvar pinstall-package-list nil)
+
 (defconst pinstall-file load-file-name)
 
 (defun package-archives-init ()
@@ -34,27 +36,27 @@
   (package-initialize))
 
 (defun get-package-list ()
-  (let ((package-list (list 'use-package)))
-    (defmacro use-package (pkg &rest args)
-      (let ((ensure (memq :ensure args))
-            (disabled (memq :disabled args))
-            (always-ensure (bound-and-true-p use-package-always-ensure)))
-        (unless (or disabled
-                    (if always-ensure
-                        (and ensure (eq nil (cadr ensure)))
-                      (or (not ensure) (eq nil (cadr ensure)))))
-          `(add-to-list 'package-list ',pkg))))
+  (add-to-list 'pinstall-package-list 'use-package)
+  (defmacro use-package (pkg &rest args)
+    (let ((ensure (memq :ensure args))
+          (disabled (memq :disabled args))
+          (always-ensure (bound-and-true-p use-package-always-ensure)))
+      (unless (or disabled
+                  (if always-ensure
+                      (and ensure (eq nil (cadr ensure)))
+                    (or (not ensure) (eq nil (cadr ensure)))))
+        `(add-to-list 'pinstall-package-list ',pkg))))
 
-    (provide 'use-package)
-    (cl-letf (((symbol-function 'package-install)
-               (lambda (&rest _) nil))
-              ((symbol-function 'package-refresh-contents)
-               (lambda (&rest _)) nil))
-      (load "~/.emacs.d/init.el"))
+  (provide 'use-package)
+  (cl-letf (((symbol-function 'package-install)
+             (lambda (&rest _) nil))
+            ((symbol-function 'package-refresh-contents)
+             (lambda (&rest _)) nil))
+    (load "~/.emacs.d/init.el"))
 
-    (package-archives-init)
+  (package-archives-init)
 
-    package-list))
+  pinstall-package-list)
 
 (defun remove-duplicate-packages-in-depth (packages &optional depth)
   (let* ((result packages)
