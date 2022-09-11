@@ -123,24 +123,23 @@
 
 (defun async-install-packages (package-list)
   (let* ((process-number pinstall-process-number)
-         (default-args-len (1+ (/ (length package-list) process-number)))
+         (default-args-len (/ (length package-list) process-number))
          (remained-packages package-list)
          (output-buffer (generate-new-buffer "*install-packages*"))
          (proc-list nil))
     (while remained-packages
-      (let* ((args-len (min default-args-len (length remained-packages)))
+      (let* ((args-len (max 1 (min default-args-len (length remained-packages))))
              (packages (mapcar #'symbol-name
-                               (cl-subseq remained-packages 0 args-len))))
-        (setq remained-packages (nthcdr args-len remained-packages))
-        (apply
-         #'start-process
-         "Install"
-         output-buffer
-         "emacs" "-l"
-         pinstall-file
-         "-batch" "-install"
-         packages)
-        (add-to-list 'proc-list (get-buffer-process output-buffer))))
+                               (cl-subseq remained-packages 0 args-len)))
+             (proc (apply
+                    #'start-process
+                    "Install"
+                    nil
+                    "emacs" "-batch"
+                    "-l" pinstall-file
+                    "-install" packages)))
+        (add-to-list 'proc-list proc)
+        (setq remained-packages (nthcdr args-len remained-packages))))
     (init-process-check package-list proc-list)
     ;; (with-current-buffer output-buffer
     ;;   (message (buffer-substring 1 (point-max))))
