@@ -105,29 +105,16 @@
     (message (format "%s %s..done." package padding))))
 
 (defun packages-installed-p (remained-packages)
-  (let ((pkg-list remained-packages)
-        (pkg-dirs (directory-files package-user-dir)))
-    (dolist (pkg pkg-list)
-      (let ((directory
-             (car
-              (seq-filter
-               (lambda (x)
-                 (and (file-directory-p (expand-file-name x package-user-dir))
-                      (string= pkg (car (split-string x "-[0-9]")))))
-               pkg-dirs))))
-        (when (and directory
-                   (seq-filter
-                    (lambda (f) (string-match "\.elc$" f))
-                    (directory-files
-                     (concat (file-name-as-directory package-user-dir)
-                             directory))))
-          (print-package-installed pkg)
-          (setq remained-packages (remove pkg remained-packages))))))
+  (dolist (pkg remained-packages)
+    (when (package-installed-p (intern pkg))
+      (print-package-installed pkg)
+      (setq remained-packages (remove pkg remained-packages))))
   remained-packages)
 
 (defun init-process-check (package-list proc-list)
   (let ((remained-packages (mapcar #'symbol-name package-list)))
     (while (seq-filter (lambda (proc) (process-live-p proc)) proc-list)
+      (package-initialize)
       (setq remained-packages (packages-installed-p remained-packages))
       (sleep-for 0.5))
     (packages-installed-p remained-packages)))
@@ -191,7 +178,8 @@
   (let ((output-buffer (generate-new-buffer "*Init*")))
     (switch-to-buffer output-buffer)
     (call-process "emacs" nil  output-buffer t
-                  "-l" pinstall-file "-batch" "-init")))
+                  "-l" pinstall-file "-batch" "-init")
+    (package-initialize)))
 
 
 (provide 'pinstall)
