@@ -91,11 +91,11 @@
                                  (lambda (x) (not (package-installed-p x)))
                                  (mapcar #'car (package-desc-reqs desc))))))
                    (when (and (not reqs) (not (package-installed-p pkg)))
-                     (add-to-list 'no-dep-packages pkg))
+                     (push pkg no-dep-packages))
                    reqs))
                dep-packages))))
         (setq dep-packages deps)
-        (when deps (add-to-list 'result deps))))
+        (when deps (push deps result))))
     (when (or result no-dep-packages)
       (setcar (nthcdr 0 result) (cl-delete-duplicates
                                  (append no-dep-packages (car result)))))
@@ -125,7 +125,6 @@
   (let* ((process-number pinstall-process-number)
          (default-args-len (/ (length package-list) process-number))
          (remained-packages package-list)
-         (output-buffer (generate-new-buffer "*install-packages*"))
          (proc-list nil))
     (while remained-packages
       (let* ((args-len (max 1 (min default-args-len (length remained-packages))))
@@ -138,12 +137,9 @@
                     "emacs" "-batch"
                     "-l" pinstall-file
                     "-install" packages)))
-        (add-to-list 'proc-list proc)
+        (push proc proc-list)
         (setq remained-packages (nthcdr args-len remained-packages))))
-    (init-process-check package-list proc-list)
-    ;; (with-current-buffer output-buffer
-    ;;   (message (buffer-substring 1 (point-max))))
-    ))
+    (init-process-check package-list proc-list)))
 
 (defun init-function (&rest _)
   (delete "-init" command-line-args)
@@ -160,7 +156,7 @@
         (async-install-packages packages)))
     (message "Init done.")))
 
-(defun install-function (&rest r)
+(defun install-function (&rest _)
   (delete "-install" command-line-args)
   (package-archives-init)
   (dolist (pkg command-line-args-left)
