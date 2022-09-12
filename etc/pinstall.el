@@ -147,7 +147,7 @@
   (let* ((deps-list (get-dependency-package-list))
          (packages-list (remove-duplicate-packages-in-depth deps-list))
          (all-packages-count (length (apply #'append packages-list))))
-    ;; (print packages-list)
+    ;; (message (format "Packages to install : %s" packages-list))
     (if (zerop all-packages-count)
         (message (format "\nAll packages are already installed.\n"))
       (message (format "\n%s packages will be installed.\n" all-packages-count))
