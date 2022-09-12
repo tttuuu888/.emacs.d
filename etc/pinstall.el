@@ -122,11 +122,10 @@
     (packages-installed-p remained-packages)))
 
 (defun async-install-packages (package-list)
-  (let* ((remained-packages package-list)
-         (proc-list nil)
+  (let* ((proc-list nil)
          (proc-pkgs-list (make-list pinstall-process-number nil))
          (idx 1))
-    (dolist (pkg (reverse remained-packages))
+    (dolist (pkg (reverse package-list))
       (cl-pushnew (symbol-name pkg) (nth idx proc-pkgs-list))
       (setq idx (if (= idx (1- pinstall-process-number)) 0 (1+ idx))))
     (dolist (pkgs proc-pkgs-list)
