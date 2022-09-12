@@ -91,11 +91,11 @@
                                  (lambda (x) (not (package-installed-p x)))
                                  (mapcar #'car (package-desc-reqs desc))))))
                    (when (and (not reqs) (not (package-installed-p pkg)))
-                     (push pkg no-dep-packages))
+                     (cl-pushnew pkg no-dep-packages))
                    reqs))
                dep-packages))))
         (setq dep-packages deps)
-        (when deps (push deps result))))
+        (when deps (cl-pushnew deps result))))
     (when (or result no-dep-packages)
       (setcar (nthcdr 0 result) (cl-delete-duplicates
                                  (append no-dep-packages (car result)))))
@@ -122,23 +122,22 @@
     (packages-installed-p remained-packages)))
 
 (defun async-install-packages (package-list)
-  (let* ((process-number pinstall-process-number)
-         (default-args-len (/ (length package-list) process-number))
-         (remained-packages package-list)
-         (proc-list nil))
-    (while remained-packages
-      (let* ((args-len (max 1 (min default-args-len (length remained-packages))))
-             (packages (mapcar #'symbol-name
-                               (cl-subseq remained-packages 0 args-len)))
-             (proc (apply
-                    #'start-process
-                    "Install"
-                    nil
-                    "emacs" "-batch"
-                    "-l" pinstall-file
-                    "-install" packages)))
-        (push proc proc-list)
-        (setq remained-packages (nthcdr args-len remained-packages))))
+  (let* ((remained-packages package-list)
+         (proc-list nil)
+         (proc-pkgs-list (make-list pinstall-process-number nil))
+         (idx 1))
+    (dolist (pkg (reverse remained-packages))
+      (cl-pushnew (symbol-name pkg) (nth idx proc-pkgs-list))
+      (setq idx (if (= idx (1- pinstall-process-number)) 0 (1+ idx))))
+    (dolist (pkgs proc-pkgs-list)
+      (let ((proc (apply
+                   #'start-process
+                   "Install"
+                   nil
+                   "emacs" "-batch"
+                   "-l" pinstall-file
+                   "-install" pkgs)))
+        (cl-pushnew proc proc-list)))
     (init-process-check package-list proc-list)))
 
 (defun init-function (&rest _)
