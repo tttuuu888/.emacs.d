@@ -33,7 +33,7 @@
   (setq package-archives
         '(("gnu"   . "https://elpa.gnu.org/packages/")
           ("melpa" . "https://melpa.org/packages/")))
-  (package-initialize))
+  (package-initialize t))
 
 (defun get-package-list ()
   (add-to-list 'pinstall-package-list 'use-package)
@@ -116,7 +116,7 @@
 (defun init-process-check (package-list proc-list)
   (let ((remained-packages (mapcar #'symbol-name package-list)))
     (while (seq-filter (lambda (proc) (process-live-p proc)) proc-list)
-      (package-initialize)
+      (package-initialize t)
       (setq remained-packages (packages-installed-p remained-packages))
       (sleep-for 0.5))
     (packages-installed-p remained-packages)))
