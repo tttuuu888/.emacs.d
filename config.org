@@ -24,16 +24,6 @@ This comment will be added on the top of =config.el=.
   ;;; Code:
 #+END_SRC
 
-** Emacs -init
-If Emacs is executed with an =-init= argument, =parallel install= process is
-performed.
-
-#+BEGIN_SRC emacs-lisp
-  (when (member "-init" command-line-args)
-    (require 'pinstall "~/.emacs.d/etc/pinstall.el")
-    (pinstall-init))
-#+END_SRC
-
 ** Package initialize
 Process =package-initialize= before setting =package-archives= to speed up Emacs
 start up time. So =package-read-all-archive-contents= should be called after
@@ -593,8 +583,12 @@ settings.
   (require 'use-package)
 #+END_SRC
 
-* Evil and Evil-leader packages
+* Async, Evil and Evil-leader packages
 #+BEGIN_SRC emacs-lisp
+  (use-package async
+    :init
+    (async-bytecomp-package-mode 1))
+
   (use-package evil-leader
     :init
     (defvar sk-evil-sub-leader "M-m")
@@ -1988,10 +1982,6 @@ settings.
   (use-package auctex)
 
   (use-package graphviz-dot-mode)
-
-  (use-package async
-    :init
-    (sk-defer-init (async-bytecomp-package-mode 1)))
 #+END_SRC
 * Development packages - built-in
 #+BEGIN_SRC emacs-lisp
