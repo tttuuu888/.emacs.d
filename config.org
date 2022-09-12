@@ -1339,9 +1339,8 @@ settings.
   (use-package ansi-color
     :ensure nil
     :hook (compilation-filter . my-ansi-colorize-buffer)
-    :custom
-    (ansi-color-names-vector
-     ["black" "red3" "green3" "yellow3" "skyblue3" "magenta3" "cyan3" "gray90"])
+    :custom-face
+    (ansi-color-blue ((t :foreground "skyblue3" :background "skyblue3")))
     :config
     (defun my-ansi-colorize-buffer ()
       (let ((buffer-read-only nil))
