@@ -33,7 +33,7 @@
   (setq package-archives
         '(("gnu"   . "https://elpa.gnu.org/packages/")
           ("melpa" . "https://melpa.org/packages/")))
-  (package-initialize t))
+  (package-initialize))
 
 (defun get-package-list ()
   (add-to-list 'pinstall-package-list 'use-package)
