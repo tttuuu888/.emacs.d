@@ -461,7 +461,7 @@ Various useful functions.
         (sk-find-other-file)
         (goto-char (point-min))
         (unless (search-forward func nil t)
-          (end-of-buffer)
+          (goto-char (point-max))
           (while (and (not (= (point) (point-min)))
                       (not (looking-at-p "#endif")))
             (beginning-of-line 0))
