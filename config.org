@@ -238,17 +238,22 @@ Various useful functions.
     (interactive "r\nsDefine : ")
     (sharp-ifdef-insert start end (concat "#ifdef " in)))
 
-  (defun find-file-in-tree (dir filename &optional return-only-dir)
-    "Find file FILENAME up to root folder."
-    (let ((file (expand-file-name filename dir))
-          (parent (file-name-directory (directory-file-name dir))))
-      (cond ((equal dir parent) nil)
-            ((file-exists-p file)
-             (cond (return-only-dir dir)
-                   ((file-directory-p file) (file-name-as-directory file))
-                   (t file)))
-            (parent (find-file-in-tree parent filename return-only-dir))
-            (t nil))))
+  (defun find-file-in-tree (dir files &optional return-only-dir)
+    "Find first matching file of FILES up to HOME or ROOT folder.
+  FILES can be a file name string or list of files."
+    (unless (or (not dir) (equal dir "~/") (equal dir "/"))
+      (let* ((files (if (listp files) files (list files)))
+             (file (cl-find-if
+                    (lambda (f) (file-exists-p (expand-file-name f dir)))
+                    files))
+             (parent (file-name-directory (directory-file-name dir))))
+        (cond (file
+               (cond (return-only-dir dir)
+                     ((file-directory-p file)
+                      (file-name-as-directory (expand-file-name file dir)))
+                     (t (expand-file-name file dir))))
+              (parent (find-file-in-tree parent files return-only-dir))
+              (t nil)))))
 
   (defun sk-sbin-dired ()
     (interactive)
@@ -504,6 +509,13 @@ Various useful functions.
                         (buffer-string)))))
       (when online (delete-file target))
       (or content "")))
+
+  (defvar sk-project-root-files
+    '(".projectile" ".git"
+      "CMakeLists.txt" "Makefile" "GTAGS"))
+
+  (defun sk-project-root (&optional dir)
+    (find-file-in-tree (or dir default-directory) sk-project-root-files t))
 #+END_SRC
 
 ** SK-mode-line
@@ -1659,7 +1671,7 @@ settings.
     (defun helm-ag-project-or-here ()
       (interactive)
       (helm-do-ag
-       (projectile-project-root)
+       (sk-project-root)
        (thing-at-point 'symbol)))
     (defun helm-ag-here ()
       (interactive)
@@ -1674,8 +1686,7 @@ settings.
                 (lambda (&rest _) (which-func-update))))
 
   (use-package projectile
-    :commands (projectile-project-root
-               sk-add-known-project
+    :commands (sk-add-known-project
                sk-remove-known-project)
     :hook (c-mode-common
            . (lambda () (local-set-key (kbd "M-o") 'sk-find-other-file)))
@@ -1688,7 +1699,6 @@ settings.
       "jS" 'projectile-save-project-buffers)
     :config
     (setq projectile-completion-system 'ivy
-          projectile-project-root-functions '(projectile-root-bottom-up)
           projectile-require-project-root nil
           projectile-switch-project-action 'projectile-dired
           projectile-track-known-projects-automatically nil)
@@ -1700,7 +1710,8 @@ settings.
         (unless (file-exists-p pfile)
           (write-region "" nil pfile)))
       (projectile-add-known-project project-root))
-    (defalias 'sk-remove-known-project 'projectile-remove-known-project))
+    (defalias 'sk-remove-known-project 'projectile-remove-known-project)
+    (defalias 'projectile-project-root 'sk-project-root))
 
   (use-package markdown-mode)
 
@@ -1942,7 +1953,7 @@ settings.
     (defun my-counsel-fzf ()
       "Fzf on project root."
       (interactive)
-      (counsel-fzf nil (projectile-project-root)))
+      (counsel-fzf nil (sk-project-root)))
 
     (defun sk-compile-candidates ()
       (if-let ((sbin (find-file-in-tree default-directory ".sbin")))
@@ -2209,9 +2220,9 @@ settings.
   (use-package project
     :ensure nil
     :config
-    (setq project-find-functions '(projectile-project-root))
+    (setq project-find-functions '(sk-project-root))
     (cl-defmethod project-root (&rest r)
-      (projectile-project-root)))
+      (sk-project-root)))
 #+END_SRC
 * Development packages - external
 #+BEGIN_SRC emacs-lisp
@@ -2536,7 +2547,7 @@ settings.
       `(:workspace
         (:didChangeWatchedFiles
          (:dynamicRegistration
-          ,(if (projectile-project-root default-directory)
+          ,(if (sk-project-root default-directory)
                t
              :json-false)))))
     (evil-define-minor-mode-key 'normal 'eglot--managed-mode
