@@ -647,17 +647,22 @@ settings.
           '("magit-.*-mode" "gnus-.*-mode" "package-.*-mode" "dired-mode")))
 
   (use-package evil
-    :bind (:map evil-insert-state-map
-            ("C-k" . kill-line)
-            :map evil-visual-state-map
-            ("p"   . evil-paste-pgvy)
-            :map evil-ex-completion-map
-            ("C-a" . move-beginning-of-line)
-            ("C-b" . backward-char)
-            ("C-d" . delete-char)
-            ("C-k" . kill-line)
-            ("M-n" . next-complete-history-element)
-            ("M-p" . previous-complete-history-element))
+    :bind (("M-B" . evil-backward-WORD-begin)
+           ("M-F" . (lambda ()
+                      (interactive)
+                      (evil-forward-WORD-end)
+                      (forward-char)))
+           :map evil-insert-state-map
+           ("C-k" . kill-line)
+           :map evil-visual-state-map
+           ("p"   . evil-paste-pgvy)
+           :map evil-ex-completion-map
+           ("C-a" . move-beginning-of-line)
+           ("C-b" . backward-char)
+           ("C-d" . delete-char)
+           ("C-k" . kill-line)
+           ("M-n" . next-complete-history-element)
+           ("M-p" . previous-complete-history-element))
     :custom
     (evil-undo-system 'undo-tree)
     (evil-want-C-u-scroll t)
