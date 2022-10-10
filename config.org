@@ -114,16 +114,19 @@ Simple color setting function which has 'dark' and 'light' theme.
 
 #+BEGIN_SRC emacs-lisp
   (defun my-theme-setting (&optional light-theme)
-    (let ((fg-color (if light-theme "Black" "Gray80"))
-          (bg-color (if light-theme "White" "Gray23")))
+    (let ((base-fg-color   (if light-theme "Black" "Gray80"))
+          (base-bg-color   (if light-theme "White" "Gray23"))
+          (region-bg-color (if light-theme "Gray" "DodgerBlue4")))
       (set-face-attribute 'default nil
-                          :foreground fg-color :background bg-color)
+                          :foreground base-fg-color :background base-bg-color)
       (set-face-attribute 'fringe nil
-                          :background bg-color)
+                          :background base-bg-color)
       (set-face-attribute 'header-line nil
-                          :background bg-color :underline nil)
+                          :background base-bg-color :underline nil)
       (set-face-attribute 'vertical-border nil
-                          :background bg-color)))
+                          :background base-bg-color)
+      (set-face-attribute 'region nil
+                          :background region-bg-color)))
   (defun sk-light-theme () (interactive) (my-theme-setting t))
   (defun sk-dark-theme  () (interactive) (my-theme-setting))
 #+END_SRC
