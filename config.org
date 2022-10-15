@@ -251,7 +251,7 @@ Various useful functions.
                     files))
              (parent (file-name-directory (directory-file-name dir))))
         (cond (file
-               (cond (return-only-dir dir)
+               (cond (return-only-dir (file-truename dir))
                      ((file-directory-p file)
                       (file-name-as-directory (expand-file-name file dir)))
                      (t (expand-file-name file dir))))
