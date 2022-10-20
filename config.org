@@ -519,6 +519,9 @@ Various useful functions.
 
   (defun sk-project-root (&optional dir)
     (find-file-in-tree (or dir default-directory) sk-project-root-files t))
+
+  (defun is-git-project ()
+    (= 0 (call-process "git" nil nil nil "rev-parse" "--is-inside-work-tree")))
 #+END_SRC
 
 ** SK-mode-line
@@ -1686,12 +1689,18 @@ settings.
       (helm-do-ag default-directory)))
 
   (use-package helm-git-grep
+    :commands my-helm-git-grep-or-ag-here
     :init
     (evil-leader/set-key
-      "p" 'helm-git-grep-at-point)
+      "p" 'my-helm-git-grep-or-ag-here)
     :config
     (advice-add 'helm-git-grep-persistent-action :after
-                (lambda (&rest _) (which-func-update))))
+                (lambda (&rest _) (which-func-update)))
+    (defun my-helm-git-grep-or-ag-here ()
+      (interactive)
+      (if (is-git-project)
+          (call-interactively 'helm-git-grep-at-point)
+        (call-interactively 'helm-ag-here))))
 
   (use-package projectile
     :commands (sk-add-known-project
