@@ -1653,6 +1653,8 @@ settings.
            ("M-y"     . yank-pop)
            :map helm-map
            ("<escape>". helm-keyboard-quit))
+    :custom-face
+    (helm-grep-finish ((default (:inherit helm-candidate-number))))
     :init
     (evil-leader/set-key
       "i"  'helm-semantic-or-imenu
@@ -1695,6 +1697,7 @@ settings.
     (evil-leader/set-key
       "p" 'my-helm-git-grep-or-ag-here)
     :config
+    (setq helm-git-grep-candidate-number-limit 1000)
     (advice-add 'helm-git-grep-persistent-action :after
                 (lambda (&rest _) (which-func-update)))
     (defun my-helm-git-grep-or-ag-here ()
