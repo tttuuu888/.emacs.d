@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: tab-width
+# key: ,tw
+# --
+((nil . ((tab-width . 2))))
