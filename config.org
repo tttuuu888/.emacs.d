@@ -1714,6 +1714,7 @@ settings.
     :init
     (evil-leader/set-key
       "jd" 'projectile-find-dir
+      "jD" 'projectile-find-dir-here
       "jk" 'projectile-kill-buffers
       "jb" 'projectile-switch-to-buffer
       "js" 'projectile-switch-project
@@ -1731,6 +1732,9 @@ settings.
         (unless (file-exists-p pfile)
           (write-region "" nil pfile)))
       (projectile-add-known-project project-root))
+    (defun projectile-find-dir-here ()
+      (interactive)
+      (projectile-complete-dir default-directory))
     (defalias 'sk-remove-known-project 'projectile-remove-known-project)
     (defalias 'projectile-project-root 'sk-project-root))
 
