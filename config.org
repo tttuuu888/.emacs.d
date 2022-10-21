@@ -1515,10 +1515,9 @@ settings.
     (make-variable-buffer-local 'sk-vc-mode)
     (put 'sk-vc-mode 'permanent-local t)
     (add-hook 'find-file-hook #'sk-vc-refresh-state)
+    (remove-hook 'find-file-hook #'vc-refresh-state)
     (defun sk-vc-refresh-state ()
-      (setq sk-vc-mode (git-branch-of-file (buffer-file-name))))
-    :config
-    (remove-hook 'find-file-hook #'vc-refresh-state))
+      (setq sk-vc-mode (git-branch-of-file (buffer-file-name)))))
 
   (use-package tex-mode
     :ensure nil
