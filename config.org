@@ -1714,7 +1714,6 @@ settings.
     :init
     (evil-leader/set-key
       "jd" 'projectile-find-dir
-      "jD" 'projectile-find-dir-here
       "jk" 'projectile-kill-buffers
       "jb" 'projectile-switch-to-buffer
       "js" 'projectile-switch-project
@@ -1732,9 +1731,6 @@ settings.
         (unless (file-exists-p pfile)
           (write-region "" nil pfile)))
       (projectile-add-known-project project-root))
-    (defun projectile-find-dir-here ()
-      (interactive)
-      (projectile-complete-dir default-directory))
     (defalias 'sk-remove-known-project 'projectile-remove-known-project)
     (defalias 'projectile-project-root 'sk-project-root))
 
@@ -1920,7 +1916,8 @@ settings.
   (use-package posframe)
 
   (use-package counsel
-    :commands (counsel-fzf-here
+    :commands (counsel-find-dir-here
+               counsel-fzf-here
                counsel--browse-history
                my-counsel-fzf-here
                my-counsel-fzf
@@ -1945,6 +1942,7 @@ settings.
       "hv"    'counsel-describe-variable
       "hf"    'counsel-describe-function
       "nx"    'counsel-org-capture
+      "jD"    'counsel-find-dir-here
       "jh"    'my-counsel-fzf-here
       "jo"    'my-counsel-fzf
       "sb"    'my-counsel-switch-shell-buffer)
@@ -2007,7 +2005,16 @@ settings.
                 :require-match t
                 :action  #'sk-compile-action
                 :keymap counsel-compile-map
-                :caller 'sk-compile)))
+                :caller 'sk-compile))
+
+    (defun counsel-find-dir-here ()
+      "Find all folders under current directory."
+      (interactive)
+      (ivy-read "Find dir: "
+                (split-string
+                 (shell-command-to-string "find * ! -path '*.*' -type d"))
+                :action #'counsel-find-file-action
+                :caller 'counsel-find-dir-here)))
 
   (use-package which-key
     :init
