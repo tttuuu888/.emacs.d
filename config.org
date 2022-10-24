@@ -1662,7 +1662,6 @@ settings.
       "hr" 'helm-resume)
     :config
     (require 'helm-files)
-    (require 'helm-mode)
     (setq helm-imenu-execute-action-at-once-if-one nil
           helm-split-window-default-side 'right
           helm-show-completion-display-function nil)
