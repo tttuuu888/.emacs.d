@@ -1,0 +1,4 @@
+# name: today
+# key: dd
+# --
+`(format-time-string "%Y-%m-%d %A")`$0
