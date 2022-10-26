@@ -1818,7 +1818,25 @@ settings.
 
   (use-package yasnippet-snippets
     :demand t
-    :after yasnippet)
+    :after yasnippet
+    :config
+    ;; Remove all unused snippets.
+    (let* ((unused
+            '(antlr-mode
+              apples-mode applescript-mode bazel-mode chef-mode coq-mode
+              cperl-mode crystal-mode d-mode dart-mode dix-mode elixir-mode
+              enh-ruby-mode ensime-mode erc-mode erlang-mode f90-mode faust-mode
+              fundamental-mode git-commit-mode  hy-mode julia-mode kotlin-mode
+              m4-mode malabar-mode nasm-mode ned-mode nesc-mode nim-mode nix-mode
+              nsis-mode perl-mode php-mode powershell-mode protobuf-mode raku-mode
+              reason-mode ruby-mode scala-mode swift-mode terraform-mode
+              tuareg-mode typerex-mode vhdl-mode))
+           (path (concat
+                  (seq-find
+                   (lambda (x) (string-match "yasnippet-snippets" x)) load-path)
+                  "/snippets/"))
+           (toremove (mapcar (lambda (x) (concat path (symbol-name x))) unused)))
+     (apply #'call-process "rm" nil nil nil "-rf" toremove)))
 
   (use-package ivy
     :bind (("C-x b"    . ivy-switch-buffer)
