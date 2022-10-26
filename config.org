@@ -1087,7 +1087,7 @@ settings.
     (require 'counsel)
     (setq
      my-org-path "~/Dropbox/org/"
-     my-org-note (expand-file-name "notes.org" my-org-path)
+     my-org-note (expand-file-name (format-time-string "%Y_gtd.org") my-org-path)
      org-agenda-files (list my-org-path)
      org-babel-load-languages '((C . t)
                                 (css . t)
@@ -1104,14 +1104,22 @@ settings.
                                   (plain-list-item . nil))
      org-confirm-babel-evaluate nil
      org-capture-templates
-     `(("t" "Todo" entry (file+headline ,my-org-note "ToDos")
+     `(("t" "Todo" entry (file+headline ,my-org-note "Things")
         "* TODO %?\n%U" :empty-lines 1)
-       ("w" "Wait" entry (file+headline ,my-org-note "ToDos")
+       ("w" "Wait" entry (file+headline ,my-org-note "Things")
         "* WAIT %?\n%t" :empty-lines 1)
-       ("n" "Note" entry (file+headline ,my-org-note "Notes")
+       ("e" "Event" entry (file+headline ,my-org-note "Things")
         "* %?\n%U" :empty-lines 1)
-       ("e" "Event" entry (file+headline ,my-org-note "Events")
-        "* %?\n%U" :empty-lines 1))
+       ("n" "Note" entry (file+headline ,my-org-note "Things")
+        "* %?\n%U" :empty-lines 1)
+       ("T" "Todo  :WORK:" entry (file+headline ,my-org-note "Things")
+        "* TODO %?  :WORK:\n%U" :empty-lines 1)
+       ("W" "Wait  :WORK:" entry (file+headline ,my-org-note "Things")
+        "* WAIT %?  :WORK:\n%t" :empty-lines 1)
+       ("E" "Event :WORK:" entry (file+headline ,my-org-note "Things")
+        "* %? :WORK:\n%U" :empty-lines 1)
+       ("N" "Note  :WORK:" entry (file+headline ,my-org-note "Things")
+        "* %? :WORK:\n%U" :empty-lines 1))
      org-default-notes-file my-org-note
      org-export-default-language "kr"
      org-export-headline-levels 2
