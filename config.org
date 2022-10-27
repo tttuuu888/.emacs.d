@@ -1094,7 +1094,7 @@ settings.
     (setq
      my-org-path "~/Dropbox/org/"
      my-org-gtd (concat my-org-path (format-time-string "%Y_gtd.org"))
-     my-org-gtd-work (concat my-org-path (format-time-string "%Y_work.org"))
+     my-org-work (concat my-org-path (format-time-string "%Y_work.org"))
      org-agenda-custom-commands
      '(("g" "All GTD view"
         ((agenda)
@@ -1110,14 +1110,14 @@ settings.
          (todo "WAIT" ((org-agenda-files (list my-org-gtd))
                        (org-agenda-overriding-header "WAITs:")))))
        ("w" "Work GTD view"
-        ((agenda "" ((org-agenda-files (list my-org-gtd-work))))
-         (todo "TODO" ((org-agenda-files (list my-org-gtd-work))
+        ((agenda "" ((org-agenda-files (list my-org-work))))
+         (todo "TODO" ((org-agenda-files (list my-org-work))
                        (org-agenda-overriding-header "TODOs:")))
-         (todo "PROG" ((org-agenda-files (list my-org-gtd-work))
+         (todo "PROG" ((org-agenda-files (list my-org-work))
                        (org-agenda-overriding-header "PROGs:")))
-         (todo "WAIT" ((org-agenda-files (list my-org-gtd-work))
+         (todo "WAIT" ((org-agenda-files (list my-org-work))
                        (org-agenda-overriding-header "WAITs:"))))))
-     org-agenda-files (list my-org-gtd my-org-gtd-work)
+     org-agenda-files (list my-org-gtd my-org-work)
      org-babel-load-languages '((C . t)
                                 (css . t)
                                 (dot . t)
@@ -1132,39 +1132,33 @@ settings.
                                   (plain-list-item . nil))
      org-confirm-babel-evaluate nil
      org-capture-templates
-     `(("td" "Todo date" entry (file+headline ,my-org-gtd ,(my-today))
-        "* TODO %?\n%^t" :empty-lines 1)
-       ("tdt" "Todo date and time" entry (file+headline ,my-org-gtd ,(my-tomorrow))
-        "* TODO %?\n%^T" :empty-lines 1)
-       ("ed" "Event date" entry (file+headline ,my-org-gtd ,(my-today))
-        "* %?\n%^t" :empty-lines 1)
-       ("edt" "Event date and time" entry (file+headline ,my-org-gtd ,(my-today))
-        "* %?\n%^T" :empty-lines 1)
-       ("th" "Thing" entry (file+headline ,my-org-gtd "Things")
-        "* %?\n%U" :empty-lines 1)
-       ("w" "Wait" entry (file+headline ,my-org-gtd "Things")
-        "* WAIT %?\n%t" :empty-lines 1)
-       ("n" "Note" entry (file+headline ,my-org-gtd "Notes")
-        "* %?\n%U" :empty-lines 1)
+     `(("td" "Todo date"
+        entry (file+headline ,my-org-gtd ,(my-today)) "* TODO %?\n%^t")
+       ("tdt" "Todo date and time"
+        entry (file+headline ,my-org-gtd ,(my-tomorrow)) "* TODO %?\n%^T")
+       ("ed" "Event date"
+        entry (file+headline ,my-org-gtd ,(my-today)) "* %?\n%^t")
+       ("edt" "Event date and time"
+        entry (file+headline ,my-org-gtd ,(my-today)) "* %?\n%^T")
+       ("th" "Thing"
+        entry (file+headline ,my-org-gtd "Things") "* %?\n%U")
+       ("w" "Wait"
+        entry (file+headline ,my-org-gtd "Things") "* WAIT %?\n%t")
+       ("n" "Note"
+        entry (file+headline ,my-org-gtd "Notes") "* %?\n%U")
 
        ("wtd" "Work - Todo date"
-        entry (file+headline ,my-org-gtd-work ,(get-week-form))
-        "* TODO %?\n%^t" :empty-lines 1)
+        entry (file+headline ,my-org-work ,(get-week-form)) "* TODO %?\n%^t")
        ("wtdt" "Work - Todo date and time"
-        entry (file+headline ,my-org-gtd-work ,(get-week-form))
-        "* TODO %?\n%^T" :empty-lines 1)
+        entry (file+headline ,my-org-work ,(get-week-form)) "* TODO %?\n%^T")
        ("ww" "Work - Wait"
-        entry (file+headline ,my-org-gtd-work ,(get-week-form))
-        "* WAIT %?\n%^t" :empty-lines 1)
+        entry (file+headline ,my-org-work ,(get-week-form)) "* WAIT %?\n%^t")
        ("wed" "Work - Event date"
-        entry (file+headline ,my-org-gtd-work ,(get-week-form))
-        "* %?\n%^t" :empty-lines 1)
+        entry (file+headline ,my-org-work ,(get-week-form)) "* %?\n%^t")
        ("wedt" "Work - Event date and time"
-        entry (file+headline ,my-org-gtd-work ,(get-week-form))
-        "* %?\n%^T" :empty-lines 1)
+        entry (file+headline ,my-org-work ,(get-week-form)) "* %?\n%^T")
        ("wn" "Work - Note"
-        entry (file+headline ,my-org-gtd-work ,(get-week-form))
-        "* %?\n%U" :empty-lines 1))
+        entry (file+headline ,my-org-work ,(get-week-form)) "* %?\n%U"))
      org-default-notes-file my-org-gtd
      org-export-default-language "kr"
      org-export-headline-levels 2
