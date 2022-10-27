@@ -522,6 +522,12 @@ Various useful functions.
 
   (defun is-git-project ()
     (= 0 (call-process "git" nil nil nil "rev-parse" "--is-inside-work-tree")))
+
+  (defun my-today ()
+    (format-time-string "%Y-%m-%d %A"))
+
+  (defun my-tomorrow ()
+    (format-time-string "%Y-%m-%d %A" (time-add (current-time) (* 24 3600))))
 #+END_SRC
 
 ** SK-mode-line
@@ -1087,8 +1093,31 @@ settings.
     (require 'counsel)
     (setq
      my-org-path "~/Dropbox/org/"
-     my-org-note (expand-file-name (format-time-string "%Y_gtd.org") my-org-path)
-     org-agenda-files (list my-org-path)
+     my-org-gtd (concat my-org-path (format-time-string "%Y_gtd.org"))
+     my-org-gtd-work (concat my-org-path (format-time-string "%Y_work.org"))
+     org-agenda-custom-commands
+     '(("g" "All GTD view"
+        ((agenda)
+         (todo "TODO" ((org-agenda-overriding-header "TODOs:")))
+         (todo "PROG" ((org-agenda-overriding-header "PROGs:")))
+         (todo "WAIT" ((org-agenda-overriding-header "WAITs:")))))
+       ("p" "Personal GTD view"
+        ((agenda "" ((org-agenda-files (list my-org-gtd))))
+         (todo "TODO" ((org-agenda-files (list my-org-gtd))
+                       (org-agenda-overriding-header "TODOs:")))
+         (todo "PROG" ((org-agenda-files (list my-org-gtd))
+                       (org-agenda-overriding-header "PROGs:")))
+         (todo "WAIT" ((org-agenda-files (list my-org-gtd))
+                       (org-agenda-overriding-header "WAITs:")))))
+       ("w" "Work GTD view"
+        ((agenda "" ((org-agenda-files (list my-org-gtd-work))))
+         (todo "TODO" ((org-agenda-files (list my-org-gtd-work))
+                       (org-agenda-overriding-header "TODOs:")))
+         (todo "PROG" ((org-agenda-files (list my-org-gtd-work))
+                       (org-agenda-overriding-header "PROGs:")))
+         (todo "WAIT" ((org-agenda-files (list my-org-gtd-work))
+                       (org-agenda-overriding-header "WAITs:"))))))
+     org-agenda-files (list my-org-path my-org-gtd-work)
      org-babel-load-languages '((C . t)
                                 (css . t)
                                 (dot . t)
@@ -1099,28 +1128,32 @@ settings.
                                 (plantuml . t)
                                 (python . t)
                                 (shell . t))
-
      org-blank-before-new-entry '((heading . nil)
                                   (plain-list-item . nil))
      org-confirm-babel-evaluate nil
      org-capture-templates
-     `(("t" "Todo" entry (file+headline ,my-org-note "Things")
+     `(("1" "Todo Today" entry (file+headline ,my-org-gtd ,(my-today))
         "* TODO %?\n%U" :empty-lines 1)
-       ("w" "Wait" entry (file+headline ,my-org-note "Things")
+       ("2" "Todo Tomorrow" entry (file+headline ,my-org-gtd ,(my-tomorrow))
+        "* TODO %?\n%U" :empty-lines 1)
+       ("a" "Thing" entry (file+headline ,my-org-gtd "Things")
+        "* %?\n%U" :empty-lines 1)
+       ("w" "Wait" entry (file+headline ,my-org-gtd "Things")
         "* WAIT %?\n%t" :empty-lines 1)
-       ("e" "Event" entry (file+headline ,my-org-note "Things")
+       ("e" "Event" entry (file+headline ,my-org-gtd "Things")
+        "* %?\n%^t" :empty-lines 1)
+       ("n" "Note" entry (file+headline ,my-org-gtd "Notes")
         "* %?\n%U" :empty-lines 1)
-       ("n" "Note" entry (file+headline ,my-org-note "Things")
-        "* %?\n%U" :empty-lines 1)
-       ("T" "Todo  :WORK:" entry (file+headline ,my-org-note "Things")
-        "* TODO %?  :WORK:\n%U" :empty-lines 1)
-       ("W" "Wait  :WORK:" entry (file+headline ,my-org-note "Things")
-        "* WAIT %?  :WORK:\n%t" :empty-lines 1)
-       ("E" "Event :WORK:" entry (file+headline ,my-org-note "Things")
-        "* %? :WORK:\n%U" :empty-lines 1)
-       ("N" "Note  :WORK:" entry (file+headline ,my-org-note "Things")
-        "* %? :WORK:\n%U" :empty-lines 1))
-     org-default-notes-file my-org-note
+
+       ("T" "Todo - Work" entry (file+headline ,my-org-gtd-work ,(get-week-form))
+        "* TODO %?\n%U" :empty-lines 1)
+       ("W" "Wait - Work" entry (file+headline ,my-org-gtd-work ,(get-week-form))
+        "* WAIT %?\n%t" :empty-lines 1)
+       ("E" "Event - Work" entry (file+headline ,my-org-gtd-work ,(get-week-form))
+        "* %?\n%^t" :empty-lines 1)
+       ("N" "Note - Work" entry (file+headline ,my-org-gtd-work ,(get-week-form))
+        "* %?\n%U" :empty-lines 1))
+     org-default-notes-file my-org-gtd
      org-export-default-language "kr"
      org-export-headline-levels 2
      org-export-time-stamp-file nil
