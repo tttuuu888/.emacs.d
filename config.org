@@ -1117,7 +1117,7 @@ settings.
                        (org-agenda-overriding-header "PROGs:")))
          (todo "WAIT" ((org-agenda-files (list my-org-gtd-work))
                        (org-agenda-overriding-header "WAITs:"))))))
-     org-agenda-files (list my-org-path my-org-gtd-work)
+     org-agenda-files (list my-org-gtd my-org-gtd-work)
      org-babel-load-languages '((C . t)
                                 (css . t)
                                 (dot . t)
