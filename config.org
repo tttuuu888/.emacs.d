@@ -1098,23 +1098,23 @@ settings.
      org-agenda-custom-commands
      '(("g" "All GTD view"
         ((agenda)
+         (todo "NEXT" ((org-agenda-overriding-header "NEXTs:")))
          (todo "TODO" ((org-agenda-overriding-header "TODOs:")))
-         (todo "PROG" ((org-agenda-overriding-header "PROGs:")))
          (todo "WAIT" ((org-agenda-overriding-header "WAITs:")))))
        ("p" "Personal GTD view"
         ((agenda "" ((org-agenda-files (list my-org-gtd))))
+         (todo "NEXT" ((org-agenda-files (list my-org-gtd))
+                       (org-agenda-overriding-header "Nexts:")))
          (todo "TODO" ((org-agenda-files (list my-org-gtd))
                        (org-agenda-overriding-header "TODOs:")))
-         (todo "PROG" ((org-agenda-files (list my-org-gtd))
-                       (org-agenda-overriding-header "PROGs:")))
          (todo "WAIT" ((org-agenda-files (list my-org-gtd))
                        (org-agenda-overriding-header "WAITs:")))))
        ("w" "Work GTD view"
         ((agenda "" ((org-agenda-files (list my-org-work))))
+         (todo "NEXT" ((org-agenda-files (list my-org-work))
+                       (org-agenda-overriding-header "NEXTs:")))
          (todo "TODO" ((org-agenda-files (list my-org-work))
                        (org-agenda-overriding-header "TODOs:")))
-         (todo "PROG" ((org-agenda-files (list my-org-work))
-                       (org-agenda-overriding-header "PROGs:")))
          (todo "WAIT" ((org-agenda-files (list my-org-work))
                        (org-agenda-overriding-header "WAITs:"))))))
      org-agenda-files (list my-org-gtd my-org-work)
@@ -1194,7 +1194,7 @@ settings.
      org-startup-with-inline-images t
      org-tags-column -80
      org-todo-keywords
-     '((sequence "TODO(t)" "PROG(p)" "WAIT(w)" "|" "DONE(d)" "KILL(k)")))
+     '((sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "|" "DONE(d)" "KILL(k)")))
 
     (add-to-list 'safe-local-variable-values '(org-html-inline-images . embed))
 
