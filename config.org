@@ -1131,6 +1131,7 @@ settings.
      org-blank-before-new-entry '((heading . nil)
                                   (plain-list-item . nil))
      org-confirm-babel-evaluate nil
+     org-capture-bookmark nil
      org-capture-templates
      `(("td" "Todo date"
         entry (file+headline ,my-org-gtd ,(my-today)) "* TODO %?\n%^t")
