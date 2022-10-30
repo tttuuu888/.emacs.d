@@ -1167,6 +1167,9 @@ settings.
      org-export-with-section-numbers nil
      org-export-with-sub-superscripts nil
      org-export-with-toc 1
+     org-html-style-default
+     (html-head-css
+       (file-to-string (expand-file-name "org.css" emacs-etc-dir)))
      org-html-inline-image-rules
      '(("file" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")
        ("http" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")
@@ -1252,23 +1255,16 @@ settings.
       (when org-inline-image-overlays
         (org-redisplay-inline-images)))
     (defun my-org-before-process-hook (exporter)
-      (cond
-       ((eq exporter 'html)
-        (setq-local org-html-head-include-default-style nil
-                    org-html-head
-                    (html-head-css
-                      (file-to-string (expand-file-name "org.css" emacs-etc-dir))
-                      (apply #'format
-                             "\n.src {background-color: %s; color: %s;}\n"
-                             (mapcar
-                              (lambda (x)
-                                (apply #'color-rgb-to-hex
-                                       (append (color-name-to-rgb x) '(2))))
-                              (list (face-background 'default)
-                                    (face-foreground 'default)))))))
-       ((eq exporter 'latex)
-        (setq-local org-export-with-section-numbers t
-                    org-export-with-toc 2))))
+      (setq-local org-html-head
+                  (html-head-css
+                    (apply #'format
+                           "\n.src {background-color: %s; color: %s;}\n"
+                           (mapcar
+                            (lambda (x)
+                              (apply #'color-rgb-to-hex
+                                     (append (color-name-to-rgb x) '(2))))
+                            (list (face-background 'default)
+                                  (face-foreground 'default)))))))
     (defun my-org-capture-image ()
       (interactive)
       (let* ((img (file-relative-name
