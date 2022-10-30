@@ -1419,8 +1419,9 @@ settings.
   (use-package display-line-numbers
     :ensure nil
     :custom-face
-    (line-number ((t :foreground "gray51" :inherit 'default)))
-    (line-number-current-line ((t (:inherit 'default))))
+    (line-number ((t :foreground "gray51" :inherit 'default))
+                 face-defface-spec)
+    (line-number-current-line ((t (:inherit 'default))) face-defface-spec)
     :hook
     ((find-file prog-mode) . display-line-numbers-mode)
     :config
@@ -1704,7 +1705,8 @@ settings.
            :map helm-map
            ("<escape>". helm-keyboard-quit))
     :custom-face
-    (helm-grep-finish ((default (:inherit helm-candidate-number))))
+    (helm-grep-finish ((default (:inherit helm-candidate-number)))
+                      face-defface-spec)
     :init
     (evil-leader/set-key
       "i"  'helm-semantic-or-imenu
@@ -1970,7 +1972,7 @@ settings.
     (ivy-posframe
      ((((background light)) :background "ivory3" :foreground "black")
       (((background dark)) :background "#282a36" :foreground "gray80")))
-    (ivy-posframe-border ((t (:inherit ivy-posframe))))
+    (ivy-posframe-border ((t (:inherit ivy-posframe))) face-defface-spec)
     :config
     (setq ivy-truncate-lines nil
           ivy-posframe-border-width 20
@@ -2234,7 +2236,8 @@ settings.
   (use-package which-func
     :ensure nil
     :hook (prog-mode . my-which-function-setup)
-    :custom-face (which-func ((t :inherit font-lock-function-name-face)))
+    :custom-face (which-func ((t :inherit font-lock-function-name-face))
+                             face-defface-spec)
     :config
     (setq which-func-unknown "N/A"
           which-func-update-timer nil)
