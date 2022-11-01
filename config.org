@@ -1966,7 +1966,7 @@ settings.
             ("M-y" . yank-pop))
     :custom-face
     (ivy-posframe
-     ((((background light)) :background "#e3e3e3" :foreground "black")
+     ((((background light)) :background "LightGray" :foreground "black")
       (((background dark)) :background "#282a36" :foreground "gray80")))
     (ivy-posframe-border ((t (:inherit ivy-posframe))) face-defface-spec)
     :config
