@@ -116,7 +116,7 @@ Simple color setting function which has 'dark' and 'light' theme.
   (defun my-theme-setting (&optional light-theme)
     (let ((base-fg-color   (if light-theme "Black" "Gray80"))
           (base-bg-color   (if light-theme "White" "Gray23"))
-          (region-bg-color (if light-theme "Gray" "DodgerBlue4")))
+          (region-bg-color (if light-theme "PowderBlue" "DodgerBlue4")))
       (set-face-attribute 'default nil
                           :foreground base-fg-color :background base-bg-color)
       (set-face-attribute 'fringe nil
@@ -1397,7 +1397,7 @@ settings.
   (use-package hl-line
     :ensure nil
     :custom-face
-    (hl-line ((((background light)) :background "darkseagreen2" :extend t)
+    (hl-line ((((background light)) :background "AntiqueWhite" :extend t)
               (((background dark)) :background "gray18" :extend t)))
     :init
     (sk-defer-init (global-hl-line-mode 1)))
@@ -1966,7 +1966,7 @@ settings.
             ("M-y" . yank-pop))
     :custom-face
     (ivy-posframe
-     ((((background light)) :background "ivory3" :foreground "black")
+     ((((background light)) :background "#e3e3e3" :foreground "black")
       (((background dark)) :background "#282a36" :foreground "gray80")))
     (ivy-posframe-border ((t (:inherit ivy-posframe))) face-defface-spec)
     :config
