@@ -1,0 +1,4 @@
+# name: current-month
+# key: mm
+# --
+`(format-time-string "%_2m월 %B")`$0
