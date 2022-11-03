@@ -1256,15 +1256,17 @@ settings.
         (org-redisplay-inline-images)))
     (defun my-org-before-process-hook (exporter)
       (setq-local org-html-head
-                  (html-head-css
-                    (apply #'format
-                           "\n.src {background-color: %s; color: %s;}\n"
-                           (mapcar
-                            (lambda (x)
-                              (apply #'color-rgb-to-hex
-                                     (append (color-name-to-rgb x) '(2))))
-                            (list (face-background 'default)
-                                  (face-foreground 'default)))))))
+                  (concat
+                   org-html-head
+                   (html-head-css
+                     (apply #'format
+                            "\n.src {background-color: %s; color: %s;}\n"
+                            (mapcar
+                             (lambda (x)
+                               (apply #'color-rgb-to-hex
+                                      (append (color-name-to-rgb x) '(2))))
+                             (list (face-background 'default)
+                                   (face-foreground 'default))))))))
     (defun my-org-capture-image ()
       (interactive)
       (let* ((img (file-relative-name
