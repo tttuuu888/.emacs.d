@@ -449,7 +449,7 @@ Various useful functions.
           (ivy-read "Switch to: " others
                     :action (lambda (file)
                               (find-file (expand-file-name file root)))
-                    :caller #'my-find-other-file-git))))
+                    :caller #'my-find-other-file))))
 
   (defun sk-find-other-file (&optional FLEX-MATCHING)
     "Switch betwen .c|.cpp and .h|.hpp files."
