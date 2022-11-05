@@ -1132,32 +1132,43 @@ settings.
                                   (plain-list-item . nil))
      org-confirm-babel-evaluate nil
      org-capture-templates
-     `(("td" "Todo date"
+     `(("i" "Inbox"
+        entry (file+headline ,my-org-gtd "Inbox") "* %?\n%U")
+
+       ("p"   "Personal")
+       ("pt"  "Personal Todo")
+       ("ptd" "Personal Todo date"
         entry (file+olp+datetree ,my-org-gtd) "* TODO %?\n%t" :time-prompt t)
-       ("tt" "Todo date and time"
+       ("ptt" "Personal Todo date and time"
         entry (file+olp+datetree ,my-org-gtd) "* TODO %?\n%T" :time-prompt t)
-       ("ed" "Event date"
+
+       ("pe"  "Personal Event")
+       ("ped" "Personal Event date"
         entry (file+olp+datetree ,my-org-gtd) "* %?\n%t" :time-prompt t)
-       ("et" "Event date and time"
+       ("pet" "Personal Event date and time"
         entry (file+olp+datetree ,my-org-gtd) "* %?\n%T" :time-prompt t)
-       ("w" "Wait"
+
+       ("pw" "Personal Wait"
         entry (file+olp+datetree ,my-org-gtd) "* WAIT %?\n%t")
-       ("th" "Thing"
-        entry (file+headline ,my-org-gtd "Things") "* %?\n%U")
-       ("n" "Note"
+       ("pn" "Note"
         entry (file+headline ,my-org-gtd "Notes") "* %?\n%U")
 
-       ("wtd" "Work - Todo date"
+       ("w"   "Work")
+       ("wt"  "Work Todo")
+       ("wtd" "Work Todo date"
         entry (file+headline ,my-org-work ,(get-week-form)) "* TODO %?\n%^t")
-       ("wtt" "Work - Todo date and time"
+       ("wtt" "Work Todo date and time"
+
+       ("we"  "Work Event")
         entry (file+headline ,my-org-work ,(get-week-form)) "* TODO %?\n%^T")
-       ("wed" "Work - Event date"
+       ("wed" "Work Event date"
         entry (file+headline ,my-org-work ,(get-week-form)) "* %?\n%^t")
-       ("wet" "Work - Event date and time"
+       ("wet" "Work Event date and time"
         entry (file+headline ,my-org-work ,(get-week-form)) "* %?\n%^T")
-       ("ww" "Work - Wait"
+
+       ("ww" "Work Wait"
         entry (file+headline ,my-org-work ,(get-week-form)) "* WAIT %?\n%^t")
-       ("wn" "Work - Note"
+       ("wn" "Work Note"
         entry (file+headline ,my-org-work ,(get-week-form)) "* %?\n%U"))
      org-default-notes-file my-org-gtd
      org-export-default-language "kr"
