@@ -881,7 +881,7 @@ settings.
 
     (defun my-dired-copy-filepath ()
       (interactive)
-      (let ((path (dired-filename-at-point)))
+      (let ((path (dired-x-guess-file-name-at-point)))
         (kill-new path)
         (message "Copied path : %s" path)))
 
