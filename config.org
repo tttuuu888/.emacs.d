@@ -1073,7 +1073,8 @@ settings.
     (defun my-dired-open-extern ()
       "Open file with an external program."
       (interactive)
-      (call-process "xdg-open" nil nil nil (dired-get-filename))))
+      (let ((path (dired-x-guess-file-name-at-point)))
+        (start-process "xdg-open" nil "xdg-open" path))))
 
   (use-package org
     :ensure nil
