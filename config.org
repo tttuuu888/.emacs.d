@@ -1074,7 +1074,7 @@ settings.
       "Open file with an external program."
       (interactive)
       (let ((path (dired-x-guess-file-name-at-point)))
-        (start-process "xdg-open" nil "xdg-open" path))))
+        (call-process "xdg-open" nil 0 nil path))))
 
   (use-package org
     :ensure nil
