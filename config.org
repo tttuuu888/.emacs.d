@@ -1119,6 +1119,7 @@ settings.
          (todo "WAIT" ((org-agenda-files (list my-org-work))
                        (org-agenda-overriding-header "WAITs:"))))))
      org-agenda-files (list my-org-gtd my-org-work)
+     org-agenda-start-on-weekday 0
      org-babel-load-languages '((C . t)
                                 (css . t)
                                 (dot . t)
