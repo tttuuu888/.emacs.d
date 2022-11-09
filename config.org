@@ -1207,6 +1207,7 @@ settings.
 
     (add-to-list 'safe-local-variable-values '(org-html-inline-images . embed))
 
+    (sk-C-c-map-to-leader-c-map 'org-mode org-mode-map)
     (evil-leader/set-key-for-mode 'org-mode
       "c <SPC>" 'org-table-blank-field
       "c'"  'org-edit-special
@@ -1241,7 +1242,6 @@ settings.
     (evil-declare-motion 'org-down-element)
     (evil-declare-motion 'org-forward-element)
     (evil-declare-motion 'org-backward-element)
-    (sk-C-c-map-to-leader-c-map 'org-mode org-mode-map)
 
     (dolist (mode '("js" "javascript"))
       (add-to-list 'org-src-lang-modes `(,mode . js2)))
