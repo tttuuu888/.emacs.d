@@ -1160,9 +1160,9 @@ settings.
        ("wtd" "Work Todo date"
         entry (file+headline ,my-org-work ,(get-week-form)) "* TODO %?\n%^t")
        ("wtt" "Work Todo date and time"
+        entry (file+headline ,my-org-work ,(get-week-form)) "* TODO %?\n%^T")
 
        ("we"  "Work Event")
-        entry (file+headline ,my-org-work ,(get-week-form)) "* TODO %?\n%^T")
        ("wed" "Work Event date"
         entry (file+headline ,my-org-work ,(get-week-form)) "* %?\n%^t")
        ("wet" "Work Event date and time"
