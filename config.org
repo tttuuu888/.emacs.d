@@ -1078,13 +1078,6 @@ settings.
 
   (use-package org
     :ensure nil
-    :bind (:map org-mode-map
-            ("C-c a"   . org-agenda)
-            ("C-c b"   . org-switchb)
-            ("C-c l"   . org-store-link)
-            ("C-c r"   . org-remember)
-            ("C-c t"   . org-table-create)
-            ("C-c u"   . org-up-element))
     :init
     (evil-leader/set-key
       "na" 'org-agenda)
@@ -1216,21 +1209,18 @@ settings.
 
     (evil-leader/set-key-for-mode 'org-mode
       "c <SPC>" 'org-table-blank-field
-      "cb"  'org-switchb
-      "ce"  'org-export-dispatch
-      "ci"  'org-insert-link
-      "cl"  'org-store-link
-      "cs"  'my-org-capture-image
-      "ct"  'org-todo
-      "cw"  'org-refile
+      "c'"  'org-edit-special
+      "c*"  'org-ctrl-c-star
+      "c+"  'org-table-sum
+      "c,"  'org-insert-structure-template
+      "c-"  'org-ctrl-c-minus
+      "c."  'org-time-stamp
+      "c`"  'org-table-edit-field
+      "cL"  'org-store-link
       "ee"  'org-edit-src-code
-      "ei"  'org-insert-structure-template
       "tc"  'org-table-create
       "tl"  'org-tags-view
-      "ts"  'org-set-tags-command
-      "cdd" 'org-deadline
-      "cds" 'org-schedule
-      "cd." 'org-time-stamp)
+      "ts"  'org-set-tags-command)
     (evil-leader/set-key-minor-mode 'org-src-mode
       "ec" 'org-edit-src-exit
       "eq" 'org-edit-src-abort)
@@ -1251,6 +1241,7 @@ settings.
     (evil-declare-motion 'org-down-element)
     (evil-declare-motion 'org-forward-element)
     (evil-declare-motion 'org-backward-element)
+    (sk-C-c-map-to-leader-c-map 'org-mode org-mode-map)
 
     (dolist (mode '("js" "javascript"))
       (add-to-list 'org-src-lang-modes `(,mode . js2)))
@@ -1280,7 +1271,7 @@ settings.
                                       (append (color-name-to-rgb x) '(2))))
                              (list (face-background 'default)
                                    (face-foreground 'default))))))))
-    (defun my-org-capture-image ()
+    (defun sk-org-capture-image ()
       (interactive)
       (let* ((img (file-relative-name
                    (counsel--find-file-1 "Image file name: " nil nil nil)
