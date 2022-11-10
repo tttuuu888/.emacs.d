@@ -1701,8 +1701,6 @@ settings.
   (use-package helm
     :bind (("M-y"     . helm-show-kill-ring)
            ("C-x C-r" . helm-recentf)
-           :map minibuffer-local-map
-           ("M-l"     . helm-minibuffer-history)
            ("M-y"     . yank-pop)
            :map helm-map
            ("<escape>". helm-keyboard-quit))
@@ -1999,7 +1997,9 @@ settings.
            ("C-h b"   . counsel-descbinds)
            ("C-h v"   . counsel-describe-variable)
            ("C-h f"   . counsel-describe-function)
-           ("<f5>"    . sk-compile))
+           ("<f5>"    . sk-compile)
+           :map minibuffer-local-map
+           ("M-l"     . counsel-minibuffer-history))
     :init
     (evil-leader/set-key
       "<SPC>" 'counsel-M-x
