@@ -1701,7 +1701,6 @@ settings.
   (use-package helm
     :bind (("M-y"     . helm-show-kill-ring)
            ("C-x C-r" . helm-recentf)
-           ("M-y"     . yank-pop)
            :map helm-map
            ("<escape>". helm-keyboard-quit))
     :custom-face
@@ -1966,8 +1965,6 @@ settings.
     (advice-add 'ivy-yasnippet :after 'evil-insert-state))
 
   (use-package ivy-posframe
-    :bind (:map ivy-posframe-mode-map
-            ("M-y" . yank-pop))
     :custom-face
     (ivy-posframe
      ((((background light)) :background "LightGray" :foreground "black")
