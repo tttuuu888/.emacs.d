@@ -1506,31 +1506,6 @@ settings.
 
   (use-package ediff
     :ensure nil
-    :custom-face
-    (ediff-odd-diff-A
-     ((((background light)) (:background "grey" :extend t))
-      (((background dark)) (:background "gray35" :extend t))))
-    (ediff-odd-diff-B
-     ((((background light)) (:background "light grey" :extend t))
-      (((background dark)) (:background "gray55" :extend t))))
-    (ediff-odd-diff-C
-     ((((background light)) (:background "grey" :extend t))
-      (((background dark)) (:background "gray35" :extend t))))
-    (ediff-even-diff-Ancestor
-     ((((background light)) (:background "grey" :extend t))
-      (((background dark)) (:background "gray35" :extend t))))
-    (ediff-even-diff-A
-     ((((background light)) (:background "light grey" :extend t))
-      (((background dark)) (:background "gray55" :extend t))))
-    (ediff-even-diff-B
-     ((((background light)) (:background "grey" :extend t))
-      (((background dark)) (:background "gray35" :extend t))))
-    (ediff-even-diff-C
-     ((((background light)) (:background "light grey" :extend t))
-      (((background dark)) (:background "gray55" :extend t))))
-    (ediff-fine-diff-B
-     ((((background light)) (:background "#aaffaa" :extend t))
-      (((background dark)) (:background "#227722" :extend t))))
     :config
     (setq ediff-split-window-function 'split-window-horizontally
           ediff-window-setup-function 'ediff-setup-windows-plain))
