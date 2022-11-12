@@ -384,8 +384,8 @@ Various useful functions.
             (substring hash 0 7)
           (substring branch 0 (1- (length branch)))))))
 
-  (defun sk-C-c-map-to-leader-c-map (mode mode-map)
-    "Change C-c ... key map to <leader> c... key map"
+  (defun sk-C-c-map-to-leader-c-map (mode mode-map &optional exceptions)
+    "Change C-c ... key map to <leader> c... key map, except EXCEPTIONS list"
     (let* ((ret nil)
            (target (alist-get ?\C-c mode-map))
            (cm (number-sequence ?\C-a ?\C-z))
@@ -401,7 +401,9 @@ Various useful functions.
       (ctrl-map-search target (list ?\c))
       (dolist (e ret)
         (let ((key (mapconcat 'single-key-description (car e) "")))
-          (evil-leader/set-key-for-mode mode key (cdr e))))))
+          (unless (and exceptions
+                       (cl-some (lambda (e) (string-prefix-p e key)) exceptions))
+            (evil-leader/set-key-for-mode mode key (cdr e)))))))
 
   (defun sk-set-dir-to-project ()
     "Set current directory to the project root directory."
@@ -1207,7 +1209,7 @@ settings.
 
     (add-to-list 'safe-local-variable-values '(org-html-inline-images . embed))
 
-    (sk-C-c-map-to-leader-c-map 'org-mode org-mode-map)
+    (sk-C-c-map-to-leader-c-map 'org-mode org-mode-map '("cc" "ck"))
     (evil-leader/set-key-for-mode 'org-mode
       "c <SPC>" 'org-table-blank-field
       "c'"  'org-edit-special
