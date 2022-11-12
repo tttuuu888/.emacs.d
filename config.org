@@ -2240,6 +2240,8 @@ settings.
         "eb" 'eval-buffer
         "ee" 'eval-last-sexp
         "ef" 'eval-defun
+        "em" 'pp-macroexpand-last-sexp
+        "ep" 'pp-eval-last-sexp
         "er" 'eval-region))
     (evil-define-key 'normal emacs-lisp-mode-map
       "gh" 'my-describe-symbol-at-point)
