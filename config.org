@@ -652,9 +652,7 @@ settings.
         (let ((k1 (kbd (concat evil-leader/leader key)))
               (k2 (kbd (concat sk-evil-sub-leader " " key))))
           (evil-define-minor-mode-key 'motion mode k1 def)
-          (evil-define-minor-mode-key 'motion mode k2 def)
-          (evil-define-minor-mode-key 'insert mode k2 def)
-          (evil-define-minor-mode-key 'emacs mode k2 def))
+          (evil-define-minor-mode-key '(motion insert emacs) mode k2 def))
         (setq key (pop bindings)
               def (pop bindings))))
     (setq evil-leader/no-prefix-mode-rx
