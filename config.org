@@ -1877,7 +1877,6 @@ settings.
           ivy-initial-inputs-alist nil
           ;; disable magic slash on non-match
           ivy-magic-slash-non-match-action nil
-          ivy-use-selectable-prompt t
           ;; prefix match first
           ivy-sort-matches-functions-alist
           '((t . ivy--prefix-sort)
