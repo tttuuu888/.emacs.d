@@ -537,14 +537,8 @@ Simple mode line setting function.
 
 #+BEGIN_SRC emacs-lisp
   ;;; mode-line face setting
-  (custom-set-faces
-   '(mode-line
-     ((t (:background "grey75" :foreground "black"))))
-   '(mode-line-inactive
-     ((((background light))
-       (:foreground "grey20" :background "grey90" :box nil))
-      (((background dark))
-       (:foreground "grey80" :background "grey30" :box nil)))))
+  (face-spec-set 'mode-line '((t (:box nil))))
+  (face-spec-set 'mode-line-inactive '((t (:box nil))))
 
   ;;; sk-mode-line
   (defun sk-mode-line ()
