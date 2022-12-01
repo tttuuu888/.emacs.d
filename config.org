@@ -1124,37 +1124,21 @@ settings.
      `(("i" "Inbox"
         entry (file+headline ,my-org-gtd "Inbox") "* %?\n%U")
 
-       ("p"   "Personal")
-       ("pt"  "Personal Todo")
-       ("ptd" "Personal Todo date"
+       ("p"  "Personal")
+       ("pt" "Personal Todo"
         entry (file+olp+datetree ,my-org-gtd) "* TODO %?\n%t" :time-prompt t)
-       ("ptt" "Personal Todo date and time"
-        entry (file+olp+datetree ,my-org-gtd) "* TODO %?\n%T" :time-prompt t)
-
-       ("pe"  "Personal Event")
-       ("ped" "Personal Event date"
+       ("pe" "Personal Event"
         entry (file+olp+datetree ,my-org-gtd) "* %?\n%t" :time-prompt t)
-       ("pet" "Personal Event date and time"
-        entry (file+olp+datetree ,my-org-gtd) "* %?\n%T" :time-prompt t)
-
        ("pw" "Personal Wait"
         entry (file+olp+datetree ,my-org-gtd) "* WAIT %?\n%t")
        ("pn" "Note"
         entry (file+headline ,my-org-gtd "Notes") "* %?\n%U")
 
-       ("w"   "Work")
-       ("wt"  "Work Todo")
-       ("wtd" "Work Todo date"
+       ("w"  "Work")
+       ("wt" "Work Todo"
         entry (file+headline ,my-org-work ,(get-week-form)) "* TODO %?\n%^t")
-       ("wtt" "Work Todo date and time"
-        entry (file+headline ,my-org-work ,(get-week-form)) "* TODO %?\n%^T")
-
-       ("we"  "Work Event")
-       ("wed" "Work Event date"
+       ("we" "Work Event"
         entry (file+headline ,my-org-work ,(get-week-form)) "* %?\n%^t")
-       ("wet" "Work Event date and time"
-        entry (file+headline ,my-org-work ,(get-week-form)) "* %?\n%^T")
-
        ("ww" "Work Wait"
         entry (file+headline ,my-org-work ,(get-week-form)) "* WAIT %?\n%^t")
        ("wn" "Work Note"
