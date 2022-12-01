@@ -1796,6 +1796,7 @@ settings.
     (evil-leader/set-key
       "jf" 'fzf-here)
     :config
+    (setq fzf/args (concat fzf/args " --no-separator"))
     (defun fzf-here ()
       (interactive)
       (fzf/start default-directory #'fzf/action-find-file)))
