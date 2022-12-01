@@ -1208,6 +1208,7 @@ settings.
       "cw" 'org-capture-refile)
     (evil-define-key 'motion org-mode-map
       (kbd "TAB") 'org-cycle
+      "gb" 'org-goto-bottom-heading
       "gh" 'org-up-element
       "gl" 'org-down-element
       "gj" 'org-forward-element
@@ -1276,7 +1277,12 @@ settings.
                   (if (not (equal 'embed (plist-get info :html-inline-images)))
                       (apply func (list source attributes info))
                     (apply #'org-html--embed-image
-                           (list source attributes info))))))
+                           (list source attributes info)))))
+    (defun org-goto-bottom-heading ()
+      (interactive)
+      (org-end-of-subtree)
+      (org-show-children)
+      (org-end-of-subtree)))
 
   (use-package ibuffer
     :ensure nil
