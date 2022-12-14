@@ -84,6 +84,7 @@ Instead of using =custom.el=, insert the contents of the file directly here.
    '(font-use-system-font t)
    '(indent-tabs-mode nil)
    '(inhibit-startup-screen t)
+   '(major-mode 'text-mode)
    '(make-backup-files nil)
    '(mouse-wheel-progressive-speed nil)
    '(password-cache-expiry 900)
