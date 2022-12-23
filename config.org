@@ -1136,14 +1136,14 @@ settings.
         entry (file+headline ,my-org-gtd "Notes") "* %?\n%U")
 
        ("w"  "Work")
-       ("wt" "Work Todo"
-        entry (file+headline ,my-org-work ,(get-week-form)) "* TODO %?\n%^t")
-       ("we" "Work Event"
-        entry (file+headline ,my-org-work ,(get-week-form)) "* %?\n%^t")
-       ("ww" "Work Wait"
-        entry (file+headline ,my-org-work ,(get-week-form)) "* WAIT %?\n%^t")
-       ("wn" "Work Note"
-        entry (file+headline ,my-org-work ,(get-week-form)) "* %?\n%U"))
+       ("wt" "Work Todo" entry (file+olp+datetree ,my-org-work) "* TODO %?\n%t"
+        :time-prompt t :tree-type week)
+       ("we" "Work Event" entry (file+olp+datetree ,my-org-work) "* %?\n%t"
+        :time-prompt t :tree-type week)
+       ("ww" "Work Wait" entry (file+olp+datetree ,my-org-work) "* WAIT %?\n%t"
+        :tree-type week)
+       ("wn" "Work Note" entry (file+olp+datetree ,my-org-work) "* %?\n%U"
+        :tree-type week))
      org-default-notes-file my-org-gtd
      org-export-default-language "kr"
      org-export-headline-levels 2
