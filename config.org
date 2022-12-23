@@ -1840,7 +1840,7 @@ settings.
                    (lambda (x) (string-match "yasnippet-snippets" x)) load-path)
                   "/snippets/"))
            (toremove (mapcar (lambda (x) (concat path (symbol-name x))) unused)))
-     (apply #'call-process "rm" nil nil nil "-rf" toremove)))
+      (apply #'call-process "rm" nil nil nil "-rf" toremove)))
 
   (use-package ivy
     :bind (("C-x b"    . ivy-switch-buffer)
@@ -2145,8 +2145,8 @@ settings.
     :ensure nil
     :commands xref-find-reference-here
     :bind (:map xref--xref-buffer-mode-map
-           ("<return>" . xref-quit-and-goto-xref)
-           ("<RET>"    . xref-quit-and-goto-xref))
+            ("<return>" . xref-quit-and-goto-xref)
+            ("<RET>"    . xref-quit-and-goto-xref))
     :config
     (remove-hook 'xref-backend-functions #'etags--xref-backend)
     (evil-set-initial-state 'xref--xref-buffer-mode 'emacs)
