@@ -1733,7 +1733,7 @@ settings.
           projectile-require-project-root nil
           projectile-switch-project-action 'projectile-dired
           projectile-track-known-projects-automatically nil)
-    (projectile-mode 1)
+    (projectile-load-known-projects)
     (defun sk-add-known-project (project-root)
       "Make .projectile file and add the project to known projects list."
       (interactive (list (read-directory-name "Add to known projects: ")))
