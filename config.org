@@ -406,13 +406,6 @@ Various useful functions.
                        (cl-some (lambda (e) (string-prefix-p e key)) exceptions))
             (evil-leader/set-key-for-mode mode key (cdr e)))))))
 
-  (defun sk-set-dir-to-project ()
-    "Set current directory to the project root directory."
-    (interactive)
-    (unless (file-exists-p ".projectile")
-      (write-region "" nil ".projectile"))
-    (message (concat default-directory " is set to the project root directory.")))
-
   (defun my-get-git-root-dir ()
     (let* ((ret (shell-command-to-string "git rev-parse --show-toplevel"))
            (root (substring ret 0 (1- (length ret)))))
