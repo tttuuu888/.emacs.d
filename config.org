@@ -1275,8 +1275,7 @@ settings.
     (defun org-goto-bottom-heading ()
       (interactive)
       (org-end-of-subtree)
-      (org-show-children)
-      (org-end-of-subtree)))
+      (org-show-children)))
 
   (use-package ibuffer
     :ensure nil
