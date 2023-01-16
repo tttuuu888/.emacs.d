@@ -656,10 +656,6 @@ settings.
            ("C-k" . kill-line)
            :map evil-visual-state-map
            ("p"   . evil-paste-pgvy)
-           ("*"   . evil-search-visualstar-forward)
-           ("#"   . evil-search-visualstar-backward)
-           ("n"   . evil-search-visualstar-forward)
-           ("N"   . evil-search-visualstar-backward)
            :map evil-ex-completion-map
            ("C-a" . move-beginning-of-line)
            ("C-b" . backward-char)
@@ -728,24 +724,6 @@ settings.
           (if p2
               (evil-range p1 p2 type :expanded t)
             (user-error "Can't find c function.")))))
-    (defun evil-search-visualstar (beg end &optional backward)
-      "Search for the visual selection."
-      (evil-exit-visual-state)
-      (setq isearch-forward (not backward))
-      (evil-search
-       (buffer-substring-no-properties beg end) (not backward) evil-regexp-search))
-    (evil-define-motion evil-search-visualstar-forward (beg end)
-      "Search for the visual selection forwards."
-      :jump t
-      :type exclusive
-      (interactive "<r>")
-      (evil-search-visualstar beg end))
-    (evil-define-motion evil-search-visualstar-backward (beg end)
-      "Search for the visual selection backwards."
-      :jump t
-      :type exclusive
-      (interactive "<r>")
-      (evil-search-visualstar beg end t))
     (define-key evil-inner-text-objects-map "d" 'evil-inner-bracket)
     (define-key evil-outer-text-objects-map "d" 'evil-a-bracket)
     (define-key evil-inner-text-objects-map "j" 'evil-inner-curly)
@@ -766,6 +744,13 @@ settings.
   (use-package evil-anzu
     :demand t
     :after anzu)
+
+  (use-package evil-visualstar
+    :bind (:map evil-visual-state-map
+            ("n" . evil-visualstar/begin-search-forward)
+            ("N" . evil-visualstar/begin-search-backward))
+    :config
+    (global-evil-visualstar-mode))
 
   (use-package evil-surround
     :init
