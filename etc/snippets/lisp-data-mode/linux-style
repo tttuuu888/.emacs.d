@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: linux-style
+# key: ,ls
+# --
+((c-mode . ((indent-tabs-mode . t)
+            (c-default-style  . "linux"))))
