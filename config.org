@@ -2048,6 +2048,7 @@ settings.
                 :caller 'counsel-find-dir-here)))
 
   (use-package which-key
+    :custom (which-key-dont-use-unicode t)
     :init
     (sk-defer-init (which-key-mode 1)))
 
