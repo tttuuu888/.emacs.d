@@ -2111,7 +2111,7 @@ settings.
       python-mode inferior-python-mode
       (lambda ()
         (interactive)
-        (pop-to-buffer (process-buffer (call-interactively 'run-python)))))
+        (pop-to-buffer (call-interactively 'run-python))))
     (defun my-python-shell-send-line-or-region (n)
       (interactive "p")
       (if (region-active-p)
