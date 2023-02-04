@@ -248,7 +248,7 @@ Various useful functions.
     "Find first matching file of FILES up to HOME or ROOT folder.
   FILES can be a file name string or list of files."
     (unless (or (not dir) (equal dir "~/") (equal dir "/"))
-      (let* ((files (if (listp files) files (list files)))
+      (let* ((files (ensure-list files))
              (file (cl-find-if
                     (lambda (f) (file-exists-p (expand-file-name f dir)))
                     files))
