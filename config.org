@@ -526,6 +526,15 @@ Various useful functions.
 
   (defun my-tomorrow ()
     (format-time-string "%Y-%m-%d %A" (time-add (current-time) (* 24 3600))))
+
+  (let ((origin-height (face-attribute 'default :height))
+        (big-font nil))
+    (defun sk-toggle-big-font ()
+      (interactive)
+      (if big-font
+          (set-face-attribute 'default nil :height origin-height)
+        (set-face-attribute 'default nil :height (round (* origin-height 1.5))))
+      (setq big-font (not big-font))))
 #+END_SRC
 
 ** SK-mode-line
