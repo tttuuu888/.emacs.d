@@ -536,6 +536,13 @@ Various useful functions.
           (set-face-attribute 'default nil :height origin-height)
         (set-face-attribute 'default nil :height big-height))
       (setq big-font (not big-font))))
+
+  (defun sk-meld-dir (dir1 dir2)
+    (interactive "DDir 1 : \nDDir 2 : ")
+    (async-shell-command (concat "meld "
+                                 (shell-quote-argument dir1)
+                                 " "
+                                 (shell-quote-argument dir2))))
 #+END_SRC
 
 ** SK-mode-line
