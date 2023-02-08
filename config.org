@@ -539,10 +539,7 @@ Various useful functions.
 
   (defun sk-meld-dir (dir1 dir2)
     (interactive "DDir 1 : \nDDir 2 : ")
-    (async-shell-command (concat "meld "
-                                 (shell-quote-argument dir1)
-                                 " "
-                                 (shell-quote-argument dir2))))
+    (start-process "meld" nil "meld" dir1 dir2))
 #+END_SRC
 
 ** SK-mode-line
