@@ -1856,7 +1856,8 @@ settings.
                   (directory-files path nil (rx bol (not ".")))))
            (unused (seq-filter (lambda (x) (not (member (intern x) used))) all))
            (to-remove (mapcar (lambda (x) (concat path x)) unused)))
-      (apply #'call-process "rm" nil nil nil "-rf" to-remove)))
+      (when to-remove
+        (apply #'call-process "rm" nil nil nil "-rf" to-remove))))
 
   (use-package ivy
     :bind (("C-x b"    . ivy-switch-buffer)
