@@ -2639,11 +2639,14 @@ settings.
     (require 'projectile)
     (setq eglot-autoshutdown t
           eglot-server-programs
-          (append '(((c++-mode c-mode) "ccls")
-                    (python-mode
-                     . (eglot-pyright . ("pyright-langserver" "--stdio")))
-                    ((rust-mode) "rust-analyzer"))
-                  eglot-server-programs))
+          (append
+           `(((c++-mode c-mode) "ccls")
+             (elixir-mode ,(expand-file-name "elixir-ls/language_server.sh"
+                                             user-emacs-directory))
+             (python-mode
+              . (eglot-pyright . ("pyright-langserver" "--stdio")))
+             (rust-mode "rust-analyzer"))
+           eglot-server-programs))
     (defun my-find-python-project-root ()
       (find-file-in-tree default-directory '("setup.py" "requirements.txt") t))
     (defclass eglot-pyright (eglot-lsp-server) ()
