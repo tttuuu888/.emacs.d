@@ -2685,6 +2685,8 @@ settings.
     :init (sk-defer-init (eros-mode 1)))
 
   (use-package dts-mode)
+
+  (use-package elixir-mode)
 #+END_SRC
 * End
 ** Provide a feature
