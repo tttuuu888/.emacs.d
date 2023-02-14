@@ -540,6 +540,24 @@ Various useful functions.
   (defun sk-meld-dir (dir1 dir2)
     (interactive "DDir 1 : \nDDir 2 : ")
     (start-process "meld" nil "meld" dir1 dir2))
+
+  (defun get-github-latest-release-info (owner repo)
+    (json-parse-string
+     (shell-command-to-string
+      (format "curl -sL https://api.github.com/repos/%s/%s/releases/latest"
+              owner repo))))
+
+  (defun get-github-latest-release-version (owner repo &optional release-info)
+    (gethash "tag_name"
+             (or release-info
+                 (get-github-latest-release-info owner repo))))
+
+  (defun download-github-release-package (owner repo ver name target)
+    (url-copy-file
+     (format "https://github.com/%s/%s/releases/download/%s/%s"
+             owner repo ver name)
+     target))
+
 #+END_SRC
 
 ** SK-mode-line
