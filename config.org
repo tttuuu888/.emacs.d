@@ -2689,7 +2689,27 @@ settings.
 
   (use-package dts-mode)
 
-  (use-package elixir-mode)
+  (use-package elixir-mode
+    :config
+    (defun install-latest-elixir-ls ()
+      (interactive)
+      (let* ((target-dir (expand-file-name "elixir-ls/" user-emacs-directory))
+             (ver-file (expand-file-name "VERSION" target-dir))
+             (owner "elixir-lsp")
+             (repo "elixir-ls")
+             (info (get-github-latest-release-info owner repo))
+             (ver (get-github-latest-release-version owner repo info))
+             (zip (format "/tmp/%s.zip" (make-temp-name "elixir-ls-"))))
+        (if (and (file-exists-p ver-file)
+                 (string-equal ver (file-to-string ver-file)))
+            (message "Latest Elixir LSP(%s) is already installed." ver)
+          (save-window-excursion
+            (shell-command (format "rm -rf %s; mkdir %s" target-dir target-dir))
+            (download-github-release-package owner repo ver "elixir-ls.zip" zip)
+            (shell-command (format "unzip %s -d %s" zip target-dir))
+            (write-region ver nil ver-file)
+            (delete-file zip)
+            (message "Elixir LSP(%s) is installed." ver))))))
 #+END_SRC
 * End
 ** Provide a feature
