@@ -1217,6 +1217,7 @@ settings.
     (evil-leader/set-key-for-mode 'org-mode
       "c <SPC>" 'org-table-blank-field
       "c'"  'org-edit-special
+      "c!"  'org-time-stamp-inactive
       "c*"  'org-ctrl-c-star
       "c+"  'org-table-sum
       "c,"  'org-insert-structure-template
