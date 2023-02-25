@@ -2692,6 +2692,23 @@ settings.
 
   (use-package dts-mode)
 
+  (use-package inf-elixir
+    :commands run-iex
+    :config
+    (defun run-iex ()
+      (interactive)
+      (if (inf-elixir--find-project-root)
+          (call-interactively 'inf-elixir-project)
+        (call-interactively 'inf-elixir)))
+    (defun inf-elixir--send (cmd)
+      "Re-write function not to pop iex buffer."
+      (when-let ((buf (inf-elixir--determine-repl-buf)))
+        (with-current-buffer buf
+          (comint-add-to-input-history cmd)
+          (comint-send-string buf (concat cmd "\n")))))
+    (evil-leader/set-key-for-mode 'inf-elixir-mode
+      "l" 'my-comint-history))
+
   (use-package elixir-mode
     :config
     (defun install-latest-elixir-ls ()
@@ -2712,7 +2729,19 @@ settings.
             (shell-command (format "unzip %s -d %s" zip target-dir))
             (write-region ver nil ver-file)
             (delete-file zip)
-            (message "Elixir LSP(%s) is installed." ver))))))
+            (message "Elixir LSP(%s) is installed." ver)))))
+    (defun my-elixir-shell-send-line-or-region (n)
+      (interactive "p")
+      (if (region-active-p)
+          (call-interactively 'inf-elixir-send-region)
+        (call-interactively 'inf-elixir-send-line))
+      (setq deactivate-mark t))
+    (sk-switch-buffer-repl sk-elixir-buffer-iex-toggle
+      elixir-mode inf-elixir-mode run-iex)
+    (evil-leader/set-key-for-mode 'elixir-mode
+      "eb" 'inf-elixir-send-buffer
+      "ee" 'my-elixir-shell-send-line-or-region
+      "er" 'inf-elixir-send-region))
 #+END_SRC
 * End
 ** Provide a feature
