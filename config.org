@@ -543,9 +543,11 @@ Various useful functions.
 
   (defun get-github-latest-release-info (owner repo)
     (json-parse-string
-     (shell-command-to-string
-      (format "curl -sL https://api.github.com/repos/%s/%s/releases/latest"
-              owner repo))))
+     (with-temp-buffer
+       (url-insert-file-contents
+        (format "https://api.github.com/repos/%s/%s/releases/latest"
+                owner repo))
+       (buffer-string))))
 
   (defun get-github-latest-release-version (owner repo &optional release-info)
     (gethash "tag_name"
@@ -2705,7 +2707,7 @@ settings.
                  (string-equal ver (file-to-string ver-file)))
             (message "Latest Elixir LSP(%s) is already installed." ver)
           (save-window-excursion
-            (shell-command (format "rm -rf %s; mkdir %s" target-dir target-dir))
+            (delete-directory target-dir t)
             (download-github-release-package owner repo ver "elixir-ls.zip" zip)
             (shell-command (format "unzip %s -d %s" zip target-dir))
             (write-region ver nil ver-file)
