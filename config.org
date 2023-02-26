@@ -2734,7 +2734,9 @@ settings.
       (interactive "p")
       (if (region-active-p)
           (call-interactively 'inf-elixir-send-region)
-        (call-interactively 'inf-elixir-send-line))
+        (inf-elixir--send
+         (buffer-substring
+          (line-beginning-position) (line-end-position n))))
       (setq deactivate-mark t))
     (sk-switch-buffer-repl sk-elixir-buffer-iex-toggle
       elixir-mode inf-elixir-mode run-iex)
