@@ -1203,7 +1203,10 @@ settings.
      org-latex-title-command "\\maketitle \\clearpage"
      org-latex-toc-command "\\tableofcontents \\clearpage"
      org-log-done 'time
+     org-outline-path-complete-in-steps nil
      org-plantuml-jar-path "/usr/share/java/plantuml/plantuml.jar"
+     org-refile-targets '((nil :maxlevel . 5))
+     org-refile-use-outline-path t
      org-src-lang-modes (cons '("dot" . graphviz-dot) org-src-lang-modes)
      org-src-window-setup 'current-window
      org-startup-folded t
