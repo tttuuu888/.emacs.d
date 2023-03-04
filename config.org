@@ -2733,7 +2733,7 @@ settings.
             (write-region ver nil ver-file)
             (delete-file zip)
             (message "Elixir LSP(%s) is installed." ver)))))
-    (defun my-elixir-shell-send-line-or-region (n)
+    (defun inf-elixir-send-line-or-region (n)
       (interactive "p")
       (if (region-active-p)
           (call-interactively 'inf-elixir-send-region)
@@ -2741,11 +2741,38 @@ settings.
          (buffer-substring
           (line-beginning-position) (line-end-position n))))
       (setq deactivate-mark t))
+    (defun inf-elixir-reload-or-load-module ()
+      "Reloads the module if it's already loaded, or compiles and loads it."
+      (interactive)
+      (if-let* ((buffer (inf-elixir--determine-repl-buf))
+                (module (nth 0 (inf-elixir--matches-in-buffer
+                                "defmodule \\([A-Z][A-Za-z0-9\._]+\\)\s+")))
+                (check-module (format ":code.is_loaded %s\n" module))
+                (compile-file
+                 (replace-regexp-in-string
+                  (rx "\\" (group anything))
+                  "\\1"
+                  (format "c \"%s\" \n" buffer-file-name)))
+                (load-module (format "r %s\n" module)))
+          (with-current-buffer buffer
+            (comint-send-string buffer check-module)
+            ;; Can be replaced with a function like `comint-wait-for-output'.
+            (sleep-for 0.1)
+            (when (equal "false"
+                         (save-excursion
+                           (goto-char comint-last-output-start)
+                           (beginning-of-line)
+                           (goto-char (1- (point)))
+                           (word-at-point)))
+              (comint-send-string buffer compile-file)
+              (sleep-for 0.1))
+            (comint-send-string buffer load-module))))
     (sk-switch-buffer-repl sk-elixir-buffer-iex-toggle
       elixir-mode inf-elixir-mode run-iex)
     (evil-leader/set-key-for-mode 'elixir-mode
       "eb" 'inf-elixir-send-buffer
-      "ee" 'my-elixir-shell-send-line-or-region
+      "ee" 'inf-elixir-send-line-or-region
+      "em" 'inf-elixir-reload-or-load-module
       "er" 'inf-elixir-send-region))
 #+END_SRC
 * End
