@@ -2708,7 +2708,6 @@ settings.
       "Re-write function not to pop iex buffer."
       (when-let ((buf (inf-elixir--determine-repl-buf)))
         (with-current-buffer buf
-          (comint-add-to-input-history cmd)
           (comint-send-string buf (concat cmd "\n")))))
     (defun inf-elixir-send-line-or-region (n)
       (interactive "p")
