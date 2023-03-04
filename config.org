@@ -2696,7 +2696,8 @@ settings.
   (use-package dts-mode)
 
   (use-package inf-elixir
-    :commands run-iex
+    :commands (run-iex inf-elixir-send-line-or-region
+                       inf-elixir-reload-or-load-module)
     :config
     (defun run-iex ()
       (interactive)
@@ -2709,30 +2710,6 @@ settings.
         (with-current-buffer buf
           (comint-add-to-input-history cmd)
           (comint-send-string buf (concat cmd "\n")))))
-    (evil-leader/set-key-for-mode 'inf-elixir-mode
-      "l" 'my-comint-history))
-
-  (use-package elixir-mode
-    :config
-    (defun install-latest-elixir-ls ()
-      (interactive)
-      (let* ((target-dir (expand-file-name "elixir-ls/" user-emacs-directory))
-             (ver-file (expand-file-name "VERSION" target-dir))
-             (owner "elixir-lsp")
-             (repo "elixir-ls")
-             (info (get-github-latest-release-info owner repo))
-             (ver (get-github-latest-release-version owner repo info))
-             (zip (format "/tmp/%s.zip" (make-temp-name "elixir-ls-"))))
-        (if (and (file-exists-p ver-file)
-                 (string-equal ver (file-to-string ver-file)))
-            (message "Latest Elixir LSP(%s) is already installed." ver)
-          (save-window-excursion
-            (delete-directory target-dir t)
-            (download-github-release-package owner repo ver "elixir-ls.zip" zip)
-            (shell-command (format "unzip %s -d %s" zip target-dir))
-            (write-region ver nil ver-file)
-            (delete-file zip)
-            (message "Elixir LSP(%s) is installed." ver)))))
     (defun inf-elixir-send-line-or-region (n)
       (interactive "p")
       (if (region-active-p)
@@ -2767,6 +2744,30 @@ settings.
               (comint-send-string buffer compile-file)
               (sleep-for 0.1))
             (comint-send-string buffer load-module))))
+    (evil-leader/set-key-for-mode 'inf-elixir-mode
+      "l" 'my-comint-history))
+
+  (use-package elixir-mode
+    :config
+    (defun install-latest-elixir-ls ()
+      (interactive)
+      (let* ((target-dir (expand-file-name "elixir-ls/" user-emacs-directory))
+             (ver-file (expand-file-name "VERSION" target-dir))
+             (owner "elixir-lsp")
+             (repo "elixir-ls")
+             (info (get-github-latest-release-info owner repo))
+             (ver (get-github-latest-release-version owner repo info))
+             (zip (format "/tmp/%s.zip" (make-temp-name "elixir-ls-"))))
+        (if (and (file-exists-p ver-file)
+                 (string-equal ver (file-to-string ver-file)))
+            (message "Latest Elixir LSP(%s) is already installed." ver)
+          (save-window-excursion
+            (delete-directory target-dir t)
+            (download-github-release-package owner repo ver "elixir-ls.zip" zip)
+            (shell-command (format "unzip %s -d %s" zip target-dir))
+            (write-region ver nil ver-file)
+            (delete-file zip)
+            (message "Elixir LSP(%s) is installed." ver)))))
     (sk-switch-buffer-repl sk-elixir-buffer-iex-toggle
       elixir-mode inf-elixir-mode run-iex)
     (evil-leader/set-key-for-mode 'elixir-mode
