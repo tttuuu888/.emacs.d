@@ -2721,8 +2721,9 @@ settings.
       "Reloads the module if it's already loaded, or compiles and loads it."
       (interactive)
       (if-let* ((buffer (inf-elixir--determine-repl-buf))
-                (module (nth 0 (inf-elixir--matches-in-buffer
-                                "defmodule \\([A-Z][A-Za-z0-9\._]+\\)\s+")))
+                (module (substring-no-properties
+                         (nth 0 (inf-elixir--matches-in-buffer
+                                 "defmodule \\([A-Z][A-Za-z0-9\._]+\\)\s+"))))
                 (check-module (format ":code.is_loaded %s\n" module))
                 (compile-file
                  (replace-regexp-in-string
