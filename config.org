@@ -2697,7 +2697,7 @@ settings.
 
   (use-package inf-elixir
     :commands (run-iex inf-elixir-send-line-or-region
-                       inf-elixir-reload-or-load-module)
+                       inf-elixir-compile-and-load-module)
     :config
     (defun run-iex ()
       (interactive)
@@ -2717,14 +2717,13 @@ settings.
          (buffer-substring
           (line-beginning-position) (line-end-position n))))
       (setq deactivate-mark t))
-    (defun inf-elixir-reload-or-load-module ()
-      "Reloads the module if it's already loaded, or compiles and loads it."
+    (defun inf-elixir-compile-and-load-module ()
+      "Compile and load the module."
       (interactive)
       (if-let* ((buffer (inf-elixir--determine-repl-buf))
                 (module (substring-no-properties
                          (nth 0 (inf-elixir--matches-in-buffer
                                  "defmodule \\([A-Z][A-Za-z0-9\._]+\\)\s+"))))
-                (check-module (format ":code.is_loaded %s\n" module))
                 (compile-file
                  (replace-regexp-in-string
                   (rx "\\" (group anything))
@@ -2732,17 +2731,7 @@ settings.
                   (format "c \"%s\" \n" buffer-file-name)))
                 (load-module (format "r %s\n" module)))
           (with-current-buffer buffer
-            (comint-send-string buffer check-module)
-            ;; Can be replaced with a function like `comint-wait-for-output'.
-            (sleep-for 0.1)
-            (when (equal "false"
-                         (save-excursion
-                           (goto-char comint-last-output-start)
-                           (beginning-of-line)
-                           (goto-char (1- (point)))
-                           (word-at-point)))
-              (comint-send-string buffer compile-file)
-              (sleep-for 0.1))
+            (comint-send-string buffer compile-file)
             (comint-send-string buffer load-module))))
     (evil-leader/set-key-for-mode 'inf-elixir-mode
       "l" 'my-comint-history))
@@ -2773,7 +2762,7 @@ settings.
     (evil-leader/set-key-for-mode 'elixir-mode
       "eb" 'inf-elixir-send-buffer
       "ee" 'inf-elixir-send-line-or-region
-      "em" 'inf-elixir-reload-or-load-module
+      "em" 'inf-elixir-compile-and-load-module
       "er" 'inf-elixir-send-region))
 #+END_SRC
 * End
