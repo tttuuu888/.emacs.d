@@ -1,4 +1,6 @@
-;; SK Emacs Setting -*- lexical-binding: t -*-
+;;; init.el --- SK Emacs Setting -*- lexical-binding: t -*-
+;;
+;;; Code:
 
 (let ((file-name-handler-alist nil)
       (gc-cons-threshold most-positive-fixnum)
