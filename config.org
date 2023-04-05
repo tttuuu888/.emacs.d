@@ -2652,7 +2652,8 @@ settings.
              (python-mode
               . (eglot-pyright . ("pyright-langserver" "--stdio")))
              (rust-mode "rust-analyzer"))
-           eglot-server-programs))
+           eglot-server-programs)
+          eglot-sync-connect 0)
     (defun my-find-python-project-root ()
       (find-file-in-tree default-directory '("setup.py" "requirements.txt") t))
     (defclass eglot-pyright (eglot-lsp-server) ()
