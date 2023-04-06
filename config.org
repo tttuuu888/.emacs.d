@@ -1804,6 +1804,7 @@ settings.
       "gs" 'magit-status
       "gd" 'magit-file-dispatch)
     :config
+    (require 'vc-git)
     (setq magit-log-section-commit-count 5
           magit-completing-read-function #'ivy-completing-read)
     (evil-leader/set-key-minor-mode 'with-editor-mode
@@ -1811,7 +1812,20 @@ settings.
     (bind-key "<escape>" 'transient-quit-one transient-map)
     (evil-make-overriding-map magit-blame-read-only-mode-map 'normal)
     (add-hook 'magit-blame-mode-hook 'evil-normalize-keymaps)
-    (add-hook 'with-editor-mode-hook 'flyspell-mode))
+    (add-hook 'with-editor-mode-hook 'flyspell-mode)
+    (defun magit-vc-diff (&rest _)
+      "Run vc-diff"
+      (interactive)
+      (when-let* ((ms (magit-apply--get-selection))
+                  (files (ensure-list (or (--map (oref it value) ms)
+                                          (oref ms value)))))
+        (vc-git-diff files)
+        (pop-to-buffer "*vc-diff*")
+        (diff-mode)))
+    (if (transient--layout-member "v" 'magit-diff)
+        (error "Layout conflict occured!")
+      (transient-append-suffix 'magit-diff "t"
+        '("v" "Run vc-diff" magit-vc-diff))))
 
   (use-package expand-region
     :bind (("C-="   . er/expand-region))
