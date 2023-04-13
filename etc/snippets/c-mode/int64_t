@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: i64
+# key: i64
+# --
+int64_t $0

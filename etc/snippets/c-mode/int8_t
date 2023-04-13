@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: i8
+# key: i8
+# --
+int8_t $0
