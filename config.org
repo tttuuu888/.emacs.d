@@ -828,8 +828,9 @@ settings.
 
   (use-package recentf
     :ensure nil
-    :hook (find-file . recentf-mode)
     :custom (recentf-max-saved-items 100)
+    :init
+    (sk-defer-init (recentf-mode 1))
     :config
     (add-to-list 'recentf-exclude
                  (expand-file-name "elpa/.*" emacs-config-dir)))
