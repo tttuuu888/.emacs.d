@@ -139,8 +139,10 @@ Enable dark theme.
 #+BEGIN_SRC emacs-lisp
   (my-theme-setting)
 #+END_SRC
-** Font setting
+** Korean and Font setting
 #+BEGIN_SRC emacs-lisp
+  (setq default-input-method "korean-hangul3")
+
   (defvar sk-font "D2Coding")
 
   (when (display-graphic-p)
@@ -818,6 +820,7 @@ settings.
 
   ;;; Built-in packages
   (use-package korea-util
+    :disabled
     :ensure nil
     :bind (("C-\\" . toggle-korean-input-method)
            :map isearch-mode-map
@@ -1610,6 +1613,7 @@ settings.
      ("<f8>"         . (lambda () (interactive) (buffer-save-or-load 8 t)))
      ("C-<f7>"       . (lambda () (interactive) (buffer-save-or-load 7)))
      ("C-<f8>"       . (lambda () (interactive) (buffer-save-or-load 8)))
+     ("S-SPC"        . toggle-input-method)
      :map minibuffer-local-map
      ("<escape>"     . minibuffer-keyboard-quit))
     (defun my-other-window ()
