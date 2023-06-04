@@ -1690,14 +1690,11 @@ settings.
       "xu" 'undo-tree-visualize))
 
   (use-package wgrep
-    :commands wgrep-change-to-wgrep-mode
-    :bind (:map helm-git-grep-map
-            ("C-c C-e" . wgrep-change-to-wgrep-mode)
-            ("C-c C-s" . wgrep-save-all-buffers))
     :config
     (dolist (mode '(helm-git-grep-mode helm-ag-mode))
       (evil-leader/set-key-for-mode mode
-        "ce" 'wgrep-change-to-wgrep-mode
+        "ce" 'wgrep-finish-edit
+        "ee" 'wgrep-change-to-wgrep-mode
         "cs" 'wgrep-save-all-buffers
         "ck" 'wgrep-abort-changes))
     (advice-add 'wgrep-change-to-wgrep-mode :after 'evil-normal-state))
@@ -1731,6 +1728,7 @@ settings.
       "jp" 'helm-ag-project-or-here
       "jP" 'helm-ag-here)
     :config
+    (require 'wgrep)
     (setq helm-ag-insert-at-point 'symbol
           helm-ag-base-command "ag --nocolor --nogroup --follow"
           helm-ag-use-grep-ignore-list t)
@@ -1751,6 +1749,7 @@ settings.
     (evil-leader/set-key
       "p" 'my-helm-git-grep-or-ag-here)
     :config
+    (require 'wgrep)
     (setq helm-git-grep-candidate-number-limit 1000)
     (advice-add 'helm-git-grep-persistent-action :after
                 (lambda (&rest _) (which-func-update)))
