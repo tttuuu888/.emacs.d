@@ -2771,7 +2771,8 @@ settings.
             (message "Latest Elixir LSP(%s) is already installed." ver)
           (save-window-excursion
             (delete-directory target-dir t)
-            (download-github-release-package owner repo ver "elixir-ls.zip" zip)
+            (download-github-release-package
+             owner repo ver (concat "elixir-ls-" ver ".zip") zip)
             (shell-command (format "unzip %s -d %s" zip target-dir))
             (write-region ver nil ver-file)
             (delete-file zip)
