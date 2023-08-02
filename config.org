@@ -563,9 +563,15 @@ Various useful functions.
      target))
 
   (defun sk-package-upgrade-all ()
-    (interactive)
     "Upgrade all packages without asking the user."
-    (package-upgrade-all))
+    (interactive)
+    (package-refresh-contents)
+    (let* ((upgradeable (package--upgradeable-packages))
+           (pkg-cnt (length upgradeable)))
+      (if (not upgradeable)
+          (message "No packages to upgrade")
+        (mapc #'package-upgrade upgradeable)
+        (format "%s packages upgraded." pkg-cnt))))
 #+END_SRC
 
 ** SK-mode-line
