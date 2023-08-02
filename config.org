@@ -562,6 +562,10 @@ Various useful functions.
              owner repo ver name)
      target))
 
+  (defun sk-package-upgrade-all ()
+    (interactive)
+    "Upgrade all packages without asking the user."
+    (package-upgrade-all))
 #+END_SRC
 
 ** SK-mode-line
