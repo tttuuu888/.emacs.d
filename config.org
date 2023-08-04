@@ -464,7 +464,7 @@ Various useful functions.
     (save-excursion
       (c-end-of-defun)
       (c-beginning-of-defun)
-      (let* ((str (filter-buffer-substring (point-at-bol) (point-at-eol)))
+      (let* ((str (filter-buffer-substring (pos-bol) (pos-eol)))
              (func (substring-no-properties str)))
         (sk-find-other-file)
         (goto-char (point-min))
@@ -1204,7 +1204,6 @@ settings.
        ("https" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'"))
      org-html-metadata-timestamp-format "%Y-%m-%d"
      org-html-validation-link ""
-     org-latex-listings 'minted
      org-latex-packages-alist '(("" "kotex" nil)
                                 ("" "parskip" nil)
                                 ("margin=2cm" "geometry" nil)
@@ -1213,6 +1212,7 @@ settings.
      '("%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
        "%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
        "%latex -shell-escape -interaction nonstopmode -output-directory %o %f")
+     org-latex-src-block-backend '(verbatim minted)
      org-latex-tables-centered nil
      org-latex-title-command "\\maketitle \\clearpage"
      org-latex-toc-command "\\tableofcontents \\clearpage"
@@ -1310,7 +1310,7 @@ settings.
         (when (file-exists-p img)
           (insert (concat "[[file:" img "]]")))))
     (add-hook 'org-babel-after-execute-hook 'my-org-inline-image-hook)
-    (add-hook 'org-export-before-processing-hook 'my-org-before-process-hook)
+    (add-hook 'org-export-before-processing-functions 'my-org-before-process-hook)
 
     (defun org-html--embed-image (source attributes info)
       (format "<img src=\"data:image/%s;base64,%s\"%s />"
@@ -1334,7 +1334,7 @@ settings.
       (org-end-of-subtree)
       (org-back-to-heading)
       (while (my-org-has-child-p)
-        (org-with-limited-levels (org-show-children))
+        (org-with-limited-levels (org-fold-show-children))
         (org-end-of-subtree)
         (org-back-to-heading))))
 
@@ -1941,7 +1941,7 @@ settings.
       (ivy-posframe-mode 1))
     (advice-add 'ivy-thing-at-point :around
                 (lambda (old &rest r)
-                  (if (> (- (point-at-eol) (point-at-bol)) 10000)
+                  (if (> (- (pos-eol) (pos-bol)) 10000)
                       ""
                     (apply old r))))
     (defun sk-ivy-buffer-transformer (str)
