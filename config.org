@@ -571,7 +571,7 @@ Various useful functions.
       (if (not upgradeable)
           (message "No packages to upgrade")
         (mapc #'package-upgrade upgradeable)
-        (message (format "%s packages upgraded." pkg-cnt)))))
+        (message (format "%s packages upgraded. %s" pkg-cnt upgradeable)))))
 #+END_SRC
 
 ** SK-mode-line
