@@ -1418,8 +1418,6 @@ settings.
 
   (use-package term
     :ensure nil
-    :custom-face
-    (term-color-blue ((t :foreground "skyblue3" :background "skyblue3")))
     :config
     (evil-set-initial-state 'term-mode 'emacs)
     (defun term-send-esc ()
