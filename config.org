@@ -59,6 +59,17 @@ Set =emacs-etc-dir= to indicate a folder containing extra files.
     (make-directory-internal emacs-etc-dir))
 #+END_SRC
 
+** User information
+If =USER_FULL_NAME= and =USER_MAIL_ADDRESS= environment variables exist, update
+=user_full_name= and =user_mail_address= variables.
+
+#+BEGIN_SRC emacs-lisp
+  (let ((name (getenv "USER_FULL_NAME"))
+        (mail (getenv "USER_MAIL_ADDRESS")))
+    (when name (setq user-full-name name))
+    (when mail (setq user-mail-address mail)))
+#+END_SRC
+
 ** Custom file
 =custom.el= will be saved under =~/.emacs.d/.local/= but will not be used.
 
@@ -101,61 +112,19 @@ Instead of using =custom.el=, insert the contents of the file directly here.
    '(use-short-answers t))
 #+END_SRC
 
-** User information
-If =USER_FULL_NAME= and =USER_MAIL_ADDRESS= environment variables exist, update
-=user_full_name= and =user_mail_address= variables.
-
-#+BEGIN_SRC emacs-lisp
-  (let ((name (getenv "USER_FULL_NAME"))
-        (mail (getenv "USER_MAIL_ADDRESS")))
-    (when name (setq user-full-name name))
-    (when mail (setq user-mail-address mail)))
-#+END_SRC
-
-** Color setting
-Simple color setting function which has 'dark' and 'light' theme.
-
-#+BEGIN_SRC emacs-lisp
-  (defun my-theme-setting (&optional light-theme)
-    (let ((base-fg-color   (if light-theme "Black" "Gray80"))
-          (base-bg-color   (if light-theme "White" "Gray23"))
-          (region-bg-color (if light-theme "PowderBlue" "DodgerBlue4")))
-      (set-face-attribute 'default nil
-                          :foreground base-fg-color :background base-bg-color)
-      (set-face-attribute 'fringe nil
-                          :background base-bg-color)
-      (set-face-attribute 'header-line nil
-                          :background base-bg-color :underline nil)
-      (set-face-attribute 'vertical-border nil
-                          :background base-bg-color)
-      (set-face-attribute 'region nil
-                          :background region-bg-color)))
-  (defun sk-light-theme () (interactive) (my-theme-setting t))
-  (defun sk-dark-theme  () (interactive) (my-theme-setting))
-#+END_SRC
-
-Enable dark theme.
-
-#+BEGIN_SRC emacs-lisp
-  (my-theme-setting)
-#+END_SRC
-** Korean and Font setting
-#+BEGIN_SRC emacs-lisp
-  (setq default-input-method "korean-hangul3")
-
+** Custom variables
+#+begin_src emacs-lisp
   (defvar sk-font "D2Coding")
 
-  (when (display-graphic-p)
-    (set-fontset-font t 'unicode "Unifont")
-    (set-fontset-font t '(#x10000 . #xFFFFF) "Unifont Upper")
-    (set-fontset-font t 'hangul sk-font)
-    (set-face-attribute 'fixed-pitch nil :family sk-font))
-#+END_SRC
-** SK-utils
-Various useful functions.
+  (defvar sk-vc-mode nil)
 
-#+BEGIN_SRC emacs-lisp
-  ;;; SK macros
+  (defvar sk-project-root-files
+    '(".projectile" ".git"
+      "CMakeLists.txt" "Makefile" "GTAGS"))
+#+end_src
+
+** Custom macros
+#+begin_src emacs-lisp
   (let ((cnt 0))
     (defmacro sk-defer-init (&rest body)
       "Defer BODY until the very first command after init."
@@ -222,9 +191,10 @@ Various useful functions.
       ,@body
       "/*]]>*/-->\n"
       "</script>\n"))
+#+end_src
 
-
-  ;;; SK functions
+** Custom functions
+#+BEGIN_SRC emacs-lisp
   (defun sharp-ifdef-insert (start end pre)
     (save-excursion
       (goto-char (1- end))
@@ -513,10 +483,6 @@ Various useful functions.
       (when online (delete-file target))
       (or content "")))
 
-  (defvar sk-project-root-files
-    '(".projectile" ".git"
-      "CMakeLists.txt" "Makefile" "GTAGS"))
-
   (defun sk-project-root (&optional dir)
     (find-file-in-tree (or dir default-directory) sk-project-root-files t))
 
@@ -574,6 +540,42 @@ Various useful functions.
         (message (format "%s packages upgraded. %s" pkg-cnt upgradeable)))))
 #+END_SRC
 
+** Color setting
+Simple color setting function which has 'dark' and 'light' theme.
+
+#+BEGIN_SRC emacs-lisp
+  (defun my-theme-setting (&optional light-theme)
+    (let ((base-fg-color   (if light-theme "Black" "Gray80"))
+          (base-bg-color   (if light-theme "White" "Gray23"))
+          (region-bg-color (if light-theme "PowderBlue" "DodgerBlue4")))
+      (set-face-attribute 'default nil
+                          :foreground base-fg-color :background base-bg-color)
+      (set-face-attribute 'fringe nil
+                          :background base-bg-color)
+      (set-face-attribute 'header-line nil
+                          :background base-bg-color :underline nil)
+      (set-face-attribute 'vertical-border nil
+                          :background base-bg-color)
+      (set-face-attribute 'region nil
+                          :background region-bg-color)))
+  (defun sk-light-theme () (interactive) (my-theme-setting t))
+  (defun sk-dark-theme  () (interactive) (my-theme-setting))
+#+END_SRC
+
+Enable dark theme.
+
+#+BEGIN_SRC emacs-lisp
+  (my-theme-setting)
+#+END_SRC
+** Korean and Font setting
+#+BEGIN_SRC emacs-lisp
+  (setq default-input-method "korean-hangul3")
+  (when (display-graphic-p)
+    (set-fontset-font t 'unicode "Unifont")
+    (set-fontset-font t '(#x10000 . #xFFFFF) "Unifont Upper")
+    (set-fontset-font t 'hangul sk-font)
+    (set-face-attribute 'fixed-pitch nil :family sk-font))
+#+END_SRC
 ** SK-mode-line
 Simple mode line setting function.
 
@@ -1567,7 +1569,6 @@ settings.
     (vc-follow-symlinks nil)
     (vc-handled-backends nil)
     :init
-    (defvar sk-vc-mode nil)
     (put 'sk-vc-mode 'risky-local-variable t)
     (make-variable-buffer-local 'sk-vc-mode)
     (put 'sk-vc-mode 'permanent-local t)
