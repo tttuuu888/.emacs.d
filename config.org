@@ -1824,9 +1824,7 @@ settings.
     (defun magit-vc-diff (&rest _)
       "Run vc-diff"
       (interactive)
-      (when-let* ((ms (magit-apply--get-selection))
-                  (files (ensure-list (or (--map (oref it value) ms)
-                                          (oref ms value)))))
+      (when-let (files (magit-staged-files))
         (vc-git-diff files)
         (pop-to-buffer "*vc-diff*")
         (diff-mode)))
