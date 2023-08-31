@@ -538,17 +538,6 @@ Instead of using =custom.el=, insert the contents of the file directly here.
           (message "No packages to upgrade")
         (mapc #'package-upgrade upgradeable)
         (message (format "%s packages upgraded. %s" pkg-cnt upgradeable)))))
-
-  (defun string-truncate-right (string length &optional append)
-    "If STRING is longer than LENGTH, return a truncated version.
-  When truncating, and APPEND is not nil, APPEND is always appended to the string,
-  so the resulting string may be longer than the original if LENGTH is smaller
-  than the length of APPEND."
-    (let ((strlen (length string)))
-      (if (<= strlen length)
-          string
-        (setq length (max 0 (- length (length append))))
-        (concat (substring string 0 length) append))))
 #+END_SRC
 
 ** Color setting
@@ -618,14 +607,11 @@ Simple mode line setting function.
                                        'face 'mode-line-inactive))
                (line-info (format-mode-line " %l,%3c  "))
                (pos-info (format-mode-line "%p%% "))
-               (left-info (concat evil-info buffer-info buffer-name mode-and-vc))
                (right-info (concat input-name line-info pos-info))
-               (left-len (string-width left-info))
                (right-len (string-width right-info))
-               (left-info
-                (if (> width (+ left-len right-len))
-                    left-info
-                  (string-truncate-right left-info (- width right-len))))
+               (left-info (truncate-string-to-width
+                           (concat evil-info buffer-info buffer-name mode-and-vc)
+                           (- width right-len)))
                (center-fill (propertize
                              " "
                              'face 'mode-line-inactive
