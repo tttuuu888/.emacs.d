@@ -538,6 +538,15 @@ Instead of using =custom.el=, insert the contents of the file directly here.
           (message "No packages to upgrade")
         (mapc #'package-upgrade upgradeable)
         (message (format "%s packages upgraded. %s" pkg-cnt upgradeable)))))
+
+  (defun add-sudo-to-command (sudo cmd)
+    "Get password and add sudo to CMD if SUDO is non-nil, otherwise return CMD."
+    (concat
+     (when sudo
+       (concat "echo "
+               (shell-quote-argument (read-passwd "Password? "))
+               "| sudo -S "))
+     cmd))
 #+END_SRC
 
 ** Color setting
@@ -1023,9 +1032,9 @@ settings.
              (message "Compress files done."))
            (expand-file-name name default-directory)))))
 
-    (defun my-dired-do-copy ()
+    (defun my-dired-do-copy (&optional arg)
       "Copy files asynchronously."
-      (interactive)
+      (interactive "p")
       (let* ((files (dired-get-marked-files))
              (source (mapcar #'shell-quote-argument files))
              (target (my-dired-get-target "Copy to: " files))
@@ -1040,7 +1049,9 @@ settings.
                  files))))
         (if (not remote)
             (async-shell-command-callback
-             (concat "cp -rf " (string-join source " ") " " dst)
+             (add-sudo-to-command
+              (> arg 1)
+              (concat "cp -rf " (string-join source " ") " " dst))
              (lambda (target-files)
                (mapc (lambda (f)
                        (dired-remove-file f)
@@ -1055,9 +1066,9 @@ settings.
                 target-files)
           (message "Copy files done."))))
 
-    (defun my-dired-do-delete ()
+    (defun my-dired-do-delete (&optional arg)
       "Delete files asynchronously."
-      (interactive)
+      (interactive "p")
       (let* ((remote (file-remote-p default-directory))
              (files (dired-get-marked-files))
              (source (mapcar #'shell-quote-argument files)))
@@ -1066,7 +1077,9 @@ settings.
                     " *Deletions*" 'delete files #'yes-or-no-p "Delete files? "))
           (if (not remote)
               (async-shell-command-callback
-               (concat "rm -rf " (string-join source " "))
+               (add-sudo-to-command
+                (> arg 1)
+                (concat "rm -rf " (string-join source " ")))
                (lambda (files)
                  (mapc (lambda (f) (dired-delete-entry f)) files)
                  (message "Delete files done."))
@@ -1079,9 +1092,9 @@ settings.
             (mapc (lambda (f) (dired-delete-entry f)) files)
             (message "Delete files done.")))))
 
-    (defun my-dired-do-flagged-delete ()
+    (defun my-dired-do-flagged-delete (&optional arg)
       "Delete files flagged for deletion asynchronously."
-      (interactive)
+      (interactive "p")
       (let* ((remote (file-remote-p default-directory))
              (dired-marker-char dired-del-marker)
              (regexp (dired-marker-regexp))
@@ -1094,7 +1107,9 @@ settings.
                     " *Deletions*" 'delete files #'yes-or-no-p "Delete files? "))
           (if (not remote)
               (async-shell-command-callback
-               (concat "rm -rf " (string-join source " "))
+               (add-sudo-to-command
+                (> arg 1)
+                (concat "rm -rf " (string-join source " ")))
                (lambda (files)
                  (mapc (lambda (f) (dired-delete-entry f)) files)
                  (message "Delete files done."))
