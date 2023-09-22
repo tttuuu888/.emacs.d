@@ -1819,7 +1819,6 @@ settings.
       "gs" 'magit-status
       "gd" 'magit-file-dispatch)
     :config
-    (require 'vc-git)
     (setq magit-log-section-commit-count 5
           magit-completing-read-function #'ivy-completing-read)
     (evil-leader/set-key-minor-mode 'with-editor-mode
@@ -1828,17 +1827,31 @@ settings.
     (evil-make-overriding-map magit-blame-read-only-mode-map 'normal)
     (add-hook 'magit-blame-mode-hook 'evil-normalize-keymaps)
     (add-hook 'with-editor-mode-hook 'flyspell-mode)
-    (defun magit-vc-diff (&rest _)
-      "Run vc-diff"
+    (defun sk-git-diff (&rest _)
+      "Run git-diff"
       (interactive)
-      (when-let (files (magit-staged-files))
-        (vc-git-diff files)
-        (pop-to-buffer "*vc-diff*")
+      (if (not (magit-staged-files))
+          (message "No staged files")
+        (shell-command "git diff --cached" (get-buffer-create "*git-diff*"))
+        (pop-to-buffer "*git-diff*")
         (diff-mode)))
+    (defun sk-save-git-diff (diff-file)
+      "Save git-diff"
+      (interactive "F")
+      (if (not (magit-staged-files))
+          (message "No staged files")
+        (shell-command "git diff --cached" (get-buffer-create "*git-diff*"))
+        (with-current-buffer "*git-diff*"
+          (write-region (point-min) (point-max) diff-file)
+          (kill-buffer))))
     (if (transient--layout-member "v" 'magit-diff)
         (error "Layout conflict occured!")
-      (transient-append-suffix 'magit-diff "t"
-        '("v" "Run vc-diff" magit-vc-diff))))
+      (transient-append-suffix 'magit-diff "p"
+        '("v" "Run vc-diff" sk-git-diff)))
+    (if (transient--layout-member "V" 'magit-diff)
+        (error "Layout conflict occured!")
+      (transient-append-suffix 'magit-diff "w"
+        '("V" "Save vc-diff" sk-save-git-diff))))
 
   (use-package expand-region
     :bind (("C-="   . er/expand-region))
