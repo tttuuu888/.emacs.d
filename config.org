@@ -547,6 +547,12 @@ Instead of using =custom.el=, insert the contents of the file directly here.
                (shell-quote-argument (read-passwd "Password? "))
                "| sudo -S "))
      cmd))
+
+  (defun get-clear-buffer (buffer)
+    "Return the buffer specified by BUFFER. BUFFER is always returned empty."
+    (with-current-buffer (get-buffer-create buffer)
+      (erase-buffer)
+      (current-buffer)))
 #+END_SRC
 
 ** Color setting
@@ -1832,18 +1838,18 @@ settings.
       (interactive)
       (if (not (magit-staged-files))
           (message "No staged files")
-        (shell-command "git diff --cached" (get-buffer-create "*git-diff*"))
+        (call-process "git" nil (get-clear-buffer "*git-diff*") nil
+                      "--no-pager" "diff" "--cached")
         (pop-to-buffer "*git-diff*")
+        (goto-char (point-min))
         (diff-mode)))
     (defun sk-save-git-diff (diff-file)
       "Save git-diff"
       (interactive "F")
       (if (not (magit-staged-files))
           (message "No staged files")
-        (shell-command "git diff --cached" (get-buffer-create "*git-diff*"))
-        (with-current-buffer "*git-diff*"
-          (write-region (point-min) (point-max) diff-file)
-          (kill-buffer))))
+        (call-process "git" nil `(:file ,diff-file) nil
+                      "--no-pager" "diff" "--cached")))
     (if (transient--layout-member "v" 'magit-diff)
         (error "Layout conflict occured!")
       (transient-append-suffix 'magit-diff "p"
