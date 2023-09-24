@@ -1825,8 +1825,7 @@ settings.
       "gs" 'magit-status
       "gd" 'magit-file-dispatch)
     :config
-    (setq magit-log-section-commit-count 5
-          magit-completing-read-function #'ivy-completing-read)
+    (setq magit-log-section-commit-count 5)
     (evil-leader/set-key-minor-mode 'with-editor-mode
       "ck" 'with-editor-cancel)
     (bind-key "<escape>" 'transient-quit-one transient-map)
@@ -1938,7 +1937,6 @@ settings.
            ("C-j"      . ivy-partial)
            ("TAB"      . ivy-alt-done))
     :init
-    (defalias 'completing-read 'ivy-completing-read)
     (evil-leader/set-key
       "b" 'ivy-switch-buffer)
     :config
