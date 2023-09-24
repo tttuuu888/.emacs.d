@@ -2034,8 +2034,8 @@ settings.
     :commands (counsel-find-dir-here
                counsel-fzf-here
                counsel--browse-history
-               my-counsel-fzf-here
                my-counsel-fzf
+               my-counsel-fzf-here
                my-counsel-switch-shell-buffer)
     :bind (("M-x"     . counsel-M-x)
            ("C-x d"   . counsel-find-file)
@@ -2079,6 +2079,10 @@ settings.
      'ivy-switch-buffer
      '(("d" ivy--kill-buffer-action "delete")))
 
+    (defun my-counsel-fzf ()
+      "Fzf on project root."
+      (interactive)
+      (counsel-fzf nil (sk-project-root)))
     (defun my-counsel-fzf-here ()
       "Fzf on current directory."
       (interactive)
@@ -2091,10 +2095,6 @@ settings.
                         (counsel--buffers-with-mode #'eshell-mode))
                 :action #'counsel--switch-to-shell
                 :caller 'ivy-switch-buffer))
-    (defun my-counsel-fzf ()
-      "Fzf on project root."
-      (interactive)
-      (counsel-fzf nil (sk-project-root)))
 
     (defun sk-compile-candidates ()
       (if-let ((sbin (find-file-in-tree default-directory ".sbin")))
