@@ -1,0 +1,4 @@
+# name: yesterday
+# key: dy
+# --
+`(format-time-string "%Y-%m-%d %A" (time-subtract (current-time) (* 24 3600)))`$0
