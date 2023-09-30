@@ -2688,6 +2688,7 @@ settings.
     :config
     (require 'projectile)
     (setq eglot-autoshutdown t
+          eglot-events-buffer-size 0
           eglot-server-programs
           (append
            `(((c++-mode c-mode) "ccls")
@@ -2698,6 +2699,7 @@ settings.
              (rust-mode "rust-analyzer"))
            eglot-server-programs)
           eglot-sync-connect 0)
+    (fset #'jsonrpc--log-event #'ignore)
     (defun my-find-python-project-root ()
       (find-file-in-tree default-directory '("setup.py" "requirements.txt") t))
     (defclass eglot-pyright (eglot-lsp-server) ()
