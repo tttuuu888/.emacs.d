@@ -1356,7 +1356,12 @@ settings.
       (while (my-org-has-child-p)
         (org-with-limited-levels (org-fold-show-children))
         (org-end-of-subtree)
-        (org-back-to-heading))))
+        (org-back-to-heading)))
+    (defun sk-org-tag-view-all ()
+      (interactive)
+      (let ((org-agenda-files
+             (directory-files-recursively my-org-path "^[^#.].*\.org$")))
+        (call-interactively 'org-tags-view))))
 
   (use-package ibuffer
     :ensure nil
