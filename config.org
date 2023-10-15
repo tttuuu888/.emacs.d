@@ -1360,7 +1360,8 @@ settings.
     (defun sk-org-tag-view-all ()
       (interactive)
       (let ((org-agenda-files
-             (directory-files-recursively my-org-path "^[^#.].*\.org$")))
+             (directory-files-recursively my-org-path "^[^#.].*\.org$"))
+            (recentf-exclude (list (concat my-org-path ".*"))))
         (call-interactively 'org-tags-view))))
 
   (use-package ibuffer
