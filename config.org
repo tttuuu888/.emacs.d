@@ -1748,8 +1748,8 @@ settings.
     :commands (helm-ag-project-or-here helm-ag-here)
     :init
     (evil-leader/set-key
-      "jp" 'helm-ag-project-or-here
-      "jP" 'helm-ag-here)
+      "jp" 'helm-ag-here
+      "jP" 'helm-ag-project-or-here)
     :config
     (require 'wgrep)
     (setq helm-ag-insert-at-point 'symbol
@@ -1767,20 +1767,14 @@ settings.
       (helm-do-ag default-directory)))
 
   (use-package helm-git-grep
-    :commands my-helm-git-grep-or-ag-here
     :init
     (evil-leader/set-key
-      "p" 'my-helm-git-grep-or-ag-here)
+      "p" 'helm-git-grep-at-point)
     :config
     (require 'wgrep)
     (setq helm-git-grep-candidate-number-limit 1000)
     (advice-add 'helm-git-grep-persistent-action :after
-                (lambda (&rest _) (which-func-update)))
-    (defun my-helm-git-grep-or-ag-here ()
-      (interactive)
-      (if (is-git-project)
-          (call-interactively 'helm-git-grep-at-point)
-        (call-interactively 'helm-ag-here))))
+                (lambda (&rest _) (which-func-update))))
 
   (use-package projectile
     :commands (sk-add-known-project
