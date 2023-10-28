@@ -1,5 +1,5 @@
 #+TITLE: SK Emacs configuration
-#+AUTHOR: SeungKi Kim
+#+AUTHOR: Seungki Kim
 #+EMAIL: tttuuu888@gmail.com
 #+PROPERTY: header-args :tangle yes
 

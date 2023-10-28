@@ -1,8 +1,8 @@
 ;;; company-sql.el --- Company mode backend for sql-mode -*- lexical-binding: t -*-
 
-;; Copyright (C) 2018 SeungKi Kim
+;; Copyright (C) 2018 Seungki Kim
 
-;; Author: SeungKi Kim <tttuuu888@gmail.com>
+;; Author: Seungki Kim <tttuuu888@gmail.com>
 ;; URL: https://github.com/tttuuu888/.emacs.d
 ;; Version: 0.2.0
 ;; Package-Requires: ((company "0.8.0"))
