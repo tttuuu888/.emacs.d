@@ -1738,9 +1738,12 @@ settings.
       "hr" 'helm-resume)
     :config
     (require 'helm-files)
-    (setq helm-imenu-execute-action-at-once-if-one nil
-          helm-split-window-default-side 'right
-          helm-show-completion-display-function nil)
+    (setq helm-allow-mouse nil
+          helm-always-two-windows nil
+          helm-imenu-execute-action-at-once-if-one nil
+          helm-show-action-window-other-window nil
+          helm-show-completion-display-function nil
+          helm-split-window-default-side 'right)
     (advice-add 'helm-occur-goto-line :after
                 (lambda (&rest _) (which-func-update))))
 
