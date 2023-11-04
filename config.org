@@ -1786,6 +1786,7 @@ settings.
            . (lambda () (local-set-key (kbd "M-o") 'sk-find-other-file)))
     :init
     (evil-leader/set-key
+      "jc" 'compile
       "jd" 'projectile-find-dir
       "jk" 'projectile-kill-buffers
       "jb" 'projectile-switch-to-buffer
