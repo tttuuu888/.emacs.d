@@ -1266,8 +1266,7 @@ settings.
       "cL"  'org-store-link
       "ee"  'org-edit-src-code
       "tc"  'org-table-create
-      "tl"  'org-tags-view
-      "ts"  'org-set-tags-command)
+      "tl"  'org-tags-view)
     (evil-leader/set-key-minor-mode 'org-src-mode
       "ec" 'org-edit-src-exit
       "eq" 'org-edit-src-abort)
