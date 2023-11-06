@@ -2145,14 +2145,18 @@ settings.
   (use-package prog-mode
     :ensure nil
     :config
-    (evil-leader/set-key (kbd "<DEL>") 'c-hungry-backspace)
+    (evil-leader/set-key (kbd "<DEL>") 'sk-hungry-backspace)
     (evil-define-key 'normal prog-mode-map
       "gd" 'xref-find-definitions
       "gp" 'xref-go-back
       "gr" 'xref-find-reference-here
       "g[" 'xref-go-back)
     (add-hook 'before-save-hook (lambda () (when (derived-mode-p 'prog-mode)
-                                             (delete-trailing-whitespace)))))
+                                             (delete-trailing-whitespace))))
+    (defun sk-hungry-backspace (n)
+      (interactive "p")
+      (call-interactively 'c-hungry-backspace)
+      (when n (insert " "))))
 
   (use-package elec-pair
     :ensure nil
