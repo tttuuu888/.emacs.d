@@ -1345,17 +1345,11 @@ settings.
                       (apply func (list source attributes info))
                     (apply #'org-html--embed-image
                            (list source attributes info)))))
-    (defun my-org-has-child-p ()
-      (save-excursion
-        (org-goto-first-child)))
     (defun org-goto-bottom-heading ()
       (interactive)
-      (org-end-of-subtree)
-      (org-back-to-heading)
-      (while (my-org-has-child-p)
-        (org-with-limited-levels (org-fold-show-children))
-        (org-end-of-subtree)
-        (org-back-to-heading)))
+      (goto-char (point-max))
+      (outline-previous-heading)
+      (org-show-context))
     (defun sk-org-tag-view-all ()
       (interactive)
       (let ((org-agenda-files
