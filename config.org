@@ -843,16 +843,6 @@ settings.
       (add-to-list 'company-backends 'company-sql)))
 
   ;;; Built-in packages
-  (use-package korea-util
-    :disabled
-    :ensure nil
-    :bind (("C-\\" . toggle-korean-input-method)
-           :map isearch-mode-map
-           ("C-\\" . isearch-toggle-korean-input-method))
-    :init
-    (setq default-korean-keyboard "3")
-    (setup-korean-environment-internal))
-
   (use-package recentf
     :ensure nil
     :custom (recentf-max-saved-items 100)
@@ -2490,10 +2480,6 @@ settings.
       "z"  'cider-switch-to-last-clojure-buffer
       "cs" 'cider-repl-set-ns))
 
-  (use-package clj-refactor
-    :disabled t
-    :mode ("\\.clj\\'" . clojure-mode))
-
   (use-package sly
     :init
     (setq inferior-lisp-program "sbcl")
@@ -2565,20 +2551,6 @@ settings.
     :config
     (setq js2-basic-offset 2)
     (add-hook 'js2-mode-hook 'js2-imenu-extras-mode))
-
-  (use-package js2-refactor
-    :disabled t
-    :config
-    (js2r-add-keybindings-with-prefix "C-c C-n"))
-
-  (use-package rjsx-mode
-    :disabled
-    :mode ("components\\/.*\\.js\\'" . rjsx-mode)
-    :hook (find-file
-           . (lambda ()
-               (and (string-match "\\.js\\'" buffer-file-name)
-                    (find-file-in-tree default-directory "next.config.js" t)
-                    (rjsx-mode)))))
 
   (use-package emmet-mode
     :hook ((web-mode js2-mode css-mode) . emmet-mode))
