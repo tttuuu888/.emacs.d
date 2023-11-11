@@ -2792,4 +2792,6 @@ Make =config.el= available to load by =require=.
 
 #+BEGIN_SRC emacs-lisp
   (provide 'config)
+
+  ;;; config.el ends here
 #+END_SRC
