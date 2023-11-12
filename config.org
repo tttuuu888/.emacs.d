@@ -2796,8 +2796,9 @@ settings.
 
   (use-package janet-mode
     :config
+    (sk-switch-buffer-repl sk-janet-buffer-repl-toggle
+      janet-mode inf-janet-mode inf-janet)
     (evil-leader/set-key-for-mode 'janet-mode
-      "z"  'inf-janet
       "eb" 'inf-janet-eval-buffer
       "ee" 'sk-janet-eval
       "ef" 'inf-janet-eval-defun
