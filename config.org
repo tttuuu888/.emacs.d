@@ -2400,8 +2400,8 @@ settings.
           '(irony-cdb-clang-complete irony-cdb-libclang)))
 
   (use-package paredit
-    :hook ((clojure-mode cider-repl-mode emacs-lisp-mode inferior-scheme-mode
-                         lisp-mode scheme-mode sly-mrepl-mode)
+    :hook ((clojure-mode cider-repl-mode emacs-lisp-mode janet-mode
+                         lisp-mode scheme-mode)
            . enable-paredit-mode)
     :bind (:map paredit-mode-map
             ("M-b" . paredit-backward)
