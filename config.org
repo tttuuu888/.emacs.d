@@ -2792,6 +2792,25 @@ settings.
       "ee" 'inf-elixir-send-line-or-region
       "em" 'inf-elixir-compile-and-load-module
       "er" 'inf-elixir-send-region))
+
+
+  (use-package janet-mode
+    :config
+    (evil-leader/set-key-for-mode 'janet-mode
+      "z"  'inf-janet
+      "eb" 'inf-janet-eval-buffer
+      "ee" 'sk-janet-eval
+      "ef" 'inf-janet-eval-defun
+      "er" 'inf-janet-send-region))
+
+  (use-package inf-janet
+    :init
+    (github-install "velkyel/inf-janet")
+    :commands (sk-janet-eval inf-janet-eval-line-or-region)
+    :config
+    (sk-define-lisp-eval sk-janet-eval inf-janet-eval-region)
+    (evil-leader/set-key-for-mode 'inf-janet-mode
+      "l" 'my-comint-history))
 #+END_SRC
 * End
 ** Provide a feature
