@@ -553,6 +553,13 @@ Instead of using =custom.el=, insert the contents of the file directly here.
     (with-current-buffer (get-buffer-create buffer)
       (erase-buffer)
       (current-buffer)))
+
+  (defun github-install (repo)
+    (let ((vc-handled-backends '(Git))
+          (url (format "https://www.github.com/%s" repo))
+          (package (intern (file-name-base repo))))
+      (unless (package-installed-p package)
+        (package-vc-install url))))
 #+END_SRC
 
 ** Color setting
