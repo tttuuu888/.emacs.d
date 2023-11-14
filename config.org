@@ -121,6 +121,13 @@ Instead of using =custom.el=, insert the contents of the file directly here.
   (defvar sk-project-root-files
     '(".projectile" ".git"
       "CMakeLists.txt" "Makefile" "GTAGS"))
+
+  ;;; Basic variables that do not belong to any package
+  (setq paragraph-start
+        (rx (or "\f"
+                (and (* space) eol)
+                (and (* space) (any "-+*") space)
+                (and (* space) (1+ (any num)) (or "." ")") space))))
 #+end_src
 
 ** Custom macros
