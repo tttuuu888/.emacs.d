@@ -531,7 +531,8 @@ Instead of using =custom.el=, insert the contents of the file directly here.
     "Upgrade all packages without asking the user."
     (interactive)
     (package-refresh-contents)
-    (let* ((upgradeable (package--upgradeable-packages))
+    (let* ((vc-handled-backends '(Git))
+           (upgradeable (package--upgradeable-packages))
            (pkg-cnt (length upgradeable)))
       (if (not upgradeable)
           (message "No packages to upgrade")
@@ -1536,9 +1537,12 @@ settings.
       (kbd "RET") 'my-comint-return))
 
   (use-package package
+    :ensure nil)
+
+  (use-package package-vc
     :ensure nil
-    :init
-    (sk-defer-init (package-read-all-archive-contents)))
+    :config
+    (remove-hook 'package-read-archive-hook 'package-vc--read-archive-data))
 
   (use-package diff-mode
     :ensure nil
