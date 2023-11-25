@@ -1541,7 +1541,9 @@ settings.
     (evil-define-key 'normal comint-mode-map
       "gj" 'comint-next-prompt
       "gk" 'comint-previous-prompt
-      (kbd "RET") 'my-comint-return))
+      (kbd "RET") 'my-comint-return)
+    (evil-define-key 'insert comint-mode-map
+      (kbd "RET") 'comint-send-input))
 
   (use-package package
     :ensure nil)
@@ -2411,9 +2413,10 @@ settings.
           '(irony-cdb-clang-complete irony-cdb-libclang)))
 
   (use-package paredit
-    :hook ((clojure-mode cider-repl-mode emacs-lisp-mode janet-mode
-                         lisp-mode scheme-mode)
-           . enable-paredit-mode)
+    :hook ((emacs-lisp-mode
+            clojure-mode cider-repl-mode janet-mode inf-janet-mode
+            lisp-mode scheme-mode)
+     . enable-paredit-mode)
     :bind (:map paredit-mode-map
             ("M-b" . paredit-backward)
             ("M-f" . paredit-forward)
