@@ -711,12 +711,19 @@ settings.
         (define-key evil-emacs-state-local-map sub-leader map)))
     (add-hook 'evil-local-mode-hook 'evil-sub-leader-mode t)
     (defun evil-leader/set-key-minor-mode (mode key def &rest bindings)
-      (declare (indent defun))
       (while key
         (let ((k1 (kbd (concat evil-leader/leader key)))
               (k2 (kbd (concat sk-evil-sub-leader " " key))))
           (evil-define-minor-mode-key 'motion mode k1 def)
           (evil-define-minor-mode-key '(motion insert emacs) mode k2 def))
+        (setq key (pop bindings)
+              def (pop bindings))))
+    (defun evil-leader/set-key-for-map (map key def &rest bindings)
+      (while key
+        (let ((k1 (kbd (concat evil-leader/leader key)))
+              (k2 (kbd (concat sk-evil-sub-leader " " key))))
+          (evil-define-key* 'motion map k1 def)
+          (define-key map k2 def))
         (setq key (pop bindings)
               def (pop bindings))))
     (setq evil-leader/no-prefix-mode-rx
