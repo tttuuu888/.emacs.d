@@ -1413,10 +1413,7 @@ settings.
     :init
     (evil-leader/set-key
       "sc" 'shell-command
-      "ss" 'shell)
-    :config
-    (evil-leader/set-key-for-mode 'shell-mode
-      "l"  'my-comint-history))
+      "ss" 'shell))
 
   (use-package eshell
     :ensure nil
@@ -1543,7 +1540,7 @@ settings.
       (interactive)
       (evil-goto-line)
       (evil-append-line 1))
-    (evil-leader/set-key-for-mode 'comint-mode
+    (evil-leader/set-key-for-map comint-mode-map
       "l"  'my-comint-history)
     (evil-define-key 'normal comint-mode-map
       "gj" 'comint-next-prompt
@@ -2236,7 +2233,6 @@ settings.
         (comint-send-string process (thing-at-point 'line)))
       (move-beginning-of-line 2))
     (evil-leader/set-key-for-mode 'inferior-python-mode
-      "l"  'my-comint-history
       "cd" 'python-describe-at-point
       "ch" 'my-python-help-repl)
     (evil-leader/set-key-for-mode 'python-mode
@@ -2278,8 +2274,6 @@ settings.
       (bind-keys :map (symbol-value mm)
                  ("j" . next-line)
                  ("k" . previous-line)))
-    (evil-leader/set-key-for-mode 'gud-mode
-      "l"  'my-comint-history)
     (evil-leader/set-key-minor-mode 'gdb-many-windows
       "ab" 'gud-break
       "ad" 'gud-remove
@@ -2342,12 +2336,6 @@ settings.
     :ensure nil
     :custom (emacs-lisp-docstring-fill-column 80))
 
-  (use-package sql
-    :ensure nil
-    :config
-    (evil-leader/set-key-for-mode 'sql-interactive-mode
-      "l" 'my-comint-history))
-
   (use-package cc-mode
     :ensure nil
     :mode (("\\.aidl\\'" . java-mode)
@@ -2384,9 +2372,7 @@ settings.
       "eb" 'scheme-send-buffer
       "ee" 'sk-scheme-eval
       "ef" 'scheme-send-definition
-      "er" 'scheme-send-region)
-    (evil-leader/set-key-for-mode 'inferior-scheme-mode
-      "l" 'my-comint-history))
+      "er" 'scheme-send-region))
 
   (use-package project
     :ensure nil
@@ -2779,9 +2765,7 @@ settings.
                 (load-module (format "r %s\n" module)))
           (with-current-buffer buffer
             (comint-send-string buffer compile-file)
-            (comint-send-string buffer load-module))))
-    (evil-leader/set-key-for-mode 'inf-elixir-mode
-      "l" 'my-comint-history))
+            (comint-send-string buffer load-module)))))
 
   (use-package elixir-mode
     :config
@@ -2829,9 +2813,7 @@ settings.
     (github-install "velkyel/inf-janet")
     :commands (sk-janet-eval inf-janet-eval-line-or-region)
     :config
-    (sk-define-lisp-eval sk-janet-eval inf-janet-eval-region)
-    (evil-leader/set-key-for-mode 'inf-janet-mode
-      "l" 'my-comint-history))
+    (sk-define-lisp-eval sk-janet-eval inf-janet-eval-region))
 #+END_SRC
 * End
 ** Provide a feature
