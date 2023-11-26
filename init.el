@@ -13,3 +13,5 @@
     (org-babel-tangle-file config-org))
 
   (require 'config config-el))
+
+;;; init.el ends here
