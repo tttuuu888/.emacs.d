@@ -98,6 +98,10 @@ Instead of using =custom.el=, insert the contents of the file directly here.
    '(major-mode 'text-mode)
    '(make-backup-files nil)
    '(mouse-wheel-progressive-speed nil)
+   '(paragraph-start (rx (or "\f"
+                             (and (* space) eol)
+                             (and (* space) (any "-+*") space)
+                             (and (* space) (1+ (any num)) (or "." ")") space))))
    '(password-cache-expiry 900)
    '(safe-local-variable-values '((c-default-style . "linux")
                                   (indent-tabs-mode . t)
@@ -122,12 +126,6 @@ Instead of using =custom.el=, insert the contents of the file directly here.
     '(".projectile" ".git"
       "CMakeLists.txt" "Makefile" "GTAGS"))
 
-  ;;; Basic variables that do not belong to any package
-  (setq paragraph-start
-        (rx (or "\f"
-                (and (* space) eol)
-                (and (* space) (any "-+*") space)
-                (and (* space) (1+ (any num)) (or "." ")") space))))
 #+end_src
 
 ** Custom macros
