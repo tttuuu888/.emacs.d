@@ -565,6 +565,20 @@ Instead of using =custom.el=, insert the contents of the file directly here.
           (package (intern (file-name-base repo))))
       (unless (package-installed-p package)
         (package-vc-install url))))
+
+  (defun sk-git-diff-relative ()
+    "Run git diff with --relative option."
+    (interactive)
+    (if (zerop
+         (call-process "git" nil (get-clear-buffer "*git-diff*") nil
+                       "--no-pager" "diff" "--relative"
+                       "--cached"))
+        (progn
+          (pop-to-buffer "*git-diff*")
+          (goto-char (point-min))
+          (diff-mode))
+      (kill-buffer "*git-diff*")
+      (message "Running git diff failed.")))
 #+END_SRC
 
 ** Color setting
