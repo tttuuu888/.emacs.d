@@ -711,7 +711,7 @@ settings.
       "st" 'tmux-new-pane-here
       "hk" 'describe-key
       "hm" 'describe-mode
-      "xr" 'read-only-mode
+      "xq" 'read-only-mode
       "xv" 'evil-reload-file)
     (defun evil-sub-leader-mode ()
       (let* ((sub-leader (kbd sk-evil-sub-leader))
