@@ -1634,7 +1634,38 @@ settings.
       (TeX-command "LaTeX" 'TeX-master-file)))
 
   (use-package bookmark
-    :custom (bookmark-set-fringe-mark nil))
+    :ensure nil
+    :custom (bookmark-set-fringe-mark nil)
+    :init
+    (evil-leader/set-key
+      "xrb" 'bookmark-jump
+      "xrl" 'bookmark-bmenu-list
+      "xrm" 'bookmark-set))
+
+  (use-package register
+    :ensure nil
+    :config
+    (evil-leader/set-key
+      "xr <SPC>" 'point-to-register
+      "xrg" 'insert-register
+      "xri" 'insert-register
+      "xrj" 'jump-to-register
+      "xrk" 'kill-rectangle
+      "xrn" 'number-to-register
+      "xrr" 'copy-rectangle-to-register
+      "xrs" 'copy-to-register
+      "xrw" 'window-configuration-to-register
+      "xrx" 'copy-to-register))
+
+  (use-package rect
+    :ensure nil
+    :config
+    (evil-leader/set-key
+      "xrc" 'clear-rectangle
+      "xrd" 'delete-rectangle
+      "xro" 'open-rectangle
+      "xrt" 'string-rectangle
+      "xry" 'yank-rectangle))
 #+END_SRC
 * General packages - external
 #+BEGIN_SRC emacs-lisp
