@@ -2720,6 +2720,10 @@ settings.
     (require 'projectile)
     (setq eglot-autoshutdown t
           eglot-events-buffer-size 0
+          eglot-ignored-server-capabilities
+          '(:documentHighlightProvider
+            :documentSymbolProvider
+            :signatureHelpProvider)
           eglot-server-programs
           (append
            `(((c++-mode c-mode) "ccls")
