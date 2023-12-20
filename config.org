@@ -1859,7 +1859,10 @@ settings.
     (defalias 'sk-remove-known-project 'projectile-remove-known-project)
     (defalias 'projectile-project-root 'sk-project-root))
 
-  (use-package markdown-mode)
+  (use-package markdown-mode
+    :config
+    (set-face-background 'markdown-line-break-face (face-background 'default))
+    (set-face-underline 'markdown-line-break-face nil))
 
   (use-package markdown-toc)
 
