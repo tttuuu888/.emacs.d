@@ -2727,8 +2727,7 @@ settings.
             :signatureHelpProvider)
           eglot-server-programs
           (append
-           `(((c++-mode c-mode) "ccls")
-             (elixir-mode ,(expand-file-name "elixir-ls/language_server.sh"
+           `((elixir-mode ,(expand-file-name "elixir-ls/language_server.sh"
                                              user-emacs-directory))
              (python-mode
               . (eglot-pyright . ("pyright-langserver" "--stdio")))
