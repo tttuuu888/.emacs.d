@@ -2723,6 +2723,7 @@ settings.
           eglot-ignored-server-capabilities
           '(:documentHighlightProvider
             :documentSymbolProvider
+            :inlayHintProvider
             :signatureHelpProvider)
           eglot-server-programs
           (append
