@@ -318,33 +318,6 @@ Instead of using =custom.el=, insert the contents of the file directly here.
       (call-process "tmux" nil nil nil "new-window")
       (message "New tmux pane is opened.")))
 
-  (defun get-week-form (&optional offset date)
-    "Create a string with the week number and the date range of the week. OFFSET
-  is a integer number indicating offset from today. DATE is a list in a form
-  of (month day year). OFFSET is ignored if DATE is provided."
-    (require 'cal-iso)
-    (let* ((d (calendar-absolute-from-gregorian
-               (or date (calendar-current-date offset))))
-           (day (% d 7))
-           (week-number (car (calendar-iso-from-absolute d)))
-           (monday (calendar-gregorian-from-absolute (- d (- day 1))))
-           (friday (calendar-gregorian-from-absolute (+ d (- 5 day))))
-           (month-of-monday (format "%2d월 " (car monday)))
-           (month-of-friday (if (equal (car monday) (car friday))
-                                ""
-                              (format "%2d월 " (car friday))))
-           (start (format "%s%2d일" month-of-monday (nth 1 monday)))
-           (end (format "%s%2d일" month-of-friday (nth 1 friday))))
-      (format "%2d주차  %s ~ %s" week-number start end)))
-
-  (defun sk-insert-current-week-form ()
-    (interactive)
-    (insert (get-week-form)))
-
-  (defun sk-insert-next-week-form ()
-    (interactive)
-    (insert (get-week-form 7)))
-
   (defun git-tracked-file-p (&optional file-name)
     (let ((file (or file-name buffer-file-name)))
       (and file
