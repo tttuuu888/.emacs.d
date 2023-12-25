@@ -466,12 +466,6 @@ Instead of using =custom.el=, insert the contents of the file directly here.
   (defun is-git-project ()
     (= 0 (call-process "git" nil nil nil "rev-parse" "--is-inside-work-tree")))
 
-  (defun my-today ()
-    (format-time-string "%Y-%m-%d %A"))
-
-  (defun my-tomorrow ()
-    (format-time-string "%Y-%m-%d %A" (time-add (current-time) (* 24 3600))))
-
   (let* ((origin-height (face-attribute 'default :height))
          (big-height (round (* origin-height 1.5)))
          (big-font nil))
