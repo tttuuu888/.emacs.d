@@ -2771,18 +2771,19 @@ settings.
 
   (use-package janet-mode
     :config
+    (require 'inf-janet)
     (sk-switch-buffer-repl sk-janet-buffer-repl-toggle
       janet-mode inf-janet-mode inf-janet)
     (evil-leader/set-key-for-mode 'janet-mode
       "eb" 'inf-janet-eval-buffer
       "ee" 'sk-janet-eval
       "ef" 'inf-janet-eval-defun
-      "er" 'inf-janet-send-region))
+      "er" 'inf-janet-eval-region))
 
   (use-package inf-janet
     :ensure nil
     :load-path (lambda () (expand-file-name "inf-janet/" emacs-etc-dir))
-    :commands (sk-janet-eval inf-janet-eval-line-or-region)
+    :commands (sk-janet-eval)
     :config
     (sk-define-lisp-eval sk-janet-eval inf-janet-eval-region))
 #+END_SRC
