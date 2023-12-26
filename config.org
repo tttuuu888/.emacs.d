@@ -891,7 +891,7 @@ settings.
     :init
     (add-to-list 'magic-mode-alist
                  '((lambda () (< large-file-warning-threshold (buffer-size)))
-                   . fundamental-mode))
+                   . text-mode))
     :config
     (require 'dired-aux)
     (require 'dired-x)
