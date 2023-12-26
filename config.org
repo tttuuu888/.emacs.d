@@ -738,13 +738,13 @@ settings.
               (lambda () (when buffer-read-only (read-only-mode -1))))
     (add-hook 'isearch-mode-hook
               (lambda (&rest _)
-                (remove-hook 'input-method-activate-hook
-                             'evil-activate-input-method t)))
+                (evil-put-property
+                 'evil-state-properties 'normal :input-method t)))
     (add-hook 'isearch-mode-end-hook
               (lambda (&rest _)
-                (deactivate-input-method)
-                (add-hook 'input-method-activate-hook
-                          'evil-activate-input-method nil t)))
+                (when current-input-method (toggle-input-method))
+                (evil-put-property
+                 'evil-state-properties 'normal :input-method nil)))
     (defun evil-reload-file ()
       (interactive)
       (let ((p (point)))
