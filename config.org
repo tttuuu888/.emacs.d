@@ -480,25 +480,6 @@ Instead of using =custom.el=, insert the contents of the file directly here.
     (interactive "DDir 1 : \nDDir 2 : ")
     (start-process "meld" nil "meld" dir1 dir2))
 
-  (defun get-github-latest-release-info (owner repo)
-    (json-parse-string
-     (with-temp-buffer
-       (url-insert-file-contents
-        (format "https://api.github.com/repos/%s/%s/releases/latest"
-                owner repo))
-       (buffer-string))))
-
-  (defun get-github-latest-release-version (owner repo &optional release-info)
-    (gethash "tag_name"
-             (or release-info
-                 (get-github-latest-release-info owner repo))))
-
-  (defun download-github-release-package (owner repo ver name target)
-    (url-copy-file
-     (format "https://github.com/%s/%s/releases/download/%s/%s"
-             owner repo ver name)
-     target))
-
   (defun sk-package-upgrade-all ()
     "Upgrade all packages without asking the user."
     (interactive)
@@ -2697,8 +2678,7 @@ settings.
             :signatureHelpProvider)
           eglot-server-programs
           (append
-           `((elixir-mode ,(expand-file-name "elixir-ls/language_server.sh"
-                                             user-emacs-directory))
+           `((elixir-mode "elixir-ls")
              (python-mode
               . (eglot-pyright . ("pyright-langserver" "--stdio")))
              (rust-mode "rust-analyzer"))
@@ -2788,26 +2768,6 @@ settings.
 
   (use-package elixir-mode
     :config
-    (defun install-latest-elixir-ls ()
-      (interactive)
-      (let* ((target-dir (expand-file-name "elixir-ls/" user-emacs-directory))
-             (ver-file (expand-file-name "VERSION" target-dir))
-             (owner "elixir-lsp")
-             (repo "elixir-ls")
-             (info (get-github-latest-release-info owner repo))
-             (ver (get-github-latest-release-version owner repo info))
-             (zip (format "/tmp/%s.zip" (make-temp-name "elixir-ls-"))))
-        (if (and (file-exists-p ver-file)
-                 (string-equal ver (file-to-string ver-file)))
-            (message "Latest Elixir LSP(%s) is already installed." ver)
-          (save-window-excursion
-            (delete-directory target-dir t)
-            (download-github-release-package
-             owner repo ver (concat "elixir-ls-" ver ".zip") zip)
-            (shell-command (format "unzip %s -d %s" zip target-dir))
-            (write-region ver nil ver-file)
-            (delete-file zip)
-            (message "Elixir LSP(%s) is installed." ver)))))
     (sk-switch-buffer-repl sk-elixir-buffer-iex-toggle
       elixir-mode inf-elixir-mode run-iex)
     (evil-leader/set-key-for-mode 'elixir-mode
@@ -2815,7 +2775,6 @@ settings.
       "ee" 'inf-elixir-send-line-or-region
       "em" 'inf-elixir-compile-and-load-module
       "er" 'inf-elixir-send-region))
-
 
   (use-package janet-mode
     :config
