@@ -507,13 +507,6 @@ Instead of using =custom.el=, insert the contents of the file directly here.
       (erase-buffer)
       (current-buffer)))
 
-  (defun github-install (repo)
-    (let ((vc-handled-backends '(Git))
-          (url (format "https://www.github.com/%s" repo))
-          (package (intern (file-name-base repo))))
-      (unless (package-installed-p package)
-        (package-vc-install url))))
-
   (defun sk-git-diff-relative ()
     "Run git diff with --relative option."
     (interactive)
@@ -2787,8 +2780,8 @@ settings.
       "er" 'inf-janet-send-region))
 
   (use-package inf-janet
-    :init
-    (github-install "velkyel/inf-janet")
+    :ensure nil
+    :load-path (lambda () (expand-file-name "inf-janet/" emacs-etc-dir))
     :commands (sk-janet-eval inf-janet-eval-line-or-region)
     :config
     (sk-define-lisp-eval sk-janet-eval inf-janet-eval-region))
