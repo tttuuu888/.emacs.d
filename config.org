@@ -306,36 +306,6 @@ Instead of using =custom.el=, insert the contents of the file directly here.
       (window-configuration-to-register num)
       (message "Windows are saved to F%d" num)))
 
-  (defun tmux-running-p ()
-    "Check if tmux is currently running or not."
-    (zerop (call-process "tmux" nil nil nil "has-session")))
-
-  (defun tmux-new-pane-here ()
-    "Open tmux pane of the current path."
-    (interactive)
-    (if (not (tmux-running-p))
-        (message "Tmux is not running!")
-      (call-process "tmux" nil nil nil "new-window")
-      (message "New tmux pane is opened.")))
-
-  (defun git-tracked-file-p (&optional file-name)
-    (let ((file (or file-name buffer-file-name)))
-      (and file
-           (file-exists-p file)
-           (zerop (process-file "git" nil nil nil
-                                "ls-files" "--error-unmatch"
-                                (file-name-nondirectory file))))))
-
-  (defun git-branch-of-file (file)
-    (when (git-tracked-file-p file)
-      (let* ((default-directory (file-name-directory file))
-             (branch (shell-command-to-string "git branch --show-current"))
-             (hash (when (equal branch "")
-                     (shell-command-to-string "git rev-parse HEAD"))))
-        (if hash
-            (substring hash 0 7)
-          (string-trim-right branch)))))
-
   (defun sk-C-c-map-to-leader-c-map (mode mode-map &optional exceptions)
     "Change C-c ... key map to <leader> c... key map, except EXCEPTIONS list"
     (let* ((ret nil)
@@ -357,6 +327,42 @@ Instead of using =custom.el=, insert the contents of the file directly here.
                        (cl-some (lambda (e) (string-prefix-p e key)) exceptions))
             (evil-leader/set-key-for-mode mode key (cdr e)))))))
 
+  (defun tmux-running-p ()
+    "Check if tmux is currently running or not."
+    (zerop (call-process "tmux" nil nil nil "has-session")))
+
+  (defun tmux-new-pane-here ()
+    "Open tmux pane of the current path."
+    (interactive)
+    (if (not (tmux-running-p))
+        (message "Tmux is not running!")
+      (call-process "tmux" nil nil nil "new-window")
+      (message "New tmux pane is opened.")))
+
+  (defun sk-project-root (&optional dir)
+    (find-file-in-tree (or dir default-directory) sk-project-root-files t))
+
+  (defun is-git-project ()
+    (= 0 (call-process "git" nil nil nil "rev-parse" "--is-inside-work-tree")))
+
+  (defun git-tracked-file-p (&optional file-name)
+    (let ((file (or file-name buffer-file-name)))
+      (and file
+           (file-exists-p file)
+           (zerop (process-file "git" nil nil nil
+                                "ls-files" "--error-unmatch"
+                                (file-name-nondirectory file))))))
+
+  (defun git-branch-of-file (file)
+    (when (git-tracked-file-p file)
+      (let* ((default-directory (file-name-directory file))
+             (branch (shell-command-to-string "git branch --show-current"))
+             (hash (when (equal branch "")
+                     (shell-command-to-string "git rev-parse HEAD"))))
+        (if hash
+            (substring hash 0 7)
+          (string-trim-right branch)))))
+
   (defun my-get-git-root-dir ()
     (let* ((ret (shell-command-to-string "git rev-parse --show-toplevel"))
            (root (substring ret 0 (1- (length ret)))))
@@ -369,6 +375,20 @@ Instead of using =custom.el=, insert the contents of the file directly here.
              (ret (shell-command-to-string
                    (concat "git ls-files|grep -E '" regex "'"))))
         (split-string ret))))
+
+  (defun sk-git-diff-relative ()
+    "Run git diff with --relative option."
+    (interactive)
+    (if (zerop
+         (call-process "git" nil (get-clear-buffer "*git-diff*") nil
+                       "--no-pager" "diff" "--relative"
+                       "--cached"))
+        (progn
+          (pop-to-buffer "*git-diff*")
+          (goto-char (point-min))
+          (diff-mode))
+      (kill-buffer "*git-diff*")
+      (message "Running git diff failed.")))
 
   (defun my-find-file-in-dir (regex &optional dir)
     (let* ((default-directory (or (and dir (file-truename dir))
@@ -459,12 +479,6 @@ Instead of using =custom.el=, insert the contents of the file directly here.
       (when online (delete-file target))
       (or content "")))
 
-  (defun sk-project-root (&optional dir)
-    (find-file-in-tree (or dir default-directory) sk-project-root-files t))
-
-  (defun is-git-project ()
-    (= 0 (call-process "git" nil nil nil "rev-parse" "--is-inside-work-tree")))
-
   (let* ((origin-height (face-attribute 'default :height))
          (big-height (round (* origin-height 1.5)))
          (big-font nil))
@@ -505,20 +519,6 @@ Instead of using =custom.el=, insert the contents of the file directly here.
     (with-current-buffer (get-buffer-create buffer)
       (erase-buffer)
       (current-buffer)))
-
-  (defun sk-git-diff-relative ()
-    "Run git diff with --relative option."
-    (interactive)
-    (if (zerop
-         (call-process "git" nil (get-clear-buffer "*git-diff*") nil
-                       "--no-pager" "diff" "--relative"
-                       "--cached"))
-        (progn
-          (pop-to-buffer "*git-diff*")
-          (goto-char (point-min))
-          (diff-mode))
-      (kill-buffer "*git-diff*")
-      (message "Running git diff failed.")))
 #+END_SRC
 
 ** Color setting
