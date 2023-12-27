@@ -410,7 +410,7 @@ Instead of using =custom.el=, insert the contents of the file directly here.
               (others (or (my-find-file-in-dir regex)
                           (and (setq root (my-get-git-root-dir))
                                (my-find-file-in-git-project regex root)))))
-        (if (= (length others) 1)
+        (if (length= others 1)
             (find-file (expand-file-name (car others) root))
           (ivy-read "Switch to: " others
                     :action (lambda (file)
