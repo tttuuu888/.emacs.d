@@ -365,17 +365,16 @@ Instead of using =custom.el=, insert the contents of the file directly here.
 
   (defun my-find-file-in-git-project (regex root)
     (when (file-exists-p (expand-file-name ".git" root))
-      (let* ((default-directory root)
+      (let* ((default-directory (file-truename root))
              (ret (shell-command-to-string
                    (concat "git ls-files|grep -E '" regex "'"))))
-        (unless (string= ret "")
-          (split-string (substring ret 0 (1- (length ret))))))))
+        (split-string ret))))
 
   (defun my-find-file-in-dir (regex &optional dir)
-    (let* ((default-directory (or dir default-directory))
+    (let* ((default-directory (or (and dir (file-truename dir))
+                                  default-directory))
            (ret (shell-command-to-string (concat "ls|grep -E '" regex "'"))))
-      (unless (string= ret "")
-        (split-string (substring ret 0 (1- (length ret)))))))
+      (split-string ret)))
 
   (defun my-find-other-file ()
     "Switch betwen .c|.cpp and .h|.hpp files in project."
