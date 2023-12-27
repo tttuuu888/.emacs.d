@@ -342,7 +342,7 @@ Instead of using =custom.el=, insert the contents of the file directly here.
   (defun sk-project-root (&optional dir)
     (find-file-in-tree (or dir default-directory) sk-project-root-files t))
 
-  (defun is-git-project ()
+  (defun git-project-p ()
     (zerop (call-process "git" nil nil nil "rev-parse" "--is-inside-work-tree")))
 
   (defun git-tracked-file-p (&optional file-name)
