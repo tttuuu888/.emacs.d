@@ -364,8 +364,8 @@ Instead of using =custom.el=, insert the contents of the file directly here.
           (string-trim-right branch)))))
 
   (defun my-get-git-root-dir ()
-    (let* ((ret (shell-command-to-string "git rev-parse --show-toplevel"))
-           (root (substring ret 0 (1- (length ret)))))
+    (let ((root (string-trim-right
+                 (shell-command-to-string "git rev-parse --show-toplevel"))))
       (when (file-exists-p root)
         root)))
 
