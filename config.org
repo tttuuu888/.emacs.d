@@ -334,7 +334,7 @@ Instead of using =custom.el=, insert the contents of the file directly here.
                      (shell-command-to-string "git rev-parse HEAD"))))
         (if hash
             (substring hash 0 7)
-          (substring branch 0 (1- (length branch)))))))
+          (string-trim-right branch)))))
 
   (defun sk-C-c-map-to-leader-c-map (mode mode-map &optional exceptions)
     "Change C-c ... key map to <leader> c... key map, except EXCEPTIONS list"
