@@ -1527,6 +1527,7 @@ settings.
     (put 'sk-vc-mode 'permanent-local t)
     (add-hook 'find-file-hook #'sk-vc-refresh-state)
     (remove-hook 'find-file-hook #'vc-refresh-state)
+    (defun vc-refresh-state () nil)
     (defun sk-vc-refresh-state ()
       (setq sk-vc-mode (git-branch-of-file (buffer-file-name)))))
 
