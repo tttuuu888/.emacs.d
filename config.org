@@ -1522,14 +1522,12 @@ settings.
     (vc-follow-symlinks nil)
     (vc-handled-backends nil)
     :init
-    (put 'sk-vc-mode 'risky-local-variable t)
     (make-variable-buffer-local 'sk-vc-mode)
+    (put 'sk-vc-mode 'risky-local-variable t)
     (put 'sk-vc-mode 'permanent-local t)
-    (add-hook 'find-file-hook #'sk-vc-refresh-state)
-    (remove-hook 'find-file-hook #'vc-refresh-state)
-    (defun vc-refresh-state () nil)
     (defun sk-vc-refresh-state ()
-      (setq sk-vc-mode (git-branch-of-file (buffer-file-name)))))
+      (setq sk-vc-mode (git-branch-of-file (buffer-file-name))))
+    (defalias 'vc-refresh-state 'sk-vc-refresh-state))
 
   (use-package tex-mode
     :ensure nil
