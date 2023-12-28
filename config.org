@@ -223,19 +223,23 @@ Instead of using =custom.el=, insert the contents of the file directly here.
   (defun find-file-in-tree (dir files &optional return-only-dir)
     "Find first matching file of FILES up to HOME or ROOT folder.
   FILES can be a file name string or list of files."
-    (unless (or (not dir) (equal dir "~/") (equal dir "/"))
-      (let* ((files (ensure-list files))
-             (file (cl-find-if
-                    (lambda (f) (file-exists-p (expand-file-name f dir)))
-                    files))
-             (parent (file-name-directory (directory-file-name dir))))
-        (cond (file
-               (cond (return-only-dir (file-truename dir))
-                     ((file-directory-p file)
-                      (file-name-as-directory (expand-file-name file dir)))
-                     (t (expand-file-name file dir))))
-              (parent (find-file-in-tree parent files return-only-dir))
-              (t nil)))))
+    (let ((default-directory (file-name-as-directory (expand-file-name dir)))
+          (files (ensure-list files))
+          (home (expand-file-name "~/"))
+          (root "/"))
+      (cl-loop for file = (cl-find-if (lambda (f) (file-exists-p f)) files)
+               if file return (let ((file (expand-file-name file)))
+                                (cond (return-only-dir default-directory)
+                                      ((file-directory-p file)
+                                       (file-name-as-directory file))
+                                      (t file)))
+               else if (or (not (file-exists-p default-directory))
+                           (equal default-directory home)
+                           (equal default-directory root))
+               return nil
+               else do (setq default-directory
+                             (file-name-directory
+                              (directory-file-name default-directory))))))
 
   (defun sk-sbin-dired ()
     (interactive)
