@@ -1162,6 +1162,7 @@ settings.
        ("https" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'"))
      org-html-metadata-timestamp-format "%Y-%m-%d"
      org-html-validation-link ""
+     org-imenu-depth 4
      org-latex-packages-alist '(("" "kotex" nil)
                                 ("" "parskip" nil)
                                 ("margin=2cm" "geometry" nil)
