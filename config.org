@@ -493,6 +493,23 @@ Instead of using =custom.el=, insert the contents of the file directly here.
     (with-current-buffer (get-buffer-create buffer)
       (erase-buffer)
       (current-buffer)))
+
+  (defun sk-alist-to-json (alist &optional omit-curly-braces)
+    "Convert ALIST to json string. When OMIT-CURLY-BRACES is non-nil, omit curly
+  braces wrapping."
+    (concat
+     (unless omit-curly-braces "{ ")
+     (string-join
+      (cl-loop for (key . value) in alist
+               collect
+               (format
+                (cond ((and (stringp key) (stringp value)) "\"%s\": \"%s\"")
+                      ((stringp key) "\"%s\": %s")
+                      ((stringp value) "%s: \"%s\"")
+                      (t "%s: %s"))
+                key value))
+      ", ")
+     (unless omit-curly-braces " }")))
 #+END_SRC
 
 ** Color setting
@@ -1785,10 +1802,14 @@ settings.
     :demand t
     :after org
     :config
-    (setq org-reveal-hlevel 2
+    (setq my-reveal-init-options '((progress . false)
+                                   (slideNumber . "c/t")
+                                   (transition . "none"))
+          org-reveal-hlevel 2
+          org-reveal-init-options
+          (sk-alist-to-json my-reveal-init-options t)
           org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js"
-          org-reveal-title-slide "<h2>%t</h2><h4>%a&nbsp(%e)</h4>"
-          org-reveal-transition "none"))
+          org-reveal-title-slide "<h2>%t</h2><h4>%a&nbsp(%e)</h4>"))
 
   (use-package magit
     :bind ("<f12>" . magit-status)
