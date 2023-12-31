@@ -1099,6 +1099,7 @@ settings.
     (require 'counsel)
     (setq
      my-org-path "~/Dropbox/org/"
+     my-org-diary (concat my-org-path (format-time-string "%Y_personal.org"))
      my-org-gtd (concat my-org-path (format-time-string "%Y_gtd.org"))
      my-org-work (concat my-org-path (format-time-string "%Y_work.org"))
      org-agenda-custom-commands
@@ -1151,6 +1152,8 @@ settings.
         entry (file+olp+datetree ,my-org-gtd) "* WAIT %?\n%t")
        ("pn" "Note"
         entry (file+headline ,my-org-gtd "Notes") "* %?\n%U")
+       ("pd" "Diary" plain (file+olp+datetree ,my-org-diary) ""
+        :immediate-finish t :jump-to-captured t :time-prompt t :tree-type week)
 
        ("w"  "Work")
        ("wt" "Work Todo" entry (file+olp+datetree ,my-org-work) "* TODO %?\n%t"
