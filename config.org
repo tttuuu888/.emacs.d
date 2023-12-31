@@ -661,6 +661,8 @@ settings.
           (evil-define-minor-mode-key '(motion insert emacs) mode k2 def))
         (setq key (pop bindings)
               def (pop bindings))))
+    (put 'evil-leader/set-key-minor-mode 'lisp-indent-function 'defun)
+
     (defun evil-leader/set-key-for-map (map key def &rest bindings)
       (while key
         (let ((k1 (kbd (concat evil-leader/leader key)))
@@ -669,6 +671,8 @@ settings.
           (define-key map k2 def))
         (setq key (pop bindings)
               def (pop bindings))))
+    (put 'evil-leader/set-key-for-map 'lisp-indent-function 'defun)
+
     (setq evil-leader/no-prefix-mode-rx
           '("magit-.*-mode" "gnus-.*-mode" "package-.*-mode" "dired-mode")))
 
@@ -2396,7 +2400,7 @@ settings.
     :hook ((emacs-lisp-mode
             clojure-mode cider-repl-mode janet-mode inf-janet-mode
             lisp-mode scheme-mode)
-     . enable-paredit-mode)
+           . enable-paredit-mode)
     :bind (:map paredit-mode-map
             ("M-b" . paredit-backward)
             ("M-f" . paredit-forward)
