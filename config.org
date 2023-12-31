@@ -494,9 +494,9 @@ Instead of using =custom.el=, insert the contents of the file directly here.
       (erase-buffer)
       (current-buffer)))
 
-  (defun sk-alist-to-json (alist &optional omit-curly-braces)
-    "Convert ALIST to json string. When OMIT-CURLY-BRACES is non-nil, omit curly
-  braces wrapping."
+  (defun sk-alist-to-js-obj (alist &optional omit-curly-braces)
+    "Convert ALIST to javascript object string. When OMIT-CURLY-BRACES is non-nil,
+  omit curly braces wrapping."
     (concat
      (unless omit-curly-braces "{ ")
      (string-join
@@ -1807,7 +1807,7 @@ settings.
                                    (transition . "none"))
           org-reveal-hlevel 2
           org-reveal-init-options
-          (sk-alist-to-json my-reveal-init-options t)
+          (sk-alist-to-js-obj my-reveal-init-options t)
           org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js"
           org-reveal-title-slide "<h2>%t</h2><h4>%a&nbsp(%e)</h4>"))
 
