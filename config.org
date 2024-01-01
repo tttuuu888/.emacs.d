@@ -1157,7 +1157,7 @@ settings.
        ("pn" "Note"
         entry (file+headline ,my-org-gtd "Notes") "* %?\n%U")
        ("pd" "Diary" plain (file+olp+datetree ,my-org-diary) ""
-        :immediate-finish t :jump-to-captured t :time-prompt t :tree-type week)
+        :immediate-finish t :jump-to-captured t :time-prompt t)
 
        ("w"  "Work")
        ("wt" "Work Todo" entry (file+olp+datetree ,my-org-work) "* TODO %?\n%t"
