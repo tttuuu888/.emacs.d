@@ -1607,7 +1607,12 @@ settings.
       "xrN" 'rectangle-number-lines
       "xro" 'open-rectangle
       "xrt" 'string-rectangle
-      "xry" 'yank-rectangle))
+      "xry" 'yank-rectangle)
+    (defun rectangle--default-line-number-format (start end start-at)
+      (concat "%"
+              (int-to-string (length (int-to-string (+ (count-lines start end)
+                                                       start-at))))
+              "d. ")))
 #+END_SRC
 * General packages - external
 #+BEGIN_SRC emacs-lisp
