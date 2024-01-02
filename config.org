@@ -1579,7 +1579,9 @@ settings.
     (evil-leader/set-key
       "xrb" 'bookmark-jump
       "xrl" 'bookmark-bmenu-list
-      "xrm" 'bookmark-set))
+      "xrm" 'bookmark-set)
+    :config
+    (remove-hook 'kill-emacs-hook 'bookmark-exit-hook-internal))
 
   (use-package register
     :ensure nil
