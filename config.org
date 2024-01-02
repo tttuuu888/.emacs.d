@@ -1604,6 +1604,7 @@ settings.
     (evil-leader/set-key
       "xrc" 'clear-rectangle
       "xrd" 'delete-rectangle
+      "xrN" 'rectangle-number-lines
       "xro" 'open-rectangle
       "xrt" 'string-rectangle
       "xry" 'yank-rectangle))
