@@ -2255,7 +2255,9 @@ settings.
     (evil-set-initial-state 'xref--xref-buffer-mode 'emacs)
     (defun xref-find-reference-here ()
       (interactive)
-      (xref-find-references (thing-at-point 'symbol))))
+      (xref-find-references (thing-at-point 'symbol)))
+    (advice-add 'xref--goto-char :after
+                (lambda (&rest _) (which-func-update))))
 
   (use-package gdb-mi
     :ensure nil
