@@ -737,14 +737,12 @@ settings.
       (interactive)
       (evil-execute-in-emacs-state)
       (rectangle-mark-mode arg))
-    (evil-define-text-object evil-a-c-func (count &optional beg end type)
+    (evil-define-text-object evil-a-func (count &optional beg end type)
       (save-excursion
         (move-end-of-line 1)
         (let ((p1 (and (evil-backward-section-begin) (point)))
-              (p2 (ignore-errors (and (search-forward "{") (evil-jump-item)))))
-          (if p2
-              (evil-range p1 (1+ p2) type :expanded t)
-            (user-error "Can't find c function.")))))
+              (p2 (and (evil-forward-section-end) (point))))
+          (evil-range p1 p2 type :expanded t))))
     (evil-define-text-object evil-inner-c-func (count &optional beg end type)
       (save-excursion
         (move-end-of-line 1)
@@ -759,7 +757,7 @@ settings.
     (define-key evil-inner-text-objects-map "j" 'evil-inner-curly)
     (define-key evil-outer-text-objects-map "j" 'evil-a-curly)
     (define-key evil-inner-text-objects-map "f" 'evil-inner-c-func)
-    (define-key evil-outer-text-objects-map "f" 'evil-a-c-func)
+    (define-key evil-outer-text-objects-map "f" 'evil-a-func)
     (define-key evil-inner-text-objects-map "k" 'evil-inner-angle)
     (define-key evil-outer-text-objects-map "k" 'evil-an-angle)
     (evil-swap-key evil-motion-state-map "j" "gj")
