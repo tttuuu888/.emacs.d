@@ -1619,11 +1619,6 @@ settings.
               (int-to-string (length (int-to-string (+ (count-lines start end)
                                                        start-at))))
               "d. ")))
-
-  (use-package git-commit
-    :ensure nil
-    :config
-    (remove-hook 'git-commit-setup-hook 'git-commit-setup-changelog-support))
 #+END_SRC
 * General packages - external
 #+BEGIN_SRC emacs-lisp
@@ -1836,6 +1831,10 @@ settings.
           (sk-alist-to-js-obj my-reveal-init-options t)
           org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js"
           org-reveal-title-slide "<h2>%t</h2><h4>%a&nbsp(%e)</h4>"))
+
+  (use-package git-commit
+    :config
+    (remove-hook 'git-commit-setup-hook 'git-commit-setup-changelog-support))
 
   (use-package magit
     :bind ("<f12>" . magit-status)
