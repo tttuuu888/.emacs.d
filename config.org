@@ -1619,6 +1619,15 @@ settings.
               (int-to-string (length (int-to-string (+ (count-lines start end)
                                                        start-at))))
               "d. ")))
+
+  (use-package winner
+    :ensure nil
+    :custom (winner-dont-bind-my-keys t)
+    :init (sk-defer-init (winner-mode 1))
+    :config
+    (evil-leader/set-key
+      "xwu" 'winner-undo
+      "xwr" 'winner-redo))
 #+END_SRC
 * General packages - external
 #+BEGIN_SRC emacs-lisp
