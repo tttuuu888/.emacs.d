@@ -1596,7 +1596,7 @@ settings.
       "xr <SPC>" 'point-to-register
       "xrg" 'insert-register
       "xri" 'insert-register
-      "xrj" 'jump-to-register
+      "xrj" 'counsel-register
       "xrk" 'kill-rectangle
       "xrn" 'number-to-register
       "xrr" 'copy-rectangle-to-register
