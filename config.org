@@ -2412,7 +2412,9 @@ settings.
       (let ((default-directory root))
         (async-shell-command-callback
          "gtags"
-         (lambda () (message (concat "GTAGS generated in " default-directory))))))
+         (lambda ()
+           (clrhash ggtags-projects)
+           (message (concat "GTAGS generated in " default-directory))))))
     (advice-add 'move-to-column :around
                 (lambda (func column &rest r)
                   (let ((col (max column 0)))
