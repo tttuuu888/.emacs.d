@@ -188,18 +188,14 @@ Instead of using =custom.el=, insert the contents of the file directly here.
     (declare (indent defun))
     `(concat
       "<style type=\"text/css\">\n"
-      "<!--/*--><![CDATA[/*><!--*/\n"
       ,@body
-      "/*]]>*/-->\n"
       "</style>\n"))
 
   (defmacro html-head-js (&rest body)
     (declare (indent defun))
     `(concat
       "<script type=\"text/javascript\">\n"
-      "<!--/*--><![CDATA[/*><!--*/\n"
       ,@body
-      "/*]]>*/-->\n"
       "</script>\n"))
 #+end_src
 
