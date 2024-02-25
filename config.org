@@ -2807,7 +2807,16 @@ settings.
       "eb" 'inf-janet-eval-buffer
       "ee" 'sk-janet-eval
       "ef" 'inf-janet-eval-defun
-      "er" 'inf-janet-eval-region))
+      "er" 'inf-janet-eval-region)
+    (defun janet-insert-semicolon ()
+      (interactive)
+      (insert-and-inherit ?\;))
+    (defun my-janet-mode-hook ()
+      (setq-local paredit-comment-prefix-toplevel "### "
+                  paredit-comment-prefix-code "## "
+                  paredit-comment-prefix-margin "#")
+      (evil-local-set-key 'insert ";" 'janet-insert-semicolon))
+    (add-hook 'janet-mode-hook 'my-janet-mode-hook))
 
   (use-package inf-janet
     :ensure nil
