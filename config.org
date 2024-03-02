@@ -2246,16 +2246,15 @@ settings.
       (let ((process (python-shell-get-process-or-error)))
         (comint-send-string process (thing-at-point 'line)))
       (move-beginning-of-line 2))
-    (evil-leader/set-key-for-mode 'inferior-python-mode
-      "cd" 'python-describe-at-point
-      "ch" 'my-python-help-repl)
     (evil-leader/set-key-for-mode 'python-mode
       "cd" 'python-describe-at-point
       "eb" 'python-shell-send-buffer
       "ee" 'my-python-shell-send-line-or-region
       "ef" 'python-shell-send-defun
       "er" 'python-shell-send-region
-      "es" 'my-python-send-line-to-repl))
+      "es" 'my-python-send-line-to-repl)
+    (evil-define-key 'normal inferior-python-mode-map
+      "gh" 'python-describe-at-point))
 
   (use-package xref
     :ensure nil
