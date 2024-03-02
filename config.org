@@ -2817,15 +2817,24 @@ settings.
       "ee" 'sk-janet-eval
       "ef" 'inf-janet-eval-defun
       "er" 'inf-janet-eval-region)
+    (evil-define-key 'normal janet-mode-map
+      "gh" 'sk-janet-describe-symbol)
     (add-hook 'janet-mode-hook 'sk-janet-mode-hook))
 
   (use-package inf-janet
     :ensure nil
     :load-path (lambda () (expand-file-name "inf-janet/" emacs-etc-dir))
-    :commands (sk-janet-eval)
+    :commands (sk-janet-eval sk-janet-describe-symbol)
     :config
     (sk-define-lisp-eval sk-janet-eval inf-janet-eval-region)
-    (add-hook 'inf-janet-mode-hook 'sk-janet-mode-hook))
+    (add-hook 'inf-janet-mode-hook 'sk-janet-mode-hook)
+    (defun sk-janet-describe-symbol ()
+      (interactive)
+      (when-let ((sym (symbol-at-point)))
+        (inf-janet-eval-string (format "(doc %s)" sym))
+        (display-buffer inf-janet-buffer)))
+    (evil-define-key 'normal inf-janet-mode-map
+      "gh" 'sk-janet-describe-symbol))
 #+END_SRC
 * End
 ** Provide a feature
