@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: sz
+# key: sz
+# --
+size_t $0
