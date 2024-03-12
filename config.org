@@ -1749,6 +1749,7 @@ settings.
     (require 'helm-files)
     (setq helm-allow-mouse nil
           helm-always-two-windows nil
+          helm-grep-file-path-style 'relative
           helm-imenu-execute-action-at-once-if-one nil
           helm-show-action-window-other-window nil
           helm-show-completion-display-function nil
