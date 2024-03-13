@@ -1505,6 +1505,8 @@ settings.
 
   (use-package package
     :ensure nil
+    :init
+    (sk-defer-init (package-read-all-archive-contents))
     :config
     (setq package-install-upgrade-built-in t))
 
