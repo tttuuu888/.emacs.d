@@ -1421,7 +1421,7 @@ settings.
     :ensure nil
     :custom-face
     (hl-line ((((background light)) :background "AntiqueWhite" :extend t)
-              (((background dark)) :background "gray18" :extend t)))
+              (((background dark)) :background "gray16" :extend t)))
     :init
     (sk-defer-init (global-hl-line-mode 1)))
 
