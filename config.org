@@ -2359,8 +2359,12 @@ settings.
     :mode (("\\.aidl\\'" . java-mode)
            ("\\.hal\\'" . c++-mode))
     :config
+    (c-add-style "my-bsd" '("bsd"
+                            (c-offsets-alist
+                             (case-label . +)
+                             (inextern-lang . 0))))
     (setq c-basic-offset tab-width
-          c-default-style "bsd")
+          c-default-style "my-bsd")
     (defvaralias 'c-basic-offset 'tab-width))
 
   (use-package compile
