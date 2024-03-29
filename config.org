@@ -512,6 +512,22 @@ Instead of using =custom.el=, insert the contents of the file directly here.
                 key value))
       ", ")
      (unless omit-curly-braces " }")))
+
+  (defun sk-yank-file-name ()
+    (interactive)
+    (if (not (file-exists-p (buffer-name)))
+        (message "Not in the file buffer")
+      (let ((name (buffer-name)))
+        (kill-new name)
+        (message (format "File name yanked : %s" name)))))
+
+  (defun sk-yank-file-whole-path ()
+    (interactive)
+    (if (not (file-exists-p (buffer-name)))
+        (message "Not in the file buffer")
+      (let ((path (buffer-file-name)))
+        (kill-new path)
+        (message (format "File path yanked : %s" path)))))
 #+END_SRC
 
 ** Color setting
