@@ -9,7 +9,7 @@ html {
 body {
   font-family: sans-serif;
   font-size: 1rem;
-  line-height: 140%;
+  line-height: 180%;
   color: black;
   margin: auto;
   max-width: 50rem;
@@ -207,4 +207,8 @@ pre.a:hover {
 .footpara {
   display: inline;
   padding-left: 0;
+}
+
+.org-center {
+  text-align: center;
 }
