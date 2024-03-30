@@ -2088,7 +2088,7 @@ settings.
            ("C-h f"   . counsel-describe-function)
            ("<f5>"    . sk-compile)
            :map minibuffer-local-map
-           ("M-l"     . counsel-minibuffer-history))
+           ("C-r"     . counsel-minibuffer-history))
     :init
     (evil-leader/set-key
       "<SPC>" 'counsel-M-x
