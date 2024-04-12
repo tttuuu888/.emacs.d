@@ -1108,6 +1108,12 @@ settings.
       (let ((path (dired-get-filename)))
         (call-process "xdg-open" nil 0 nil path))))
 
+  (use-package ob-janet
+    :ensure nil
+    :load-path (lambda () (expand-file-name "ob-janet/" emacs-etc-dir))
+    :config
+    (add-to-list 'org-babel-load-languages '(janet . t)))
+
   (use-package org
     :ensure nil
     :init
@@ -1117,6 +1123,7 @@ settings.
     (require 'ox)
     (require 'ox-beamer)
     (require 'counsel)
+    (require 'ob-janet)
     (setq
      my-org-path "~/Dropbox/org/"
      my-org-diary (concat my-org-path (format-time-string "%Y_personal.org"))
@@ -1149,8 +1156,8 @@ settings.
      org-babel-load-languages '((C . t)
                                 (css . t)
                                 (dot . t)
-                                (gnuplot . t)
                                 (emacs-lisp . t)
+                                (gnuplot . t)
                                 (latex . t)
                                 (octave . t)
                                 (plantuml . t)
