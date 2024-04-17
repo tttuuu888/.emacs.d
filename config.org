@@ -2425,6 +2425,12 @@ settings.
     (setq project-find-functions '(sk-project-root))
     (cl-defmethod project-root (&rest r)
       (sk-project-root)))
+
+  (use-package ielm
+    :ensure nil
+    :config
+    (evil-define-key 'insert inferior-emacs-lisp-mode-map
+      (kbd "<return>") 'ielm-return))
 #+END_SRC
 * Development packages - external
 #+BEGIN_SRC emacs-lisp
@@ -2455,7 +2461,7 @@ settings.
   (use-package paredit
     :hook ((emacs-lisp-mode
             clojure-mode cider-repl-mode janet-mode inf-janet-mode
-            lisp-mode scheme-mode)
+            lisp-mode scheme-mode inferior-emacs-lisp-mode)
            . enable-paredit-mode)
     :bind (:map paredit-mode-map
             ("M-b" . paredit-backward)
