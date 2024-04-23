@@ -657,6 +657,8 @@ settings.
       "u"  'pop-to-mark-command
       "w"  'save-buffer
       "cc" (kbd "\C-c\C-c")
+      "cy" 'sk-yank-file-name
+      "cY" 'sk-yank-file-whole-path
       "st" 'tmux-new-pane-here
       "hk" 'describe-key
       "hm" 'describe-mode
