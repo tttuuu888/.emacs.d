@@ -532,6 +532,14 @@ Instead of using =custom.el=, insert the contents of the file directly here.
   (defun sk-yank-file-whole-path ()
     (interactive)
     (sk-yank-file-name-or-path 'whole-path))
+
+  (defun sk-google-search ()
+    (interactive)
+    (let ((target
+           (if (region-active-p)
+               (buffer-substring-no-properties (region-beginning) (region-end))
+             (word-at-point t))))
+      (browse-url (format "https://www.google.com/search?q=%s&ie=UTF-8" target))))
 #+END_SRC
 
 ** Color setting
@@ -663,6 +671,7 @@ settings.
       "cc" (kbd "\C-c\C-c")
       "cy" 'sk-yank-file-name
       "cY" 'sk-yank-file-whole-path
+      "eg" 'sk-google-search
       "st" 'tmux-new-pane-here
       "hk" 'describe-key
       "hm" 'describe-mode
