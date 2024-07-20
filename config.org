@@ -540,6 +540,26 @@ Instead of using =custom.el=, insert the contents of the file directly here.
                (buffer-substring-no-properties (region-beginning) (region-end))
              (word-at-point t))))
       (browse-url (format "https://www.google.com/search?q=%s&ie=UTF-8" target))))
+
+  (defun align-columns (beg end)
+    "Align columns in region BEG END."
+    (interactive "r")
+    (align-regexp beg end
+                  (rx (group (* space))
+                      (+ (or (not (any space ?\" ?\( ?\[ ?\{))
+                             (seq ?\"
+                                  (* (not (any ?\")))
+                                  ?\")
+                             (seq ?\(
+                                  (* (not (any ?\))))
+                                  ?\))
+                             (seq ?\[
+                                  (* (not (any ?\])))
+                                  ?\])
+                             (seq ?\{
+                                  (* (not (any ?\})))
+                                  ?\}))))
+                  1 1 t))
 #+END_SRC
 
 ** Color setting
