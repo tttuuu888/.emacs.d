@@ -338,13 +338,23 @@ Instead of using =custom.el=, insert the contents of the file directly here.
     "Check if tmux is currently running or not."
     (zerop (call-process "tmux" nil nil nil "has-session")))
 
-  (defun tmux-new-pane-here ()
-    "Open tmux pane of the current path."
+  (defun tmux-new-window-here ()
+    "Open new tmux window at the current path."
     (interactive)
     (if (not (tmux-running-p))
         (message "Tmux is not running!")
       (call-process "tmux" nil nil nil "new-window")
-      (message "New tmux pane is opened.")))
+      (message "New tmux window is opened.")))
+
+  (defun tmux-vim-current-file ()
+    "Open a new tmux window and edit the current file with vim."
+    (interactive)
+    (if (not (tmux-running-p))
+        (message "Tmux is not running!")
+      (if (not (buffer-file-name))
+          (user-error "Buffer %s does not visit a file" (current-buffer))
+      (call-process "tmux" nil nil nil "new-window" "vim" (buffer-file-name))
+      (message "New tmux window with vim is opened."))))
 
   (defun sk-project-root (&optional dir)
     (find-file-in-tree (or dir default-directory) sk-project-root-files t))
@@ -692,7 +702,8 @@ settings.
       "cy" 'sk-yank-file-name
       "cY" 'sk-yank-file-whole-path
       "eg" 'sk-google-search
-      "st" 'tmux-new-pane-here
+      "st" 'tmux-new-window-here
+      "sv" 'tmux-vim-current-file
       "hk" 'describe-key
       "hm" 'describe-mode
       "xq" 'read-only-mode
