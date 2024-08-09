@@ -570,6 +570,14 @@ Instead of using =custom.el=, insert the contents of the file directly here.
                                   (* (not (any ?\})))
                                   ?\}))))
                   1 1 t))
+
+  (defun sk-get-gpg-encrypt-cmd (recipents)
+    (interactive "MRecipent? ")
+    (let* ((lst (split-string recipents "[ \f\t\n\r\v,;]+"))
+           (to (mapconcat (lambda (r) (concat " --recipient " r)) lst))
+           (cmd (concat "gpg" to " --encrypt ")))
+      (kill-new cmd)
+      (message cmd)))
 #+END_SRC
 
 ** Color setting
