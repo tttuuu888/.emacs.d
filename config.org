@@ -2246,6 +2246,18 @@ settings.
   (use-package auctex)
 
   (use-package graphviz-dot-mode)
+
+  (use-package org-roam
+    :custom
+    (org-roam-directory "~/Dropbox/org-roam")
+    :init
+    (evil-leader/set-key
+      "nf" 'org-roam-node-find
+      "ni" 'org-roam-node-insert)
+    :config
+    (org-roam-db-autosync-enable)
+    (evil-leader/set-key-for-mode 'org-mode
+      "nl" 'org-roam-buffer-toggle))
 #+END_SRC
 * Development packages - built-in
 #+BEGIN_SRC emacs-lisp
