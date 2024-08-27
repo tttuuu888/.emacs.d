@@ -2501,7 +2501,7 @@ settings.
 #+BEGIN_SRC emacs-lisp
   (use-package ggtags
     :hook ((c-mode-common asm-mode) . ggtags-mode)
-    :commands (sk-create-ggtags)
+    :commands (sk-create-ggtags sk-set-c-project)
     :config
     (defun sk-create-ggtags (root)
       (interactive "DRoot directory: ")
@@ -2511,6 +2511,11 @@ settings.
          (lambda ()
            (clrhash ggtags-projects)
            (message (concat "GTAGS generated in " default-directory))))))
+    (defun sk-set-c-project (root)
+      (interactive "DRoot directory: ")
+      (let ((default-directory root))
+        (sk-create-ggtags root)
+        (sk-clang-complete-make)))
     (advice-add 'move-to-column :around
                 (lambda (func column &rest r)
                   (let ((col (max column 0)))
