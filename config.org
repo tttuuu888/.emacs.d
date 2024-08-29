@@ -754,6 +754,10 @@ settings.
                       (interactive)
                       (evil-forward-WORD-end)
                       (forward-char)))
+           ("S-<up>" . evil-window-up)
+           ("S-<down>" . evil-window-down)
+           ("S-<left>" . evil-window-left)
+           ("S-<right>" . evil-window-right)
            :map evil-insert-state-map
            ("C-k" . kill-line)
            :map evil-visual-state-map
