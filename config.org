@@ -636,18 +636,16 @@ Simple mode line setting function.
                                (concat " " (upcase (symbol-name evil-state)))))
                (buffer-info " %* ")
                (buffer-name (propertize " %b " 'face 'mode-line-emphasis))
-               (vc-info (and sk-vc-mode (concat " (" sk-vc-mode ") ")))
                (mode-and-vc (propertize
                              (concat " "
                                      (format-mode-line mode-name)
-                                     vc-info
+                                     (and sk-vc-mode (concat " (" sk-vc-mode ")"))
                                      " ")
                              'face 'mode-line-inactive))
                (input-name (propertize (concat current-input-method-title " ")
                                        'face 'mode-line-inactive))
-               (line-info (format-mode-line " %l,%3c  "))
-               (pos-info (format-mode-line "%p%% "))
-               (right-info (concat input-name line-info pos-info))
+               (line-and-pos-info (format-mode-line " %l,%3c  %p%% "))
+               (right-info (concat input-name line-and-pos-info))
                (right-len (string-width right-info))
                (left-info (truncate-string-to-width
                            (concat evil-info buffer-info buffer-name mode-and-vc)
