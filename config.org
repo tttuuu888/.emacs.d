@@ -2238,6 +2238,8 @@ settings.
                 :action #'counsel-find-file-action
                 :caller 'counsel-find-dir-here)))
 
+  (use-package swiper)
+
   (use-package which-key
     :custom (which-key-dont-use-unicode t)
     :init
