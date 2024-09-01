@@ -1917,10 +1917,6 @@ settings.
           org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js"
           org-reveal-title-slide "<h2>%t</h2><h4>%a&nbsp(%e)</h4>"))
 
-  (use-package git-commit
-    :config
-    (remove-hook 'git-commit-setup-hook 'git-commit-setup-changelog-support))
-
   (use-package magit
     :bind ("<f12>" . magit-status)
     :hook (with-editor-mode . evil-normal-state)
@@ -1936,6 +1932,7 @@ settings.
     (evil-make-overriding-map magit-blame-read-only-mode-map 'normal)
     (add-hook 'magit-blame-mode-hook 'evil-normalize-keymaps)
     (add-hook 'with-editor-mode-hook 'flyspell-mode)
+    (remove-hook 'git-commit-setup-hook 'git-commit-setup-changelog-support)
     (defun sk-git-diff (&rest _)
       "Run git-diff"
       (interactive)
