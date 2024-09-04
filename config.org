@@ -110,6 +110,7 @@ Instead of using =custom.el=, insert the contents of the file directly here.
              (and (* space) (any "-+*") space)
              (and (* space) (1+ (any num)) (or "." ")") space))))
    '(password-cache-expiry 900)
+   '(ring-bell-function 'ignore)
    '(safe-local-variable-values '((c-default-style . "linux")
                                   (indent-tabs-mode . t)
                                   (tab-width . 2)))
