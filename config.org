@@ -2014,11 +2014,11 @@ settings.
     (let* ((used
             '(bibtex-mode
               c++-mode c-lang-common c-mode cc-mode clojure-mode cmake-mode
-              cpp-omnet-mode csharp-mode css-mode elixir-mode emacs-lisp-mode
-              fish-mode go-mode groovy-mode html-mode java-mode js-mode latex-mode
-              lisp-mode lua-mode makefile-gmake-mode markdown-mode nxml-mode
-              octave-mode org-mode prog-mode python-mode rst-mode rust-mode
-              sh-mode snippet-mode sql-mode))
+              cpp-omnet-mode csharp-mode css-mode dart-mode elixir-mode
+              emacs-lisp-mode fish-mode go-mode groovy-mode html-mode java-mode
+              js-mode latex-mode lisp-mode lua-mode makefile-gmake-mode
+              markdown-mode nxml-mode octave-mode org-mode prog-mode python-mode
+              rst-mode rust-mode sh-mode snippet-mode sql-mode))
            (path (concat
                   (seq-find
                    (lambda (x) (string-match "yasnippet-snippets" x)) load-path)
