@@ -2942,6 +2942,8 @@ settings.
         (display-buffer inf-janet-buffer)))
     (evil-define-key 'normal inf-janet-mode-map
       "gh" 'sk-janet-describe-symbol))
+
+  (use-package dart-mode)
 #+END_SRC
 * End
 ** Provide a feature
