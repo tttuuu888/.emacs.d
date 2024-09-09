@@ -2816,10 +2816,8 @@ settings.
             :signatureHelpProvider)
           eglot-server-programs
           (append
-           `((elixir-mode "elixir-ls")
-             (python-mode
-              . (eglot-pyright . ("pyright-langserver" "--stdio")))
-             (rust-mode "rust-analyzer"))
+           `((python-mode
+              . (eglot-pyright . ("pyright-langserver" "--stdio"))))
            eglot-server-programs)
           eglot-sync-connect 0)
     (fset #'jsonrpc--log-event #'ignore)
