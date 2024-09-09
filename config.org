@@ -2835,6 +2835,8 @@ settings.
           ,(if (my-find-python-project-root)
                t
              :json-false)))))
+    (evil-leader/set-key-minor-mode 'eglot--managed-mode
+      "ex" 'eglot-code-action-quickfix)
     (evil-define-minor-mode-key 'normal 'eglot--managed-mode
       "gh" 'eldoc-doc-buffer))
 
