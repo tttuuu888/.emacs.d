@@ -2943,7 +2943,8 @@ settings.
     (evil-define-key 'normal inf-janet-mode-map
       "gh" 'sk-janet-describe-symbol))
 
-  (use-package dart-mode)
+  (use-package dart-mode
+    :hook (dart-mode . eglot-ensure))
 #+END_SRC
 * End
 ** Provide a feature
