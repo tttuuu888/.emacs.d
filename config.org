@@ -1991,10 +1991,6 @@ settings.
   (use-package yasnippet
     :commands yas-expand company-yas-expand
     :config
-    (advice-add 'yas-expand-snippet :around
-                (lambda (old &rest r)
-                  (let ((org-src-tab-acts-natively nil))
-                    (apply old r))))
     (let ((my-yasnippet-dir (expand-file-name "snippets/" emacs-etc-dir)))
       (add-to-list 'yas-snippet-dirs my-yasnippet-dir)
       (yas-load-directory my-yasnippet-dir t))
