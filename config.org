@@ -1083,12 +1083,18 @@ settings.
                   (list target)
                 (mapcar
                  (lambda (f) (expand-file-name (file-name-nondirectory f) target))
-                 files))))
+                 files)))
+             (dired-copy-dereference (if (zerop (% arg 10))
+                                         (not dired-copy-dereference)
+                                       dired-copy-dereference)))
         (if (not remote)
             (async-shell-command-callback
              (add-sudo-to-command
               (> arg 1)
-              (concat "cp -rf " (string-join source " ") " " dst))
+              (concat "cp -rf "
+                      (when dired-copy-dereference " -L ")
+                      (string-join source " ") " "
+                      dst))
              (lambda (target-files)
                (mapc (lambda (f)
                        (dired-remove-file f)
