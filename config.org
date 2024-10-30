@@ -1414,8 +1414,8 @@ settings.
       "xb" 'ibuffer)
     :config
     (setq ibuffer-expert t
-          ibuffer-sorting-mode 'ibuffer-do-sort-by-filename/process
-          ibuffer-default-sorting-mode 'filename/process
+          ibuffer-sorting-mode 'ibuffer-do-sort-by-mode-name-then-filename
+          ibuffer-default-sorting-mode 'mode-name-then-filename
           ibuffer-saved-filter-groups
           '(("home"
              ("Emacs-config" (filename . ".emacs.d"))
@@ -1430,6 +1430,23 @@ settings.
              ("Help" (or (name . "\*Help\*")
                          (name . "\*Apropos\*")
                          (name . "\*info\*"))))))
+    (define-ibuffer-sorter mode-name-then-filename
+      "Sort the buffers first by their mode name, then by their file name or
+  process name."
+      (:description "mode name, then file name")
+      (let* ((mode-a (with-current-buffer (car a) (format-mode-line mode-name)))
+             (mode-b (with-current-buffer (car b) (format-mode-line mode-name)))
+             (file-a (or (with-current-buffer (car a) (ibuffer-buffer-file-name))
+                         (let ((pr-a (get-buffer-process (car a))))
+                           (and (processp pr-a) (process-name pr-a)))))
+             (file-b (or (with-current-buffer (car b) (ibuffer-buffer-file-name))
+                         (let ((pr-b (get-buffer-process (car b))))
+                           (and (processp pr-b) (process-name pr-b))))))
+        (if (string= mode-a mode-b)
+            ;; Same mode, sort by filename/process
+            (string-lessp file-a file-b)
+          ;; Different modes, sort by mode
+          (string-lessp (downcase mode-a) (downcase mode-b)))))
     (defun my-ibuffer-unmark-all ()
       "Unmark all immdiately"
       (interactive)
