@@ -354,8 +354,8 @@ Instead of using =custom.el=, insert the contents of the file directly here.
         (message "Tmux is not running!")
       (if (not (buffer-file-name))
           (user-error "Buffer %s does not visit a file" (current-buffer))
-      (call-process "tmux" nil nil nil "new-window" "vim" (buffer-file-name))
-      (message "New tmux window with vim is opened."))))
+        (call-process "tmux" nil nil nil "new-window" "vim" (buffer-file-name))
+        (message "New tmux window with vim is opened."))))
 
   (defun sk-project-root (&optional dir)
     (find-file-in-tree (or dir default-directory) sk-project-root-files t))
