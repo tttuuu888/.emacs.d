@@ -1410,7 +1410,7 @@ settings.
 
   (use-package ibuffer
     :ensure nil
-    :bind ("C-x C-b" . ibuffer)
+    :bind ("C-x b" . ibuffer)
     :init
     (evil-leader/set-key
       "xb" 'ibuffer)
@@ -2050,7 +2050,7 @@ settings.
         (apply #'call-process "rm" nil nil nil "-rf" to-remove))))
 
   (use-package ivy
-    :bind (("C-x b"    . ivy-switch-buffer)
+    :bind (("C-x C-b"   . ivy-switch-buffer)
            :map minibuffer-inactive-mode-map
            ("<escape>" . abort-recursive-edit)
            :map ivy-minibuffer-map
