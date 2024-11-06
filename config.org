@@ -704,6 +704,7 @@ settings.
       "q"  'kill-current-buffer
       "Q"  'kill-emacs
       "u"  'pop-to-mark-command
+      "x"  (lookup-key global-map (kbd "C-x"))
       "w"  'save-buffer
       "cc" (kbd "\C-c\C-c")
       "cy" 'sk-yank-file-name
