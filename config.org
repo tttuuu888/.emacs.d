@@ -1411,9 +1411,6 @@ settings.
   (use-package ibuffer
     :ensure nil
     :bind ("C-x b" . ibuffer)
-    :init
-    (evil-leader/set-key
-      "xb" 'ibuffer)
     :config
     (setq ibuffer-expert t
           ibuffer-sorting-mode 'ibuffer-do-sort-by-mode-name-then-filename
@@ -1682,39 +1679,12 @@ settings.
   (use-package bookmark
     :ensure nil
     :custom (bookmark-set-fringe-mark nil)
-    :init
-    (evil-leader/set-key
-      "xrb" 'bookmark-jump
-      "xrl" 'bookmark-bmenu-list
-      "xrm" 'bookmark-set)
     :config
     (remove-hook 'kill-emacs-hook 'bookmark-exit-hook-internal))
-
-  (use-package register
-    :ensure nil
-    :config
-    (evil-leader/set-key
-      "xr <SPC>" 'point-to-register
-      "xrg" 'insert-register
-      "xri" 'insert-register
-      "xrj" 'counsel-register
-      "xrk" 'kill-rectangle
-      "xrn" 'number-to-register
-      "xrr" 'copy-rectangle-to-register
-      "xrs" 'copy-to-register
-      "xrw" 'window-configuration-to-register
-      "xrx" 'copy-to-register))
 
   (use-package rect
     :ensure nil
     :config
-    (evil-leader/set-key
-      "xrc" 'clear-rectangle
-      "xrd" 'delete-rectangle
-      "xrN" 'rectangle-number-lines
-      "xro" 'open-rectangle
-      "xrt" 'string-rectangle
-      "xry" 'yank-rectangle)
     (defun rectangle--default-line-number-format (start end start-at)
       (concat "%"
               (int-to-string (length (int-to-string (+ (count-lines start end)
