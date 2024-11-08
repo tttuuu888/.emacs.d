@@ -579,6 +579,10 @@ Instead of using =custom.el=, insert the contents of the file directly here.
            (cmd (concat "gpg" to " --encrypt ")))
       (kill-new cmd)
       (message cmd)))
+
+  (defun list-to-hex-string (lst)
+    "Convert a list of integers into a hex string."
+    (mapconcat (lambda (x) (format "%02x" x)) lst ""))
 #+END_SRC
 
 ** Color setting
