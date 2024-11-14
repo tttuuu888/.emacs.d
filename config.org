@@ -1420,15 +1420,17 @@ settings.
           ibuffer-sorting-mode 'ibuffer-do-sort-by-mode-name-then-filename
           ibuffer-default-sorting-mode 'mode-name-then-filename
           ibuffer-saved-filter-groups
-          '(("home"
-             ("Emacs-config" (filename . ".emacs.d"))
+          `(("home"
+             ("Emacs" (or (mode . emacs-lisp-mode)
+                          (mode . lisp-interaction-mode)))
              ("Org / MD" (or (mode . org-mode)
-                             (mode . markdown-mode)
-                             (filename . "OrgMode")))
+                             (mode . markdown-mode)))
              ("Magit" (name . "^Magit"))
              ("Code" (derived-mode . prog-mode))
-             ("Shell" (or (mode . shell-mode)
-                          (mode . eshell-mode)))
+             ("Shell" (or (mode . eshell-mode)
+                          (mode . shell-mode)
+                          (name . ,shell-command-buffer-name)
+                          (name . ,shell-command-buffer-name-async)))
              ("Dired" (mode . dired-mode))
              ("Help" (or (name . "\*Help\*")
                          (name . "\*Apropos\*")
