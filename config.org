@@ -2253,6 +2253,12 @@ settings.
     (org-roam-db-autosync-enable)
     (evil-leader/set-key-for-mode 'org-mode
       "nl" 'org-roam-buffer-toggle))
+
+  (use-package xclip
+    :init
+    (when (and (not (display-graphic-p))
+               (executable-find "xclip"))
+      (xclip-mode 1)))
 #+END_SRC
 * Development packages - built-in
 #+BEGIN_SRC emacs-lisp
