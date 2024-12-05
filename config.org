@@ -1705,6 +1705,10 @@ settings.
     (evil-leader/set-key
       "xwu" 'winner-undo
       "xwr" 'winner-redo))
+
+  (use-package epa
+    :bind (:map epa-key-list-mode-map
+            ("/" . swiper)))
 #+END_SRC
 * General packages - external
 #+BEGIN_SRC emacs-lisp
