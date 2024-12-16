@@ -477,10 +477,6 @@ Instead of using =custom.el=, insert the contents of the file directly here.
         (set-face-attribute 'default nil :height big-height))
       (setq big-font (not big-font))))
 
-  (defun sk-meld-dir (dir1 dir2)
-    (interactive "DDir 1 : \nDDir 2 : ")
-    (start-process "meld" nil "meld" dir1 dir2))
-
   (defun sk-package-upgrade-all ()
     "Upgrade all packages without asking the user."
     (interactive)
@@ -985,8 +981,9 @@ settings.
         (dired-goto-file curr)
         (kill-buffer buf)))
 
-    (defun my-dired-get-target (prompt files)
-      (let ((defaults (dired-dwim-target-defaults nil nil)))
+    (defun my-dired-get-target (prompt &optional files)
+      (let ((files (if files files '(nil)))
+            (defaults (dired-dwim-target-defaults nil nil)))
         (expand-file-name
          (minibuffer-with-setup-hook
              (lambda ()
@@ -1173,7 +1170,13 @@ settings.
       "Open file with an external program."
       (interactive)
       (let ((path (dired-get-filename)))
-        (call-process "xdg-open" nil 0 nil path))))
+        (call-process "xdg-open" nil 0 nil path)))
+
+    (defun sk-meld-dir ()
+      (interactive)
+      (let ((dir1 (my-dired-get-target "Dir1 : "))
+            (dir2 (my-dired-get-target "Dir2 : ")))
+        (start-process "meld" nil "meld" dir1 dir2))))
 
   (use-package ob-janet
     :ensure nil
