@@ -990,8 +990,7 @@ settings.
         (expand-file-name
          (minibuffer-with-setup-hook
              (lambda ()
-               (set (make-local-variable 'minibuffer-default-add-function)
-                    nil)
+               (setq-local minibuffer-default-add-function nil)
                (setq minibuffer-default defaults))
            (dired-mark-read-file-name
             prompt default-directory 'copy nil files nil)))))
