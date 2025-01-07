@@ -2624,6 +2624,8 @@ settings.
     (evil-set-initial-state 'cider-test-report-mode         'emacs)
     (evil-define-key 'normal cider-repl-mode-map
       "gd"  'cider-find-dwim
+      "gj"  'comint-next-prompt
+      "gk"  'comint-previous-prompt
       "gp"  'cider-pop-back
       "ghc" 'cider-clojuredocs
       "ghe" 'cider-apropos-documentation-select
