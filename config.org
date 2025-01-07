@@ -2581,12 +2581,8 @@ settings.
     (dolist (m (list clojure-mode-map clojurescript-mode-map))
       (evil-define-key* 'normal m
         "gd"  'cider-find-dwim
-        "gp"  'cider-pop-back
-        "ghc" 'cider-clojuredocs
-        "ghe" 'cider-apropos-documentation-select
-        "ghh" 'cider-doc
-        "ghj" 'cider-javadoc
-        "ghw" 'cider-clojuredocs-web))
+        "gh"  'cider-doc
+        "gp"  'cider-pop-back))
     (dolist (m '(clojure-mode clojurescript-mode))
       (evil-leader/set-key-for-mode m
         "z"   'cider-switch-to-repl-buffer
@@ -2594,20 +2590,11 @@ settings.
         "eb"  'cider-eval-buffer
         "ee"  'sk-cider-eval
         "ef"  'cider-eval-defun-at-point
+        "ep"  'cider-pprint-eval-last-sexp
         "er"  'cider-eval-region
-        "epc" 'cider-pprint-eval-last-sexp-to-comment
-        "epf" 'cider-pprint-eval-defun-at-point
-        "epp" 'cider-pprint-eval-last-sexp
         "esb" 'cider-browse-ns
         "esf" 'cider-find-ns
-        "ess" 'cider-repl-set-ns
-        "eta" 'cider-test-rerun-test
-        "etn" 'cider-test-run-ns-tests
-        "etp" 'cider-test-run-project-tests
-        "etr" 'cider-test-rerun-failed-tests
-        "ett" 'cider-test-run-test
-        "evv" 'cider-eval-sexp-at-point
-        "evx" 'cider-eval-last-sexp-and-replace)))
+        "ess" 'cider-repl-set-ns)))
 
   (use-package cider
     :config
@@ -2622,16 +2609,13 @@ settings.
     (evil-set-initial-state 'cider-repl-history-mode        'emacs)
     (evil-set-initial-state 'cider-stacktrace-mode          'emacs)
     (evil-set-initial-state 'cider-test-report-mode         'emacs)
+    (sk-C-c-map-to-leader-c-map 'cider-repl-mode cider-repl-mode-map)
     (evil-define-key 'normal cider-repl-mode-map
-      "gd"  'cider-find-dwim
-      "gj"  'comint-next-prompt
-      "gk"  'comint-previous-prompt
-      "gp"  'cider-pop-back
-      "ghc" 'cider-clojuredocs
-      "ghe" 'cider-apropos-documentation-select
-      "ghh" 'cider-doc
-      "ghj" 'cider-javadoc
-      "ghw" 'cider-clojuredocs-web
+      "gd" 'cider-find-dwim
+      "gh" 'cider-doc
+      "gj" 'comint-next-prompt
+      "gk" 'comint-previous-prompt
+      "gp" 'cider-pop-back
       (kbd "RET") 'my-comint-return)
     (evil-define-minor-mode-key 'normal 'cider-popup-buffer-mode
       "q" 'quit-window)
