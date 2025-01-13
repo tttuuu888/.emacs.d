@@ -318,12 +318,15 @@ Instead of using =custom.el=, insert the contents of the file directly here.
     "Change C-c ... key map to <leader> c... key map, except EXCEPTIONS list"
     (let* ((ret nil)
            (target (alist-get ?\C-c mode-map))
-           (cm (number-sequence ?\C-a ?\C-z))
-           (ks (append cm (number-sequence ?A ?Z) (number-sequence ?a ?z))))
+           (cm (append (number-sequence ?\C-a ?\C-z)))
+           (ks (append cm (number-sequence ?\ ?z))))
       (defun ctrl-map-search (elt pre)
         (if (symbolp elt)
             (setq ret (append ret (list (cons pre elt))))
           (dolist (k ks)
+            ;; NOTE: C-a, C-b, etc. will be converted to a, b, etc. for
+            ;; npre. However, C-<letter> and <letter> will result in the same
+            ;; value for npre, causing potential overwriting.
             (let ((nelt (alist-get k elt))
                   (npre (if (member k cm) (+ k 96) k)))
               (when nelt
