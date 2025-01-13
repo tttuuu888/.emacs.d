@@ -1315,14 +1315,6 @@ settings.
     (sk-C-c-map-to-leader-c-map 'org-mode org-mode-map '("cc" "ck"))
     (evil-leader/set-key-for-mode 'org-mode
       "c <SPC>" 'org-table-blank-field
-      "c'"  'org-edit-special
-      "c!"  'org-time-stamp-inactive
-      "c*"  'org-ctrl-c-star
-      "c+"  'org-table-sum
-      "c,"  'org-insert-structure-template
-      "c-"  'org-ctrl-c-minus
-      "c."  'org-time-stamp
-      "c`"  'org-table-edit-field
       "cL"  'org-store-link
       "ee"  'org-edit-src-code
       "tc"  'org-table-create
