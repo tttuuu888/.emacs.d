@@ -2411,6 +2411,12 @@ be natively supported.
     (when (and (not (display-graphic-p))
                (executable-find "xclip"))
       (xclip-mode 1)))
+
+  (use-package stillness-mode
+    :vc (:url "https://github.com/tttuuu888/stillness-mode.el"
+              :rev :newest)
+    :if (not (display-graphic-p))
+    :init (sk-defer-init (stillness-mode 1)))
 #+END_SRC
 * Development packages - built-in
 #+BEGIN_SRC emacs-lisp
