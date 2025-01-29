@@ -338,23 +338,25 @@ Instead of using =custom.el=, insert the contents of the file directly here.
                        (cl-some (lambda (e) (string-prefix-p e key)) exceptions))
             (evil-leader/set-key-for-mode mode key (cdr e)))))))
 
-  (defun tmux-running-p ()
-    "Check if tmux is currently running or not."
-    (zerop (call-process "tmux" nil nil nil "has-session")))
+  (defun tmux-running-p (&optional notice)
+    "Check if Tmux is currently running. If NOTICE is non-nil and Tmux is not
+  running, print the message: \"Tmux is not running!\""
+    (let ((running (zerop (call-process "tmux" nil nil nil "has-session"))))
+      (when (and (not running) notice)
+        (message "Tmux is not running!"))
+      running))
 
   (defun tmux-new-window-here ()
     "Open new tmux window at the current path."
     (interactive)
-    (if (not (tmux-running-p))
-        (message "Tmux is not running!")
+    (when (tmux-running-p t)
       (call-process "tmux" nil nil nil "new-window")
       (message "New tmux window is opened.")))
 
   (defun tmux-vim-current-file ()
     "Open a new tmux window and edit the current file with vim."
     (interactive)
-    (if (not (tmux-running-p))
-        (message "Tmux is not running!")
+    (when (tmux-running-p t)
       (if (not (buffer-file-name))
           (user-error "Buffer %s does not visit a file" (current-buffer))
         (call-process "tmux" nil nil nil "new-window" "vim" (buffer-file-name))
