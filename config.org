@@ -1740,8 +1740,7 @@ be natively supported.
       "Upgrade all packages without asking the user."
       (interactive)
       (package-refresh-contents)
-      (let* ((vc-handled-backends '(Git))
-             (upgradeable (package--upgradeable-packages))
+      (let* ((upgradeable (package--upgradeable-packages))
              (upgraded (cl-remove-if-not #'package-upgrade upgradeable))
              (pkg-cnt (length upgraded)))
         (if (not upgraded)
