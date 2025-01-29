@@ -1752,6 +1752,10 @@ be natively supported.
     :ensure nil
     :config
     (remove-hook 'package-read-archive-hook 'package-vc--read-archive-data)
+    (advice-add 'package-vc-install :around
+                (lambda (func &rest r)
+                  (let ((vc-handled-backends '(Git)))
+                    (apply func r))))
     (defun package-vc-upgrade (pkg-desc)
       "Attempt to upgrade the package PKG-DESC."
       (interactive (list (package-vc--read-package-desc "Upgrade VC package: " t)))
