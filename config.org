@@ -480,18 +480,6 @@ Instead of using =custom.el=, insert the contents of the file directly here.
         (set-face-attribute 'default nil :height big-height))
       (setq big-font (not big-font))))
 
-  (defun sk-package-upgrade-all ()
-    "Upgrade all packages without asking the user."
-    (interactive)
-    (package-refresh-contents)
-    (let* ((vc-handled-backends '(Git))
-           (upgradeable (package--upgradeable-packages))
-           (pkg-cnt (length upgradeable)))
-      (if (not upgradeable)
-          (message "No packages to upgrade")
-        (mapc #'package-upgrade upgradeable)
-        (message (format "%s packages upgraded. %s" pkg-cnt upgradeable)))))
-
   (defun add-sudo-to-command (sudo cmd)
     "Get password and add sudo to CMD if SUDO is non-nil, otherwise return CMD."
     (concat
@@ -1746,7 +1734,19 @@ be natively supported.
     :init
     (sk-defer-init (package-read-all-archive-contents))
     :config
-    (setq package-install-upgrade-built-in t))
+    (require 'package-vc)
+    (setq package-install-upgrade-built-in t)
+    (defun sk-package-upgrade-all ()
+      "Upgrade all packages without asking the user."
+      (interactive)
+      (package-refresh-contents)
+      (let* ((vc-handled-backends '(Git))
+             (upgradeable (package--upgradeable-packages))
+             (pkg-cnt (length upgradeable)))
+        (if (not upgradeable)
+            (message "No packages to upgrade")
+          (mapc #'package-upgrade upgradeable)
+          (message (format "%s packages upgraded. %s" pkg-cnt upgradeable))))))
 
   (use-package package-vc
     :ensure nil
