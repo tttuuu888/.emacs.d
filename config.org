@@ -1306,7 +1306,8 @@ be natively supported.
 
   (use-package ob-janet
     :ensure nil
-    :load-path (lambda () (expand-file-name "ob-janet/" emacs-etc-dir))
+    :vc (:url "https://github.com/tttuuu888/ob-janet"
+              :rev :newest)
     :config
     (add-to-list 'org-babel-load-languages '(janet . t)))
 
@@ -3068,7 +3069,8 @@ be natively supported.
 
   (use-package inf-janet
     :ensure nil
-    :load-path (lambda () (expand-file-name "inf-janet/" emacs-etc-dir))
+    :vc (:url "https://github.com/tttuuu888/inf-janet"
+              :rev :newest)
     :commands (sk-janet-eval sk-janet-describe-symbol)
     :config
     (sk-define-lisp-eval sk-janet-eval inf-janet-eval-region)
