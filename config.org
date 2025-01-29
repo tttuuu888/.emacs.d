@@ -1742,16 +1742,29 @@ be natively supported.
       (package-refresh-contents)
       (let* ((vc-handled-backends '(Git))
              (upgradeable (package--upgradeable-packages))
-             (pkg-cnt (length upgradeable)))
-        (if (not upgradeable)
+             (upgraded (cl-remove-if-not #'package-upgrade upgradeable))
+             (pkg-cnt (length upgraded)))
+        (if (not upgraded)
             (message "No packages to upgrade")
-          (mapc #'package-upgrade upgradeable)
-          (message (format "%s packages upgraded. %s" pkg-cnt upgradeable))))))
+          (message (format "%s packages upgraded. %s" pkg-cnt upgraded))))))
 
   (use-package package-vc
     :ensure nil
     :config
-    (remove-hook 'package-read-archive-hook 'package-vc--read-archive-data))
+    (remove-hook 'package-read-archive-hook 'package-vc--read-archive-data)
+    (defun package-vc-upgrade (pkg-desc)
+      "Attempt to upgrade the package PKG-DESC."
+      (interactive (list (package-vc--read-package-desc "Upgrade VC package: " t)))
+      (cl-assert (package-vc-p pkg-desc))
+      (let* ((vc-handled-backends '(Git))
+             (pkg-dir (package-desc-dir pkg-desc))
+             (default-directory pkg-dir)
+             (pre-hash (shell-command-to-string "git rev-parse HEAD"))
+             (_ (call-process "git" nil nil nil "pull"))
+             (post-hash (shell-command-to-string "git rev-parse HEAD")))
+        (when (not (equal pre-hash post-hash))
+          (with-demoted-errors "Failed to activate: %S"
+            (package-vc--unpack-1 pkg-desc pkg-dir))))))
 
   (use-package diff-mode
     :ensure nil
