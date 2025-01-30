@@ -819,8 +819,10 @@ be natively supported.
 
   (use-package evil-leader
     :init
-    (defvar sk-evil-sub-leader "M-m")
-    (global-evil-leader-mode)
+    (require 'evil-leader)
+    (setq evil-leader/sub-leader "M-m"
+          evil-leader/no-prefix-mode-rx
+          '("magit-.*-mode" "gnus-.*-mode" "package-.*-mode" "dired-mode"))
     (evil-leader/set-leader "<SPC>")
     (evil-leader/set-key
       "<escape>" 'keyboard-quit
@@ -844,20 +846,27 @@ be natively supported.
       "hm" 'describe-mode
       "xq" 'read-only-mode
       "xv" 'evil-reload-file)
-    (defun evil-sub-leader-mode ()
-      (let* ((sub-leader (kbd sk-evil-sub-leader))
-             (mode-map (cdr (assoc major-mode evil-leader--mode-maps)))
-             (map (or mode-map evil-leader--default-map)))
-        (evil-normalize-keymaps)
-        (define-key evil-motion-state-local-map sub-leader map)
-        (define-key evil-insert-state-local-map sub-leader map)
-        (define-key evil-emacs-state-local-map sub-leader map)))
-    (add-hook 'evil-local-mode-hook 'evil-sub-leader-mode t)
+    (let ((leader (read-kbd-macro evil-leader/leader))
+          (sub-leader (read-kbd-macro evil-leader/sub-leader))
+          (no-prefix-rx (mapconcat #'identity evil-leader/no-prefix-mode-rx "\\|")))
+      (defun sk-evil-leader-mode ()
+        (let* ((mode-map (cdr (assoc major-mode evil-leader--mode-maps)))
+               (map (or mode-map evil-leader--default-map)))
+          (evil-normalize-keymaps)
+          (define-key evil-motion-state-local-map leader map)
+          (define-key evil-emacs-state-local-map  sub-leader map)
+          (define-key evil-insert-state-local-map sub-leader map)
+          (define-key evil-motion-state-local-map sub-leader map)
+          (when (and no-prefix-rx
+                     (string-match-p no-prefix-rx (symbol-name major-mode)))
+            (define-key evil-emacs-state-local-map leader map)
+            (define-key evil-insert-state-local-map leader map)))))
+    (add-hook 'evil-local-mode-hook 'sk-evil-leader-mode t)
     (defun evil-leader/set-key-minor-mode (mode key def &rest bindings)
       (declare (indent defun))
       (while key
         (let ((k1 (kbd (concat evil-leader/leader key)))
-              (k2 (kbd (concat sk-evil-sub-leader " " key))))
+              (k2 (kbd (concat evil-leader/sub-leader " " key))))
           (evil-define-minor-mode-key 'motion mode k1 def)
           (evil-define-minor-mode-key '(motion insert emacs) mode k2 def))
         (setq key (pop bindings)
@@ -867,14 +876,11 @@ be natively supported.
       (declare (indent defun))
       (while key
         (let ((k1 (kbd (concat evil-leader/leader key)))
-              (k2 (kbd (concat sk-evil-sub-leader " " key))))
+              (k2 (kbd (concat evil-leader/sub-leader " " key))))
           (evil-define-key* 'motion map k1 def)
           (define-key map k2 def))
         (setq key (pop bindings)
-              def (pop bindings))))
-
-    (setq evil-leader/no-prefix-mode-rx
-          '("magit-.*-mode" "gnus-.*-mode" "package-.*-mode" "dired-mode")))
+              def (pop bindings)))))
 
   (use-package evil
     :bind (("M-B" . evil-backward-WORD-begin)
