@@ -980,6 +980,8 @@ be natively supported.
       (evil-set-initial-state m 'emacs)))
 
   (use-package evil-anzu
+    :vc (:url "https://github.com/tttuuu888/evil-anzu"
+              :rev :newest)
     :demand t
     :after anzu)
 
