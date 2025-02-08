@@ -2272,7 +2272,6 @@ be natively supported.
 
   (use-package ivy-posframe
     :if window-system
-    :after ivy
     :custom-face
     (ivy-posframe
      ((((background light)) :background "LightGray" :foreground "black")
