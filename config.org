@@ -2417,10 +2417,8 @@ be natively supported.
       "nl" 'org-roam-buffer-toggle))
 
   (use-package xclip
-    :init
-    (when (and (not (display-graphic-p))
-               (executable-find "xclip"))
-      (xclip-mode 1)))
+    :if (not (display-graphic-p))
+    :init (sk-defer-init (xclip-mode 1)))
 
   (use-package stillness-mode
     :vc (:url "https://github.com/tttuuu888/stillness-mode.el"
