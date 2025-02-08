@@ -2427,7 +2427,6 @@ be natively supported.
     :init (sk-defer-init (stillness-mode 1))
     :config
     (define-minor-mode stillness-mode "Custom stillness-mode."
-      :require 'stillness-mode
       :global t
       (if stillness-mode
           (advice-add 'read-from-minibuffer :around
