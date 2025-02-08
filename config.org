@@ -1470,6 +1470,9 @@ be natively supported.
               (lambda ()
                 (evil-local-set-key 'insert (kbd "<tab>") 'my-org-tab)
                 (evil-local-set-key 'insert (kbd "TAB") 'my-org-tab)))
+    (add-hook 'org-babel-after-execute-hook 'my-org-inline-image-hook)
+    (add-hook 'org-export-before-processing-functions 'my-org-before-process-hook)
+
     (evil-declare-motion 'org-up-element)
     (evil-declare-motion 'org-down-element)
     (evil-declare-motion 'org-forward-element)
@@ -1514,9 +1517,6 @@ be natively supported.
         (call-process "import" nil nil nil img)
         (when (file-exists-p img)
           (insert (concat "[[file:" img "]]")))))
-    (add-hook 'org-babel-after-execute-hook 'my-org-inline-image-hook)
-    (add-hook 'org-export-before-processing-functions 'my-org-before-process-hook)
-
     (defun org-html--embed-image (source attributes info)
       (format "<img src=\"data:image/%s;base64,%s\"%s />"
               (or (file-name-extension source) "")
