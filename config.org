@@ -604,7 +604,7 @@ Enable dark theme.
 ** Korean and Font setting
 #+BEGIN_SRC emacs-lisp
   (setq default-input-method "korean-hangul3")
-  (when (display-graphic-p)
+  (when window-system
     (set-fontset-font t 'unicode "Unifont")
     (set-fontset-font t '(#x10000 . #xFFFFF) "Unifont Upper")
     (set-fontset-font t 'hangul sk-font)
@@ -625,7 +625,7 @@ Simple mode line setting function.
      '("%e"
        (:eval
         (let* ((width (- (window-width)
-                         (if (display-graphic-p) 5 6)))
+                         (if window-system 5 6)))
                (evil-info (and (featurep 'evil) evil-mode
                                (concat " " (upcase (symbol-name evil-state)))))
                (buffer-info " %* ")
@@ -2271,7 +2271,7 @@ be natively supported.
     (advice-add 'ivy-yasnippet :after 'evil-insert-state))
 
   (use-package ivy-posframe
-    :if (display-graphic-p)
+    :if window-system
     :after ivy
     :custom-face
     (ivy-posframe
@@ -2418,12 +2418,12 @@ be natively supported.
       "nl" 'org-roam-buffer-toggle))
 
   (use-package xclip
-    :if (and (not (display-graphic-p))
+    :if (and (not window-system)
              (executable-find "xclip"))
     :init (sk-defer-init (xclip-mode 1)))
 
   (use-package stillness-mode
-    :if (not (display-graphic-p))
+    :if (not window-system)
     :init (sk-defer-init (stillness-mode 1))
     :config
     (define-minor-mode stillness-mode "Custom stillness-mode."
