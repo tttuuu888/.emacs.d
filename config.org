@@ -2421,10 +2421,16 @@ be natively supported.
     :init (sk-defer-init (xclip-mode 1)))
 
   (use-package stillness-mode
-    :vc (:url "https://github.com/tttuuu888/stillness-mode.el"
-              :rev :newest)
     :if (not (display-graphic-p))
-    :init (sk-defer-init (stillness-mode 1)))
+    :init (sk-defer-init (stillness-mode 1))
+    :config
+    (define-minor-mode stillness-mode "Custom stillness-mode."
+      :require 'stillness-mode
+      :global t
+      (if stillness-mode
+          (advice-add 'read-from-minibuffer :around
+                      #'stillness-mode--handle-point '(depth 90))
+        (advice-remove 'read-from-minibuffer #'stillness-mode--handle-point))))
 #+END_SRC
 * Development packages - built-in
 #+BEGIN_SRC emacs-lisp
