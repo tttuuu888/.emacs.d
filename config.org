@@ -138,18 +138,6 @@ Instead of using =custom.el=, insert the contents of the file directly here.
 
 ** Custom macros
 #+begin_src emacs-lisp
-  (let ((cnt 0))
-    (defmacro sk-defer-init (&rest body)
-      "Defer BODY until the very first command after init."
-      (declare (indent defun))
-      (let ((name (intern (format "sk-defer-init-%d" (setq cnt (1+ cnt))))))
-        `(progn
-           (defun ,name ()
-             ,@body
-             (remove-hook 'pre-command-hook ',name)
-             (unintern ',name nil))
-           (add-hook 'pre-command-hook #',name)))))
-
   (defmacro sk-switch-buffer-repl (name mode repl run-repl &optional nobind)
     "Create NAME function which switch between a file of MODE and a REPL. Open
   REPL with RUN-REPL function if REPL is not yet opened. Evil-Leader z binding
@@ -675,6 +663,29 @@ settings.
 #+BEGIN_SRC emacs-lisp
   (require 'use-package)
 #+END_SRC
+*** Add :defer-init keyword
+Defer code execution until the first command after initialization.
+
+#+begin_src emacs-lisp
+  (add-to-list 'use-package-keywords :defer-init)
+
+  (defalias 'use-package-normalize/:defer-init 'use-package-normalize-forms)
+
+  (defun use-package-handler/:defer-init (name _keyword arg rest state)
+    "Defer code execution until the first command after initialization."
+    (use-package-concat
+     (let ((init-body
+            (use-package-hook-injector (use-package-as-string name)
+                                       :defer-init arg)))
+       (when init-body
+         (let ((name-sym (gensym "defer-init-")))
+           `((defun ,name-sym ()
+               ,@init-body
+               (remove-hook 'pre-command-hook ',name-sym)
+               (unintern ',name-sym nil))
+             (add-hook 'pre-command-hook #',name-sym)))))
+     (use-package-process-keywords name rest state)))
+#+end_src
 
 *** Backport use-package :vc support from Emacs 30
 This section will be removed once Emacs 30 is released, as the :vc feature will
@@ -993,8 +1004,7 @@ be natively supported.
     (global-evil-visualstar-mode))
 
   (use-package evil-surround
-    :init
-    (sk-defer-init (global-evil-surround-mode 1))
+    :defer-init (global-evil-surround-mode 1)
     :config
     (setq-default evil-surround-pairs-alist
                   (append evil-surround-pairs-alist
@@ -1006,8 +1016,7 @@ be natively supported.
       "gs" 'evil-surround-region))
 
   (use-package evil-commentary
-    :init
-    (sk-defer-init (evil-commentary-mode 1)))
+    :defer-init (evil-commentary-mode 1))
 #+END_SRC
 * General packages - built-in
 #+BEGIN_SRC emacs-lisp
@@ -1024,8 +1033,7 @@ be natively supported.
   (use-package recentf
     :ensure nil
     :custom (recentf-max-saved-items 100)
-    :init
-    (sk-defer-init (recentf-mode 1))
+    :defer-init (recentf-mode 1)
     :config
     (add-to-list 'recentf-exclude
                  (expand-file-name "elpa/.*" emacs-config-dir)))
@@ -1651,16 +1659,14 @@ be natively supported.
 
   (use-package paren
     :ensure nil
-    :init
-    (sk-defer-init (show-paren-mode 1)))
+    :defer-init (show-paren-mode 1))
 
   (use-package hl-line
     :ensure nil
     :custom-face
     (hl-line ((((background light)) :background "AntiqueWhite" :extend t)
               (((background dark)) :background "gray16" :extend t)))
-    :init
-    (sk-defer-init (global-hl-line-mode 1)))
+    :defer-init (global-hl-line-mode 1))
 
   (use-package ansi-color
     :ensure nil
@@ -1742,8 +1748,7 @@ be natively supported.
 
   (use-package package
     :ensure nil
-    :init
-    (sk-defer-init (package-read-all-archive-contents))
+    :defer-init (package-read-all-archive-contents)
     :config
     (require 'package-vc)
     (setq package-install-upgrade-built-in t)
@@ -1859,7 +1864,7 @@ be natively supported.
   (use-package winner
     :ensure nil
     :custom (winner-dont-bind-my-keys t)
-    :init (sk-defer-init (winner-mode 1))
+    :defer-init (winner-mode 1)
     :config
     (evil-leader/set-key
       "xwu" 'winner-undo
@@ -1906,8 +1911,7 @@ be natively supported.
     (package-loading-notifier-mode 1))
 
   (use-package company
-    :init
-    (sk-defer-init (global-company-mode 1))
+    :defer-init (global-company-mode 1)
     :config
     (setq company-format-margin-function nil)
     (defun my-company-abort ()
@@ -1949,8 +1953,7 @@ be natively supported.
     (add-to-list 'company-backends 'company-ghci))
 
   (use-package undo-tree
-    :init
-    (sk-defer-init (global-undo-tree-mode 1))
+    :defer-init (global-undo-tree-mode 1)
     :config
     (setq undo-tree-auto-save-history nil)
     (add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode)
@@ -2125,8 +2128,7 @@ be natively supported.
   (use-package smex)
 
   (use-package anzu
-    :init
-    (sk-defer-init (global-anzu-mode 1))
+    :defer-init (global-anzu-mode 1)
     :config
     (setq anzu-search-threshold 1000
           anzu-replace-threshold 1000))
@@ -2198,7 +2200,7 @@ be natively supported.
     :init
     (evil-leader/set-key
       "b" 'ivy-switch-buffer)
-    (sk-defer-init (ivy-mode 1))
+    :defer-init (ivy-mode 1)
     :config
     (setq ivy-height 15
           ivy-height-alist '((t . 15))
@@ -2277,7 +2279,7 @@ be natively supported.
      ((((background light)) :background "LightGray" :foreground "black")
       (((background dark)) :background "#282a36" :foreground "gray80")))
     (ivy-posframe-border ((t (:inherit ivy-posframe))) face-defface-spec)
-    :init (sk-defer-init (ivy-posframe-mode 1))
+    :defer-init (ivy-posframe-mode 1)
     :config
     (setq ivy-truncate-lines nil
           ivy-posframe-border-width 20
@@ -2397,8 +2399,7 @@ be natively supported.
 
   (use-package which-key
     :custom (which-key-dont-use-unicode t)
-    :init
-    (sk-defer-init (which-key-mode 1)))
+    :defer-init (which-key-mode 1))
 
   (use-package auctex)
 
@@ -2419,11 +2420,11 @@ be natively supported.
   (use-package xclip
     :if (and (not window-system)
              (executable-find "xclip"))
-    :init (sk-defer-init (xclip-mode 1)))
+    :defer-init (xclip-mode 1))
 
   (use-package stillness-mode
     :if (not window-system)
-    :init (sk-defer-init (stillness-mode 1))
+    :defer-init (stillness-mode 1)
     :config
     (define-minor-mode stillness-mode "Custom stillness-mode."
       :global t
@@ -3024,7 +3025,7 @@ be natively supported.
   (use-package yaml-mode)
 
   (use-package eros
-    :init (sk-defer-init (eros-mode 1)))
+    :defer-init (eros-mode 1))
 
   (use-package dts-mode)
 
