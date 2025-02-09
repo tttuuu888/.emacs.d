@@ -667,24 +667,28 @@ settings.
 Defer code execution until the first command after initialization.
 
 #+begin_src emacs-lisp
+  (defmacro sk-defer-init (&rest body)
+    "Defer BODY until the very first command after init."
+    (declare (indent defun))
+    (let ((name (gensym "defer-init-")))
+      `(progn
+         (defun ,name ()
+           ,@body
+           (remove-hook 'pre-command-hook ',name)
+           (unintern ',name nil))
+         (add-hook 'pre-command-hook #',name))))
+
   (add-to-list 'use-package-keywords :defer-init)
 
   (defalias 'use-package-normalize/:defer-init 'use-package-normalize-forms)
 
-  (defun use-package-handler/:defer-init (name _keyword arg rest state)
-    "Defer code execution until the first command after initialization."
-    (use-package-concat
-     (let ((init-body
-            (use-package-hook-injector (use-package-as-string name)
-                                       :defer-init arg)))
-       (when init-body
-         (let ((name-sym (gensym "defer-init-")))
-           `((defun ,name-sym ()
-               ,@init-body
-               (remove-hook 'pre-command-hook ',name-sym)
-               (unintern ',name-sym nil))
-             (add-hook 'pre-command-hook #',name-sym)))))
-     (use-package-process-keywords name rest state)))
+  (defun use-package-handler/:defer-init (name _keyword args rest state)
+    "Wraps :defer-init forms in (sk-defer-init ...), converting it to :init."
+    (use-package-process-keywords
+      name
+      (plist-put rest :init
+                 (cons `(sk-defer-init ,@args) (plist-get rest :init)))
+      state))
 #+end_src
 
 *** Backport use-package :vc support from Emacs 30
