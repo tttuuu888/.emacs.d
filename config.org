@@ -1744,6 +1744,7 @@ Defer code execution until the first command after initialization.
       "xwr" 'winner-redo))
 
   (use-package epa
+    :ensure nil
     :bind (:map epa-key-list-mode-map
             ("/" . swiper)))
 #+END_SRC
