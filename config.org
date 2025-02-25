@@ -94,6 +94,7 @@ Instead of using =custom.el=, insert the contents of the file directly here.
    '(backup-directory-alist '((".*" . "/tmp/")))
    '(blink-cursor-mode nil)
    '(browse-url-browser-function 'browse-url-chrome)
+   '(byte-compile-warnings '(not obsolete))
    '(completion-styles '(basic partial-completion emacs22 initials))
    '(css-indent-offset 2)
    '(fill-column 80)
@@ -104,6 +105,7 @@ Instead of using =custom.el=, insert the contents of the file directly here.
    '(major-mode 'text-mode)
    '(make-backup-files nil)
    '(mouse-wheel-progressive-speed nil)
+   '(native-comp-async-report-warnings-errors 'silent)
    '(paragraph-start
      (rx (or "\f"
              (and (* space) eol)
@@ -121,7 +123,8 @@ Instead of using =custom.el=, insert the contents of the file directly here.
    '(tab-always-indent 'complete)
    '(tab-width 4)
    '(use-file-dialog nil)
-   '(use-short-answers t))
+   '(use-short-answers t)
+   '(warning-suppress-log-types '((comp) (bytecomp))))
 #+END_SRC
 
 ** Custom variables
