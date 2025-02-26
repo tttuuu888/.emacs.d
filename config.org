@@ -1749,6 +1749,14 @@ Defer code execution until the first command after initialization.
     :ensure nil
     :bind (:map epa-key-list-mode-map
             ("/" . swiper)))
+
+  (use-package comp
+    :ensure nil
+    :defer-init
+    (unless (equal 3 (length
+                      (directory-files
+                       (expand-file-name "eln-cache" user-emacs-directory))))
+      (native-compile-prune-cache)))
 #+END_SRC
 * General packages - external
 #+BEGIN_SRC emacs-lisp
