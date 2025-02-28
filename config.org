@@ -947,7 +947,6 @@ Defer code execution until the first command after initialization.
             ("/"     . swiper)
             ("^"     . dired-up-and-close-dir)
             ("bp"    . my-dired-pdf-size-down)
-            ("bx"    . my-dired-open-extern)
             ("<DEL>" . dired-up-and-close-dir))
     :init
     (add-to-list 'magic-mode-alist
@@ -1184,12 +1183,6 @@ Defer code execution until the first command after initialization.
                   files)
             (mapc (lambda (f) (dired-delete-entry f)) files)
             (message "Delete files done.")))))
-
-    (defun my-dired-open-extern ()
-      "Open file with an external program."
-      (interactive)
-      (let ((path (dired-get-filename)))
-        (call-process "xdg-open" nil 0 nil path)))
 
     (defun sk-meld-dir ()
       (interactive)
