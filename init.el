@@ -14,6 +14,8 @@
       (make-directory dir t))
     dir)
 
+  (setq-default temporary-file-directory (ensure-dir "/tmp/emacs/"))
+
   (startup-redirect-eln-cache (ensure-dir eln-dir))
 
   (when (file-newer-than-file-p config-org config-el)
