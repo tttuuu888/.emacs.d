@@ -47,16 +47,12 @@ all package local files would be hidden under the path.
 #+BEGIN_SRC emacs-lisp
   (defvar emacs-config-dir user-emacs-directory)
   (setq user-emacs-directory (expand-file-name ".local/" emacs-config-dir))
-  (unless (file-exists-p user-emacs-directory)
-    (make-directory-internal user-emacs-directory))
 #+END_SRC
 
 Set =emacs-etc-dir= to indicate a folder containing extra files.
 
 #+BEGIN_SRC emacs-lisp
-  (defvar emacs-etc-dir (expand-file-name "etc/" emacs-config-dir))
-  (unless (file-exists-p emacs-etc-dir)
-    (make-directory-internal emacs-etc-dir))
+  (defvar emacs-etc-dir (ensure-dir (expand-file-name "etc/" emacs-config-dir)))
 #+END_SRC
 
 ** User information
@@ -1388,8 +1384,7 @@ Defer code execution until the first command after initialization.
                    (counsel--find-file-1 "Image file name: " nil nil nil)
                    default-directory))
              (dir (file-name-directory img)))
-        (and dir (not (file-exists-p dir))
-             (make-directory dir t))
+        (when dir (ensure-dir dir))
         (call-process "import" nil nil nil img)
         (when (file-exists-p img)
           (insert (concat "[[file:" img "]]")))))
