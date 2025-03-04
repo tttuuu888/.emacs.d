@@ -4,19 +4,11 @@
 
 (let ((file-name-handler-alist nil)
       (gc-cons-threshold most-positive-fixnum)
-      (eln-dir    (expand-file-name ".local/eln-cache/" user-emacs-directory))
       (config-el  (expand-file-name "config.el"  user-emacs-directory))
       (config-org (expand-file-name "config.org" user-emacs-directory)))
 
-  (defun ensure-dir (dir)
-    "Ensure that DIR exists, creating it if necessary. Returns DIR."
-    (unless (file-exists-p dir)
-      (make-directory dir t))
-    dir)
-
-  (setq-default temporary-file-directory (ensure-dir "/tmp/emacs/"))
-
-  (startup-redirect-eln-cache (ensure-dir eln-dir))
+  (unless (boundp 'sk-early-init)
+    (startup-redirect-eln-cache ".local/eln-cache/"))
 
   (when (file-newer-than-file-p config-org config-el)
     (package-initialize)

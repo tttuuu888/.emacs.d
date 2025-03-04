@@ -7,4 +7,7 @@
                             (horizontal-scroll-bars . nil)
                             (vertical-scroll-bars . nil))
       package-enable-at-startup nil
-      package-native-compile t)
+      package-native-compile t
+      sk-early-init t)
+
+(startup-redirect-eln-cache ".local/eln-cache/")
