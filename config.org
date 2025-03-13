@@ -693,7 +693,7 @@ Defer code execution until the first command after initialization.
   (defalias 'use-package-normalize/:defer-init 'use-package-normalize-forms)
 
   (defun use-package-handler/:defer-init (name _keyword args rest state)
-    "Wraps :defer-init forms in (sk-defer-init ...), converting it to :init."
+    "Transforms `:defer-init BODY' into `:init (sk-defer-init BODY)'"
     (use-package-process-keywords
       name
       (plist-put rest :init
