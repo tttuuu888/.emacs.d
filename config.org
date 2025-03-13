@@ -705,7 +705,15 @@ Defer code execution until the first command after initialization.
 #+BEGIN_SRC emacs-lisp
   (use-package async
     :init
-    (async-bytecomp-package-mode 1))
+    (async-bytecomp-package-mode 1)
+    :config
+    (defun my-async--emacs-program-args-advice (orig-fun &rest args)
+      "Prevent creation of default eln-cache folder."
+      (let* ((orig-result (apply orig-fun args))
+             (eval-arg "(startup-redirect-eln-cache \".local/eln-cache\")"))
+        (append (list "--eval" eval-arg) orig-result)))
+    (advice-add 'async--emacs-program-args :around
+                #'my-async--emacs-program-args-advice))
 
   (use-package evil-leader
     :init
