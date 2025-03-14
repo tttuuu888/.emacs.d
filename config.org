@@ -1761,6 +1761,10 @@ Defer code execution until the first command after initialization.
                       (directory-files
                        (expand-file-name "eln-cache" user-emacs-directory))))
       (native-compile-prune-cache)))
+
+  (use-package text
+    :ensure nil
+    :mode ("\\.lst\\'" . text-mode))
 #+END_SRC
 * General packages - external
 #+BEGIN_SRC emacs-lisp
