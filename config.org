@@ -565,10 +565,10 @@ Instead of using =custom.el=, insert the contents of the file directly here.
     (mapconcat (lambda (x) (format "%02x" x)) lst ""))
 
   (defun ensure-dir (dir)
-      "Ensure that DIR exists, creating it if necessary. Returns DIR."
-      (unless (file-exists-p dir)
-        (make-directory dir t))
-      dir)
+    "Ensure that DIR exists, creating it if necessary. Returns DIR."
+    (unless (file-exists-p dir)
+      (make-directory dir t))
+    dir)
 #+END_SRC
 
 ** Color setting
