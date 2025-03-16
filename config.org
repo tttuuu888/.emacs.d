@@ -311,23 +311,24 @@ Instead of using =custom.el=, insert the contents of the file directly here.
            (target (alist-get ?\C-c mode-map))
            (cm (append (number-sequence ?\C-a ?\C-z)))
            (ks (append cm (number-sequence ?\ ?z))))
-      (defun ctrl-map-search (elt pre)
-        (if (symbolp elt)
-            (setq ret (append ret (list (cons pre elt))))
-          (dolist (k ks)
-            ;; NOTE: C-a, C-b, etc. will be converted to a, b, etc. for
-            ;; npre. However, C-<letter> and <letter> will result in the same
-            ;; value for npre, causing potential overwriting.
-            (let ((nelt (alist-get k elt))
-                  (npre (if (member k cm) (+ k 96) k)))
-              (when nelt
-                (ctrl-map-search nelt (append pre (list npre))))))))
-      (ctrl-map-search target (list ?\c))
-      (dolist (e ret)
-        (let ((key (mapconcat 'single-key-description (car e) "")))
-          (unless (and exceptions
-                       (cl-some (lambda (e) (string-prefix-p e key)) exceptions))
-            (evil-leader/set-key-for-mode mode key (cdr e)))))))
+      (cl-labels
+          ((ctrl-map-search (elt pre)
+             (if (symbolp elt)
+                 (setq ret (append ret (list (cons pre elt))))
+               (dolist (k ks)
+                 ;; NOTE: C-a, C-b, etc. will be converted to a, b, etc. for
+                 ;; npre. However, C-<letter> and <letter> will result in the same
+                 ;; value for npre, causing potential overwriting.
+                 (let ((nelt (alist-get k elt))
+                       (npre (if (member k cm) (+ k 96) k)))
+                   (when nelt
+                     (ctrl-map-search nelt (append pre (list npre)))))))))
+        (ctrl-map-search target (list ?\c))
+        (dolist (e ret)
+          (let ((key (mapconcat 'single-key-description (car e) "")))
+            (unless (and exceptions
+                         (cl-some (lambda (e) (string-prefix-p e key)) exceptions))
+              (evil-leader/set-key-for-mode mode key (cdr e))))))))
 
   (defun tmux-running-p (&optional notice)
     "Check if Tmux is currently running. If NOTICE is non-nil and Tmux is not
