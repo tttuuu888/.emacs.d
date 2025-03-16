@@ -1801,7 +1801,7 @@ Defer code execution until the first command after initialization.
 
   (use-package package-loading-notifier
     :custom  (package-loading-notifier-packages '(helm org magit yasnippet))
-    :init
+    :defer-init
     (package-loading-notifier-mode 1))
 
   (use-package company
