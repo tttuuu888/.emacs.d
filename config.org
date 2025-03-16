@@ -1585,7 +1585,7 @@ Defer code execution until the first command after initialization.
 
   (use-package autorevert
     :ensure nil
-    :hook (find-file . global-auto-revert-mode)
+    :defer-init (global-auto-revert-mode 1)
     :config
     (setq auto-revert-check-vc-info t
           auto-revert-verbose nil))
