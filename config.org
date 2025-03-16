@@ -534,7 +534,8 @@ Instead of using =custom.el=, insert the contents of the file directly here.
       (browse-url (format "https://www.google.com/search?q=%s&ie=UTF-8" target))))
 
   (defun align-columns (beg end)
-    "Align columns in region BEG END."
+    "Align columns in region BEG END, treating quoted strings and balanced
+  parentheses, brackets, and braces as single units."
     (interactive "r")
     (align-regexp beg end
                   (rx (group (* space))
