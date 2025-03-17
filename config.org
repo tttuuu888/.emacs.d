@@ -2980,7 +2980,6 @@ Defer code execution until the first command after initialization.
     (add-hook 'janet-mode-hook 'sk-janet-mode-hook))
 
   (use-package inf-janet
-    :ensure nil
     :vc (:url "https://github.com/tttuuu888/inf-janet"
               :rev :newest)
     :commands (sk-janet-eval sk-janet-describe-symbol)
