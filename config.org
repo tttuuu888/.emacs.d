@@ -2996,6 +2996,11 @@ Defer code execution until the first command after initialization.
 
   (use-package dart-mode
     :hook (dart-mode . eglot-ensure))
+
+  (use-package bb-mode
+    :vc (:url "https://github.com/mferland/bb-mode"
+              :rev :newest)
+    :mode ("\\.bb\\'" "\\.bbappend\\'" "\\.bbclass\\'"))
 #+END_SRC
 * End
 ** Provide a feature
