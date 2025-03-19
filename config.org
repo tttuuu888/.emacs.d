@@ -604,9 +604,8 @@ Enable dark theme.
 #+BEGIN_SRC emacs-lisp
   (setq default-input-method "korean-hangul3")
   (when window-system
-    (set-fontset-font t 'unicode "Unifont")
-    (set-fontset-font t '(#x10000 . #xFFFFF) "Unifont Upper")
-    (set-fontset-font t 'hangul sk-font)
+    (set-fontset-font t 'unicode "Unifont" nil t)
+    (set-fontset-font t 'unicode "Unifont Upper" nil t)
     (set-face-attribute 'fixed-pitch nil :family sk-font))
 #+END_SRC
 ** SK-mode-line
