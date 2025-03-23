@@ -2598,7 +2598,7 @@ Defer code execution until the first command after initialization.
   (use-package paredit
     :hook ((emacs-lisp-mode
             clojure-mode cider-repl-mode janet-mode inf-janet-mode
-            lisp-mode scheme-mode inferior-emacs-lisp-mode)
+            lisp-mode scheme-mode inferior-emacs-lisp-mode sly-mrepl-mode)
            . enable-paredit-mode)
     :bind (:map paredit-mode-map
             ("M-b" . paredit-backward)
@@ -2725,6 +2725,8 @@ Defer code execution until the first command after initialization.
       "gp" 'sly-pop-find-definition-stack
       "gr" 'sly-edit-uses
       (kbd "RET") 'my-comint-return)
+    (evil-define-key 'insert sly-mrepl-mode-map
+      (kbd "RET") 'sly-mrepl-return)
     (evil-define-minor-mode-key 'normal 'sly-popup-buffer-mode
       "q"  'quit-window))
 
