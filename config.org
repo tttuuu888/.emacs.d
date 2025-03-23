@@ -2503,7 +2503,9 @@ Defer code execution until the first command after initialization.
 
   (use-package lisp-mode
     :ensure nil
-    :custom (emacs-lisp-docstring-fill-column 80))
+    :custom (emacs-lisp-docstring-fill-column 80)
+    :config
+    (add-hook 'lisp-mode-hook #'enable-paredit-mode))
 
   (use-package cc-mode
     :ensure nil
@@ -2537,6 +2539,8 @@ Defer code execution until the first command after initialization.
     :config
     (setq scheme-program-name "chicken-csi")
     (require 'cmuscheme)
+    (add-hook 'scheme-mode-hook #'enable-paredit-mode)
+    (add-hook 'inferior-scheme-mode-hook #'enable-paredit-mode)
     (sk-switch-buffer-repl sk-scheme-buffer-repl-toggle
       scheme-mode inferior-scheme-mode run-scheme)
     (sk-define-lisp-eval sk-scheme-eval scheme-send-region)
@@ -2561,8 +2565,14 @@ Defer code execution until the first command after initialization.
   (use-package ielm
     :ensure nil
     :config
+    (add-hook 'inferior-emacs-lisp-mode-hook #'enable-paredit-mode)
     (evil-define-key 'insert inferior-emacs-lisp-mode-map
       (kbd "<return>") 'ielm-return))
+
+  (use-package elisp-mode
+    :ensure nil
+    :config
+    (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode))
 #+END_SRC
 * Development packages - external
 #+BEGIN_SRC emacs-lisp
@@ -2596,16 +2606,11 @@ Defer code execution until the first command after initialization.
           '(irony-cdb-clang-complete irony-cdb-libclang)))
 
   (use-package paredit
-    :hook ((emacs-lisp-mode
-            clojure-mode cider-repl-mode janet-mode inf-janet-mode
-            lisp-mode scheme-mode inferior-emacs-lisp-mode sly-mrepl-mode)
-           . enable-paredit-mode)
     :bind (:map paredit-mode-map
             ("M-b" . paredit-backward)
             ("M-f" . paredit-forward)
             ("C-c <left>"  . paredit-forward-barf-sexp)
             ("C-c <right>" . paredit-forward-slurp-sexp))
-    :commands (sk-janet-mode-hook)
     :config
     (defun evil-paredit-kill (&rest _)
       (interactive)
@@ -2614,14 +2619,6 @@ Defer code execution until the first command after initialization.
         (when (equal pos (1- (line-end-position)))
           (goto-char (1+ pos)))
         (call-interactively 'paredit-kill)))
-    (defun janet-insert-semicolon ()
-      (interactive)
-      (insert-and-inherit ?\;))
-    (defun sk-janet-mode-hook ()
-      (setq-local paredit-comment-prefix-toplevel "### "
-                  paredit-comment-prefix-code "## "
-                  paredit-comment-prefix-margin "#")
-      (evil-local-set-key 'insert ";" 'janet-insert-semicolon))
     (evil-leader/set-key-minor-mode 'paredit-mode
       "k"  'evil-paredit-kill)
     (evil-define-key 'insert paredit-mode-map
@@ -2630,6 +2627,7 @@ Defer code execution until the first command after initialization.
   (use-package clojure-mode
     :config
     (require 'cider)
+    (add-hook 'clojure-mode-hook #'enable-paredit-mode)
     (sk-define-lisp-eval sk-cider-eval cider-eval-region)
     (sk-C-c-map-to-leader-c-map 'clojure-mode cider-mode-map)
     (sk-C-c-map-to-leader-c-map 'clojurescript-mode cider-mode-map)
@@ -2653,6 +2651,7 @@ Defer code execution until the first command after initialization.
 
   (use-package cider
     :config
+    (add-hook 'cider-repl-mode-hook #'enable-paredit-mode)
     (evil-set-initial-state 'cider-auto-test-mode           'emacs)
     (evil-set-initial-state 'cider-browse-ns-mode           'emacs)
     (evil-set-initial-state 'cider-browse-spec-example-mode 'emacs)
@@ -2689,6 +2688,7 @@ Defer code execution until the first command after initialization.
     (evil-set-initial-state 'sly-stickers--replay-mode  'emacs)
     (evil-set-initial-state 'sly-xref-mode              'emacs)
     (evil-set-initial-state 'sly-xref-mode              'emacs)
+    (add-hook 'sly-mrepl-mode-hook #'enable-paredit-mode)
     (sk-define-lisp-eval sk-sly-eval sly-eval-region)
     (defun my-sly-mrepl ()
       (interactive)
@@ -2979,7 +2979,16 @@ Defer code execution until the first command after initialization.
       "er" 'inf-janet-eval-region)
     (evil-define-key 'normal janet-mode-map
       "gh" 'sk-janet-describe-symbol)
-    (add-hook 'janet-mode-hook 'sk-janet-mode-hook))
+    (add-hook 'janet-mode-hook 'sk-janet-mode-hook)
+    (add-hook 'janet-mode-hook #'enable-paredit-mode)
+    (defun janet-insert-semicolon ()
+      (interactive)
+      (insert-and-inherit ?\;))
+    (defun sk-janet-mode-hook ()
+      (setq-local paredit-comment-prefix-toplevel "### "
+                  paredit-comment-prefix-code "## "
+                  paredit-comment-prefix-margin "#")
+      (evil-local-set-key 'insert ";" 'janet-insert-semicolon)))
 
   (use-package inf-janet
     :vc (:url "https://github.com/tttuuu888/inf-janet"
@@ -2987,7 +2996,8 @@ Defer code execution until the first command after initialization.
     :commands (sk-janet-eval sk-janet-describe-symbol)
     :config
     (sk-define-lisp-eval sk-janet-eval inf-janet-eval-region)
-    (add-hook 'inf-janet-mode-hook 'sk-janet-mode-hook)
+    (add-hook 'inf-janet-mode-hook #'enable-paredit-mode)
+    (add-hook 'inf-janet-mode-hook #'sk-janet-mode-hook)
     (defun sk-janet-describe-symbol ()
       (interactive)
       (when-let ((sym (symbol-at-point)))
