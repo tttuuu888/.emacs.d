@@ -886,11 +886,8 @@ Defer code execution until the first command after initialization.
     :after anzu)
 
   (use-package evil-visualstar
-    :bind (:map evil-visual-state-map
-            ("n" . evil-visualstar/begin-search-forward)
-            ("N" . evil-visualstar/begin-search-backward))
-    :config
-    (global-evil-visualstar-mode))
+    :defer-init
+    (global-evil-visualstar-mode 1))
 
   (use-package evil-surround
     :defer-init (global-evil-surround-mode 1)
