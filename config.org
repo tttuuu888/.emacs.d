@@ -2323,6 +2323,17 @@ Defer code execution until the first command after initialization.
           (advice-add 'read-from-minibuffer :around
                       #'stillness-mode--handle-point '(depth 90))
         (advice-remove 'read-from-minibuffer #'stillness-mode--handle-point))))
+
+  (use-package gptel
+    :config
+    (setq-default gptel-model 'gemini-2.0-flash
+                  gptel-backend
+                  (gptel-make-gemini "Gemini"
+                    :key (getenv "GEMINI_API_KEY")
+                    :stream t)))
+
+  (use-package inf-gptel
+    :vc (:url "https://github.com/tttuuu888/inf-gptel" :branch "main"))
 #+END_SRC
 * Development packages - built-in
 #+BEGIN_SRC emacs-lisp
