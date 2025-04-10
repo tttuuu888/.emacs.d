@@ -2333,7 +2333,8 @@ Defer code execution until the first command after initialization.
                     :stream t)))
 
   (use-package inf-gptel
-    :vc (:url "https://github.com/tttuuu888/inf-gptel" :branch "main"))
+    :vc
+    (:url "https://github.com/tttuuu888/inf-gptel" :branch "main" :rev :newest))
 #+END_SRC
 * Development packages - built-in
 #+BEGIN_SRC emacs-lisp
