@@ -606,6 +606,7 @@ Enable dark theme.
   (when window-system
     (set-fontset-font t 'unicode "Unifont" nil t)
     (set-fontset-font t 'unicode "Unifont Upper" nil t)
+    (set-fontset-font t 'unicode "Noto Color Emoji" nil t)
     (set-fontset-font t 'hangul sk-font)
     (set-face-attribute 'fixed-pitch nil :family sk-font))
 #+END_SRC
