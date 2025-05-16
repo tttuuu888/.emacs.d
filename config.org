@@ -2002,11 +2002,11 @@ Defer code execution until the first command after initialization.
           (message "No staged files")
         (call-process "git" nil `(:file ,diff-file) nil
                       "--no-pager" "diff" "--cached")))
-    (if (transient--layout-member "v" 'magit-diff)
+    (if (transient--locate-child 'magit-diff "v")
         (error "Layout conflict occured!")
       (transient-append-suffix 'magit-diff "p"
         '("v" "Run vc-diff" sk-save-git-diff)))
-    (if (transient--layout-member "V" 'magit-diff)
+    (if (transient--locate-child 'magit-diff "V")
         (error "Layout conflict occured!")
       (transient-append-suffix 'magit-diff "w"
         '("V" "Save vc-diff" sk-git-diff))))
