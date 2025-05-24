@@ -1975,8 +1975,9 @@ Defer code execution until the first command after initialization.
     :hook (with-editor-mode . evil-normal-state)
     :init
     (evil-leader/set-key
-      "gs" 'magit-status
-      "gd" 'magit-file-dispatch)
+      "gd" 'magit-file-dispatch
+      "gl" 'magit-log-buffer-file
+      "gs" 'magit-status)
     :config
     (setq magit-log-section-commit-count 5)
     (evil-leader/set-key-minor-mode 'with-editor-mode
