@@ -3007,6 +3007,8 @@ Defer code execution until the first command after initialization.
               :rev :newest)
     :commands (sk-janet-eval sk-janet-describe-symbol)
     :config
+    (require 'janet-completion
+             (expand-file-name "janet-completion" emacs-etc-dir))
     (sk-define-lisp-eval sk-janet-eval inf-janet-eval-region)
     (add-hook 'inf-janet-mode-hook #'enable-paredit-mode)
     (add-hook 'inf-janet-mode-hook #'sk-janet-mode-hook)
