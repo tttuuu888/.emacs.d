@@ -3007,8 +3007,7 @@ Defer code execution until the first command after initialization.
               :rev :newest)
     :commands (sk-janet-eval sk-janet-describe-symbol)
     :config
-    (require 'janet-completion
-             (expand-file-name "janet-completion" emacs-etc-dir))
+    (require 'janet-completion)
     (sk-define-lisp-eval sk-janet-eval inf-janet-eval-region)
     (add-hook 'inf-janet-mode-hook #'enable-paredit-mode)
     (add-hook 'inf-janet-mode-hook #'sk-janet-mode-hook)
@@ -3019,6 +3018,11 @@ Defer code execution until the first command after initialization.
         (display-buffer inf-janet-buffer)))
     (evil-define-key 'normal inf-janet-mode-map
       "gh" 'sk-janet-describe-symbol))
+
+  (use-package janet-completion
+    :vc (:url "https://github.com/tttuuu888/janet-completion"
+              :branch "main"
+              :rev :newest))
 
   (use-package dart-mode
     :hook (dart-mode . eglot-ensure))
