@@ -2233,6 +2233,9 @@ Defer code execution until the first command after initialization.
     (ivy-add-actions
      'ivy-switch-buffer
      '(("d" ivy--kill-buffer-action "delete")))
+    (ivy-add-actions
+     'counsel-describe-variable
+     '(("s" (lambda (v) (counsel-read-setq-expression (intern v))) "setq")))
 
     (defun my-counsel-fzf ()
       "Fzf on project root."
