@@ -1233,7 +1233,7 @@ Defer code execution until the first command after initialization.
        ("p" "Personal GTD view"
         ((agenda "" ((org-agenda-files (list my-org-gtd))))
          (todo "NEXT" ((org-agenda-files (list my-org-gtd))
-                       (org-agenda-overriding-header "Nexts:")))
+                       (org-agenda-overriding-header "NEXTs:")))
          (todo "TODO" ((org-agenda-files (list my-org-gtd))
                        (org-agenda-overriding-header "TODOs:")))
          (todo "WAIT" ((org-agenda-files (list my-org-gtd))
