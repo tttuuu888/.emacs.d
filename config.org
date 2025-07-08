@@ -2300,8 +2300,6 @@ Defer code execution until the first command after initialization.
 
   (use-package auctex)
 
-  (use-package graphviz-dot-mode)
-
   (use-package org-roam
     :custom
     (org-roam-directory "~/Dropbox/org-roam")
