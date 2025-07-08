@@ -2606,6 +2606,7 @@ Defer code execution until the first command after initialization.
     (defun sk-set-c-project (root)
       (interactive "DRoot directory: ")
       (let ((default-directory root))
+        (write-region "" nil ".projectile")
         (sk-create-ggtags root)
         (sk-clang-complete-make)))
     (advice-add 'move-to-column :around
