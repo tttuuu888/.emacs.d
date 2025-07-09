@@ -1225,27 +1225,27 @@ Defer code execution until the first command after initialization.
      my-org-gtd (concat my-org-path (format-time-string "%Y_gtd.org"))
      my-org-work (concat my-org-path (format-time-string "%Y_work.org"))
      org-agenda-custom-commands
-     '(("g" "All GTD view"
-        ((agenda)
-         (todo "NEXT" ((org-agenda-overriding-header "NEXTs:")))
-         (todo "TODO" ((org-agenda-overriding-header "TODOs:")))
-         (todo "WAIT" ((org-agenda-overriding-header "WAITs:")))))
-       ("p" "Personal GTD view"
-        ((agenda "" ((org-agenda-files (list my-org-gtd))))
-         (todo "NEXT" ((org-agenda-files (list my-org-gtd))
-                       (org-agenda-overriding-header "NEXTs:")))
-         (todo "TODO" ((org-agenda-files (list my-org-gtd))
-                       (org-agenda-overriding-header "TODOs:")))
-         (todo "WAIT" ((org-agenda-files (list my-org-gtd))
-                       (org-agenda-overriding-header "WAITs:")))))
-       ("w" "Work GTD view"
-        ((agenda "" ((org-agenda-files (list my-org-work))))
-         (todo "NEXT" ((org-agenda-files (list my-org-work))
-                       (org-agenda-overriding-header "NEXTs:")))
-         (todo "TODO" ((org-agenda-files (list my-org-work))
-                       (org-agenda-overriding-header "TODOs:")))
-         (todo "WAIT" ((org-agenda-files (list my-org-work))
-                       (org-agenda-overriding-header "WAITs:"))))))
+     (let ((views '(("g" "All" (list my-org-path))
+                    ("p" "Personal" (list my-org-gtd))
+                    ("w" "Work"     (list my-org-work))))
+           result)
+       (pcase-dolist (`(,key ,desc ,files) views)
+         (push
+          `(,key
+            ,(format "%s GTD view" desc)
+            ((agenda "" ((org-agenda-files ,files)))
+             (todo "NEXT" ((org-agenda-files ,files)
+                           (org-agenda-overriding-header "NEXTs:")))
+             (todo "TODO" ((org-agenda-files ,files)
+                           (org-agenda-overriding-header "TODOs:")))
+             (todo "WAIT" ((org-agenda-files ,files)
+                           (org-agenda-overriding-header "WAITs:")))
+             (tags "CLOSED>=\"<-7d>\""
+                   ((org-agenda-files ,files)
+                    (org-agenda-overriding-header
+                     "Closed in the Last 7 Days:")))))
+          result))
+       (nreverse result))
      org-agenda-files (list my-org-path)
      org-agenda-start-on-weekday 0
      org-babel-load-languages '((C . t)
