@@ -3033,6 +3033,11 @@ Defer code execution until the first command after initialization.
     :vc (:url "https://github.com/mferland/bb-mode"
               :rev :newest)
     :mode ("\\.bb\\'" "\\.bbappend\\'" "\\.bbclass\\'"))
+
+  (use-package envrc
+    :demand t
+    :after magit
+    :config (envrc-global-mode 1))
 #+END_SRC
 * End
 ** Provide a feature
