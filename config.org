@@ -628,8 +628,10 @@ Simple mode line setting function.
                          (if window-system 5 6)))
                (evil-info (and (featurep 'evil) evil-mode
                                (concat " " (upcase (symbol-name evil-state)))))
-               (buffer-info " %* ")
-               (buffer-name (propertize " %b " 'face 'mode-line-emphasis))
+               (buffer-info (format-mode-line " %* "))
+               (buffer-name (propertize
+                             (format-mode-line " %b ")
+                             'face 'mode-line-emphasis))
                (mode-and-vc (propertize
                              (concat " "
                                      (format-mode-line mode-name)
