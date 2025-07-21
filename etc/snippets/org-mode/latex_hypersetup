@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: latex_hypersetup
+# key: hyp
+# --
+#+latex_header: \hypersetup{colorlinks=true,linkcolor=blue}
