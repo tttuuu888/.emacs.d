@@ -1219,6 +1219,7 @@ Defer code execution until the first command after initialization.
     :config
     (require 'ox)
     (require 'ox-beamer)
+    (require 'ox-latex)
     (require 'counsel)
     (require 'ob-janet)
     (setq
@@ -1308,15 +1309,11 @@ Defer code execution until the first command after initialization.
      org-html-metadata-timestamp-format "%Y-%m-%d"
      org-html-validation-link ""
      org-imenu-depth 4
+     org-latex-engraved-theme "default"
      org-latex-packages-alist '(("" "kotex" nil)
                                 ("" "parskip" nil)
-                                ("margin=2cm" "geometry" nil)
-                                ("cachedir=/tmp/minted" "minted"))
-     org-latex-pdf-process
-     '("%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
-       "%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
-       "%latex -shell-escape -interaction nonstopmode -output-directory %o %f")
-     org-latex-src-block-backend '(verbatim minted)
+                                ("margin=2cm" "geometry" nil))
+     org-latex-src-block-backend 'engraved
      org-latex-tables-centered nil
      org-latex-title-command "\\maketitle \\clearpage"
      org-latex-toc-command "\\tableofcontents \\clearpage"
@@ -2341,6 +2338,9 @@ Defer code execution until the first command after initialization.
   (use-package inf-gptel
     :vc
     (:url "https://github.com/tttuuu888/inf-gptel" :branch "main" :rev :newest))
+
+
+  (use-package engrave-faces)
 #+END_SRC
 * Development packages - built-in
 #+BEGIN_SRC emacs-lisp
