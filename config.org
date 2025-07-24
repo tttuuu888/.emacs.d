@@ -2363,7 +2363,7 @@ Defer code execution until the first command after initialization.
 
   (use-package vertico
     :bind (:map vertico-map
-            ("<escape>" . minibuffer-keyboard-quit)
+            ("<escape>" . abort-minibuffers)
             ("<next>"  . 'vertico-scroll-up)
             ("<prior>" . 'vertico-scroll-down)
             ("<tab>" . vertico-insert)
@@ -2371,8 +2371,8 @@ Defer code execution until the first command after initialization.
             ("C-M-p" . vertico-previous-group))
     :custom
     (vertico-multiform-commands
-     '((consult-buffer (vertico-posframe-mode . nil) (vertico-mode . t))
-       (consult-line (vertico-posframe-mode . nil) (vertico-mode . t))))
+     '((consult-line (vertico-posframe-mode . nil) (vertico-mode . t))
+       (sk-consult-yasnippet (vertico-posframe-mode . nil) (vertico-mode . t))))
     :defer-init (vertico-mode 1)
     :config
     (setq vertico-count 15
@@ -2412,6 +2412,18 @@ Defer code execution until the first command after initialization.
           xref-show-xrefs-function #'consult-xref
           xref-show-definitions-function #'consult-xref)
     (advice-add #'register-preview :override #'consult-register-window))
+
+  (use-package consult-yasnippet
+    :commands sk-consult-yasnippet
+    :init
+    (evil-leader/set-key "/" 'sk-consult-yasnippet)
+    :config
+    (defun sk-consult-yasnippet (arg)
+      (interactive "P")
+      (unless yas-minor-mode
+        (yas-minor-mode 1))
+      (let ((consult-preview-key 'any))
+        (call-interactively 'consult-yasnippet))))
 
   (use-package embark
     :bind
