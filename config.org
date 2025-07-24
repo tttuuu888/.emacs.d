@@ -736,6 +736,7 @@ Defer code execution until the first command after initialization.
       "2"  'split-window-below
       "3"  'split-window-right
       ","  'other-window
+      "b"  'switch-to-buffer
       "d"  'find-file
       "f"  'find-file
       "q"  'kill-current-buffer
@@ -930,6 +931,8 @@ Defer code execution until the first command after initialization.
     :ensure nil
     :custom (recentf-max-saved-items 100)
     :defer-init (recentf-mode 1)
+    :init
+    (evil-leader/set-key "r" 'recentf)
     :config
     (add-to-list 'recentf-exclude
                  (expand-file-name "elpa/.*" emacs-config-dir)))
@@ -957,7 +960,6 @@ Defer code execution until the first command after initialization.
   (use-package dired
     :ensure nil
     :bind (:map dired-mode-map
-            ("M-o"   . dired-omit-mode)
             ("c"     . my-dired-compress)
             ("C"     . my-dired-do-copy)
             ("D"     . my-dired-do-delete)
@@ -965,8 +967,9 @@ Defer code execution until the first command after initialization.
             ("k"     . dired-previous-line)
             ("r"     . my-dired-rsync)
             ("x"     . my-dired-do-flagged-delete)
-            ("/"     . swiper)
+            ("/"     . consult-line)
             ("^"     . dired-up-and-close-dir)
+            ("bo"    . dired-omit-mode)
             ("bp"    . my-dired-pdf-size-down)
             ("<DEL>" . dired-up-and-close-dir))
     :init
@@ -1931,8 +1934,6 @@ Defer code execution until the first command after initialization.
   (use-package projectile
     :commands (sk-add-known-project
                sk-remove-known-project)
-    :hook (c-mode-common
-           . (lambda () (local-set-key (kbd "M-o") 'sk-find-other-file)))
     :init
     (evil-leader/set-key
       "jd" 'projectile-find-dir
@@ -2366,16 +2367,16 @@ Defer code execution until the first command after initialization.
             ("<prior>" . 'vertico-scroll-down)
             ("<tab>" . vertico-insert)
             ("C-M-n" . vertico-next-group)
-            ("C-M-p" . vertico-previous-group)
-            ("DEL" . vertico-directory-delete-word))
-    :init
-    (evil-leader/set-key
-      "b" 'switch-to-buffer)
+            ("C-M-p" . vertico-previous-group))
     :defer-init (vertico-mode 1)
     :config
+    (require 'vertico-directory)
     (setq vertico-count 15
-          vertico-resize nil
-          vertico-cycle nil))
+          vertico-cycle nil
+          vertico-resize nil)
+    (keymap-set vertico-map "RET" #'vertico-directory-enter)
+    (keymap-set vertico-map "DEL" #'vertico-directory-delete-char)
+    (keymap-set vertico-map "M-DEL" #'vertico-directory-delete-word))
 
   (use-package vertico-posframe
     :if window-system
@@ -2404,8 +2405,8 @@ Defer code execution until the first command after initialization.
 
   (use-package embark
     :bind
-    (("C-," . embark-act)         ;; pick some comfortable binding
-     ("C-;" . embark-dwim)        ;; good alternative: M-.
+    (("M-o" . embark-act)         ;; pick some comfortable binding
+     ("M-O" . embark-dwim)        ;; good alternative: M-.
      ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
     :init
     (evil-leader/set-key
@@ -2638,6 +2639,7 @@ Defer code execution until the first command after initialization.
     :ensure nil
     :mode (("\\.aidl\\'" . java-mode)
            ("\\.hal\\'" . c++-mode))
+    :bind (:map c-mode-base-map ("C-c o" . sk-find-other-file))
     :config
     (c-add-style "my-bsd" '("bsd"
                             (c-offsets-alist
