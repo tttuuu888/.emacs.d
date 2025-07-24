@@ -2425,6 +2425,10 @@ Defer code execution until the first command after initialization.
       (let ((consult-preview-key 'any))
         (call-interactively 'consult-yasnippet))))
 
+  (use-package consult-ls-git
+    :init
+    (evil-leader/set-key "o" 'consult-ls-git-ls-files))
+
   (use-package embark
     :bind
     (("M-o" . embark-act)         ;; pick some comfortable binding
