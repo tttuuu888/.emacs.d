@@ -1761,7 +1761,7 @@ Defer code execution until the first command after initialization.
   (use-package epa
     :ensure nil
     :bind (:map epa-key-list-mode-map
-            ("/" . swiper)))
+            ("/" . consult-line)))
 
   (use-package comp
     :ensure nil
@@ -2303,7 +2303,8 @@ Defer code execution until the first command after initialization.
                 :action #'counsel-find-file-action
                 :caller 'counsel-find-dir-here)))
 
-  (use-package swiper)
+  (use-package swiper
+    :disabled)
 
   (use-package which-key
     :custom (which-key-dont-use-unicode t)
@@ -2368,15 +2369,24 @@ Defer code execution until the first command after initialization.
             ("<tab>" . vertico-insert)
             ("C-M-n" . vertico-next-group)
             ("C-M-p" . vertico-previous-group))
+    :custom
+    (vertico-multiform-commands
+     '((consult-buffer (vertico-posframe-mode . nil) (vertico-mode . t))
+       (consult-line (vertico-posframe-mode . nil) (vertico-mode . t))))
     :defer-init (vertico-mode 1)
     :config
-    (require 'vertico-directory)
     (setq vertico-count 15
           vertico-cycle nil
           vertico-resize nil)
-    (keymap-set vertico-map "RET" #'vertico-directory-enter)
     (keymap-set vertico-map "DEL" #'vertico-directory-delete-char)
-    (keymap-set vertico-map "M-DEL" #'vertico-directory-delete-word))
+    (keymap-set vertico-map "M-DEL" #'vertico-directory-delete-word)
+    (vertico-multiform-mode 1))
+
+  (use-package vertico-multiform
+    :ensure nil
+    :after vertico
+    :config
+    (vertico-multiform-mode +1))
 
   (use-package vertico-posframe
     :if window-system
