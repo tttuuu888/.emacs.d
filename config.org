@@ -729,11 +729,15 @@ Defer code execution until the first command after initialization.
     (evil-leader/set-leader "<SPC>")
     (evil-leader/set-key
       "<escape>" 'keyboard-quit
+      "<SPC>" 'execute-extended-command
+      "M-m"   'execute-extended-command
       "0"  'delete-window
       "1"  'delete-other-windows
       "2"  'split-window-below
       "3"  'split-window-right
       ","  'other-window
+      "d"  'find-file
+      "f"  'find-file
       "q"  'kill-current-buffer
       "Q"  'kill-emacs
       "u"  'pop-to-mark-command
@@ -745,8 +749,11 @@ Defer code execution until the first command after initialization.
       "eg" 'sk-google-search
       "st" 'tmux-new-window-here
       "sv" 'tmux-vim-current-file
+      "ha" 'describe-face
+      "hf" 'describe-function
       "hk" 'describe-key
       "hm" 'describe-mode
+      "hv" 'describe-variable
       "xq" 'read-only-mode
       "xv" 'evil-reload-file)
     (let ((leader (read-kbd-macro evil-leader/leader))
@@ -1787,7 +1794,7 @@ Defer code execution until the first command after initialization.
      ("C-<f8>"       . (lambda () (interactive) (buffer-save-or-load 8)))
      ("S-SPC"        . toggle-input-method)
      :map minibuffer-local-map
-     ("<escape>"     . minibuffer-keyboard-quit))
+     ("<escape>"     . abort-minibuffers))
     (defun my-other-window ()
       (interactive)
       (if (minibufferp)
@@ -2083,6 +2090,7 @@ Defer code execution until the first command after initialization.
         (apply #'call-process "rm" nil nil nil "-rf" to-remove))))
 
   (use-package ivy
+    :disabled
     :bind (("C-x C-b"   . ivy-switch-buffer)
            :map minibuffer-inactive-mode-map
            ("<escape>" . abort-recursive-edit)
@@ -2159,6 +2167,7 @@ Defer code execution until the first command after initialization.
      '(("d" (lambda (p) (projectile-remove-known-project p)) "delete"))))
 
   (use-package ivy-yasnippet
+    :disabled
     :init
     (evil-leader/set-key "/" 'ivy-yasnippet)
     :config
@@ -2166,6 +2175,7 @@ Defer code execution until the first command after initialization.
     (advice-add 'ivy-yasnippet :after 'evil-insert-state))
 
   (use-package ivy-posframe
+    :disabled
     :if window-system
     :custom-face
     (ivy-posframe
@@ -2185,6 +2195,7 @@ Defer code execution until the first command after initialization.
   (use-package posframe)
 
   (use-package counsel
+    :disabled
     :commands (counsel-find-dir-here
                counsel-fzf-here
                counsel--browse-history
@@ -2341,6 +2352,107 @@ Defer code execution until the first command after initialization.
 
 
   (use-package engrave-faces)
+
+  (use-package marginalia
+    :defer-init (marginalia-mode 1)
+    :config
+    (setq marginalia-align 'right
+          marginalia-max-relative-age 0))
+
+  (use-package vertico
+    :bind (:map vertico-map
+            ("<escape>" . minibuffer-keyboard-quit)
+            ("<next>"  . 'vertico-scroll-up)
+            ("<prior>" . 'vertico-scroll-down)
+            ("<tab>" . vertico-insert)
+            ("C-M-n" . vertico-next-group)
+            ("C-M-p" . vertico-previous-group)
+            ("DEL" . vertico-directory-delete-word))
+    :init
+    (evil-leader/set-key
+      "b" 'switch-to-buffer)
+    :defer-init (vertico-mode 1)
+    :config
+    (setq vertico-count 15
+          vertico-resize nil
+          vertico-cycle nil))
+
+  (use-package vertico-posframe
+    :if window-system
+    :custom-face
+    (vertico-posframe
+     ((((background light)) :background "LightGray" :foreground "black")
+      (((background dark)) :background "#282a36" :foreground "gray80")))
+    (vertico-posframe-border ((t (:inherit vertico-posframe))) face-defface-spec)
+    :defer-init (vertico-posframe-mode 1)
+    :config
+    (setq vertico-posframe-border-width 20))
+
+  (use-package orderless
+    :custom
+    (completion-category-defaults nil)
+    (completion-styles '(orderless basic partial-completion)))
+
+  (use-package consult
+    :hook (completion-list-mode . consult-preview-at-point-mode)
+    :config
+    (setq sk-compile-history nil
+          consult-preview-key nil
+          xref-show-xrefs-function #'consult-xref
+          xref-show-definitions-function #'consult-xref)
+    (advice-add #'register-preview :override #'consult-register-window))
+
+  (use-package embark
+    :bind
+    (("C-," . embark-act)         ;; pick some comfortable binding
+     ("C-;" . embark-dwim)        ;; good alternative: M-.
+     ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+    :init
+    (evil-leader/set-key
+      "hb" 'embark-bindings)
+    :config
+    (setq embark-indicators
+          '(embark-which-key-indicator
+            embark-highlight-indicator
+            embark-isearch-highlight-indicator)
+          prefix-help-command #'embark-prefix-help-command)
+
+    (defun embark-which-key-indicator ()
+      "An embark indicator that displays keymaps using which-key.
+  The which-key help message will show the type and value of the
+  current target followed by an ellipsis if there are further
+  targets."
+      (lambda (&optional keymap targets prefix)
+        (if (null keymap)
+            (which-key--hide-popup-ignore-command)
+          (which-key--show-keymap
+           (if (eq (plist-get (car targets) :type) 'embark-become)
+               "Become"
+             (format "Act on %s '%s'%s"
+                     (plist-get (car targets) :type)
+                     (embark--truncate-target (plist-get (car targets) :target))
+                     (if (cdr targets) "…" "")))
+           (if prefix
+               (pcase (lookup-key keymap prefix 'accept-default)
+                 ((and (pred keymapp) km) km)
+                 (_ (key-binding prefix 'accept-default)))
+             keymap)
+           nil nil t (lambda (binding)
+                       (not (string-suffix-p "-argument" (cdr binding))))))))
+
+    (defun embark-hide-which-key-indicator (fn &rest args)
+      "Hide the which-key indicator immediately when using the completing-read prompter."
+      (which-key--hide-popup-ignore-command)
+      (let ((embark-indicators
+             (remq #'embark-which-key-indicator embark-indicators)))
+        (apply fn args)))
+
+    (advice-add #'embark-completing-read-prompter
+                :around #'embark-hide-which-key-indicator))
+
+  (use-package embark-consult
+    :hook
+    (embark-collect-mode . consult-preview-at-point-mode))
 #+END_SRC
 * Development packages - built-in
 #+BEGIN_SRC emacs-lisp
