@@ -1225,7 +1225,8 @@ Defer code execution until the first command after initialization.
     :ensure nil
     :init
     (evil-leader/set-key
-      "na" 'org-agenda)
+      "na" 'org-agenda
+      "nx" 'org-capture)
     :config
     (require 'ox)
     (require 'ox-beamer)
@@ -1864,7 +1865,7 @@ Defer code execution until the first command after initialization.
 
   (use-package wgrep
     :config
-    (dolist (mode '(helm-git-grep-mode helm-ag-mode))
+    (dolist (mode '(grep-mode helm-git-grep-mode helm-ag-mode))
       (evil-leader/set-key-for-mode mode
         "ce" 'wgrep-finish-edit
         "ee" 'wgrep-change-to-wgrep-mode
