@@ -425,12 +425,12 @@ Instead of using =custom.el=, insert the contents of the file directly here.
               (others (or (my-find-file-in-dir regex)
                           (and (setq root (my-get-git-root-dir))
                                (my-find-file-in-git-project regex root)))))
-        (if (length= others 1)
-            (find-file (expand-file-name (car others) root))
-          (ivy-read "Switch to: " others
-                    :action (lambda (file)
-                              (find-file (expand-file-name file root)))
-                    :caller #'my-find-other-file))))
+        (find-file
+         (expand-file-name
+          (if (length= others 1)
+              (car others)
+            (consult--read others :prompt "Switch to: "))
+          root))))
 
   (defun sk-find-other-file (&optional FLEX-MATCHING)
     "Switch betwen .c|.cpp and .h|.hpp files."
@@ -1092,9 +1092,9 @@ Defer code execution until the first command after initialization.
                                   (string= inital-name "~"))
                               "default"
                             inital-name))
-             (name (ivy-read "Compress file name: " nil
-                             :initial-input
-                             (concat inital-name ".zip")))
+             (name (consult--read nil
+                                  :prompt "Compress file name: "
+                                  :initial (concat inital-name ".zip")))
              (target (shell-quote-argument name))
              (ext (file-name-extension name))
              (cmd (pcase ext
