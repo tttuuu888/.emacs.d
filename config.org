@@ -2452,9 +2452,9 @@ Defer code execution until the first command after initialization.
 
   (use-package embark
     :bind
-    (("M-o" . embark-act)         ;; pick some comfortable binding
-     ("M-O" . embark-dwim)        ;; good alternative: M-.
-     ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+    (("M-o"   . embark-act)
+     ("C-M-o" . embark-act-1)
+     ("C-h B" . embark-bindings))
     :init
     (evil-leader/set-key
       "hb" 'embark-bindings)
@@ -2464,6 +2464,10 @@ Defer code execution until the first command after initialization.
             embark-highlight-indicator
             embark-isearch-highlight-indicator)
           prefix-help-command #'embark-prefix-help-command)
+
+    (defun embark-act-1 ()
+      (interactive)
+      (embark-act 1))
 
     (defun embark-which-key-indicator ()
       "An embark indicator that displays keymaps using which-key.
