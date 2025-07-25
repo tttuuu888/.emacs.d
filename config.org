@@ -2407,12 +2407,33 @@ Defer code execution until the first command after initialization.
 
   (use-package consult
     :hook (completion-list-mode . consult-preview-at-point-mode)
+    :bind (("M-x". consult-M-x))
     :config
+    (require 'smex)
     (setq sk-compile-history nil
           consult-preview-key nil
           xref-show-xrefs-function #'consult-xref
           xref-show-definitions-function #'consult-xref)
-    (advice-add #'register-preview :override #'consult-register-window))
+    (advice-add #'register-preview :override #'consult-register-window)
+
+    (defun consult-M-x ()
+      (interactive)
+      ;; Initialize Smex
+      (unless smex-initialized-p
+        (smex-initialize))
+      (and smex-auto-update
+           (smex-detect-new-commands)
+           (smex-update))
+      ;; Execute command
+      (let ((cmd (consult--read smex-ido-cache :sort nil :prompt "M-x ")))
+        (setq cmd
+              (intern
+               (subst-char-in-string ?\s ?- (string-remove-prefix "^" cmd))))
+        (smex-rank cmd)
+        (setq prefix-arg current-prefix-arg)
+        (setq this-command cmd)
+        (setq real-this-command cmd)
+        (command-execute cmd 'record))))
 
   (use-package consult-yasnippet
     :commands sk-consult-yasnippet
