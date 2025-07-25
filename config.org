@@ -1943,8 +1943,7 @@ Defer code execution until the first command after initialization.
       "js" 'projectile-switch-project
       "jS" 'projectile-save-project-buffers)
     :config
-    (setq projectile-completion-system 'ivy
-          projectile-require-project-root nil
+    (setq projectile-require-project-root nil
           projectile-switch-project-action 'projectile-dired
           projectile-track-known-projects-automatically nil)
     (projectile-load-known-projects)
