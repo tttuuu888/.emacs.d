@@ -2373,11 +2373,12 @@ Defer code execution until the first command after initialization.
   (use-package vertico-multiform
     :ensure nil
     :config
-    (setq vertico-multiform-categories
-          '((file (vertico-sort-function . vertico-sort-dir-first-alpha)))
-          vertico-multiform-commands
-          '((consult-line (vertico-posframe-mode . nil) (vertico-mode . t))
-            (sk-consult-yasnippet (vertico-posframe-mode . nil) (vertico-mode . t))))
+    (setq
+     vertico-multiform-categories
+     '((file (vertico-sort-function . vertico-sort-dir-first-alpha)))
+     vertico-multiform-commands
+     '((consult-line (vertico-posframe-mode . nil) (vertico-mode . t))
+       (sk-consult-yasnippet (vertico-posframe-mode . nil) (vertico-mode . t))))
     (defun vertico-sort-dir-first-alpha (lst)
       "Sort directories before files, both sorted alphabetically."
       (let (dirs files)
@@ -2575,7 +2576,8 @@ Defer code execution until the first command after initialization.
                        (not (string-suffix-p "-argument" (cdr binding))))))))
 
     (defun embark-hide-which-key-indicator (fn &rest args)
-      "Hide the which-key indicator immediately when using the completing-read prompter."
+      "Hide the which-key indicator immediately when using the completing-read
+  prompter."
       (which-key--hide-popup-ignore-command)
       (let ((embark-indicators
              (remq #'embark-which-key-indicator embark-indicators)))
