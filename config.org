@@ -2495,9 +2495,11 @@ Defer code execution until the first command after initialization.
      ("C-M-o" . embark-act-1))
     :init
     (evil-leader/set-key
-      "hb" 'embark-bindings)
+      "hb" 'embark-bindings
+      "xo" 'embark-act)
     :config
-    (setq embark-indicators
+    (setq embark-cycle-key "M-o"
+          embark-indicators
           '(embark-which-key-indicator
             embark-highlight-indicator
             embark-isearch-highlight-indicator)
