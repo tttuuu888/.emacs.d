@@ -2344,6 +2344,9 @@ Defer code execution until the first command after initialization.
 
   (use-package marginalia
     :defer-init (marginalia-mode 1)
+    :custom-face
+    (marginalia-documentation
+     ((t :inherit font-lock-function-name-face :underline nil)))
     :config
     (setq marginalia-align 'right
           marginalia-max-relative-age 0))
