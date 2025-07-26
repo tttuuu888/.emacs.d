@@ -2372,12 +2372,6 @@ Defer code execution until the first command after initialization.
     (keymap-set vertico-map "M-DEL" #'vertico-directory-delete-word)
     (vertico-multiform-mode 1))
 
-  (use-package vertico-multiform
-    :ensure nil
-    :after vertico
-    :config
-    (vertico-multiform-mode +1))
-
   (use-package vertico-posframe
     :if window-system
     :custom-face
