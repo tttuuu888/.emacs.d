@@ -96,6 +96,7 @@ Instead of using =custom.el=, insert the contents of the file directly here.
    '(browse-url-browser-function 'browse-url-chrome)
    '(byte-compile-warnings '(not obsolete))
    '(completion-styles '(basic partial-completion emacs22 initials))
+   '(completion-ignored-extensions nil)
    '(css-indent-offset 2)
    '(fill-column 80)
    '(font-use-system-font t)
