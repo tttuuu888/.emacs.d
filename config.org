@@ -2403,7 +2403,7 @@ Defer code execution until the first command after initialization.
       "jD"    'consult-fd-dir-here
       "jf"    'consult-fd-file
       "jh"    'consult-fd-file-here)
-    :defer-init (require 'consult)
+    :commands consult--read
     :config
     (require 'smex)
     (setq sk-compile-history nil
