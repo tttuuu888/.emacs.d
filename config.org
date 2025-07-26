@@ -2394,7 +2394,8 @@ Defer code execution until the first command after initialization.
 
   (use-package consult
     :hook (completion-list-mode . consult-preview-at-point-mode)
-    :bind (("M-x". consult-M-x))
+    :bind (("M-x"     . consult-M-x)
+           ("<f5>"    . sk-compile))
     :init
     (evil-leader/set-key
       "<SPC>" 'consult-M-x
@@ -2461,7 +2462,33 @@ Defer code execution until the first command after initialization.
       (let* ((consult-fd-args (append consult-fd-args '("-I" "-t f")))
              (prompt "Fd: ")
              (builder (consult--fd-make-builder '("."))))
-        (find-file (consult--find prompt builder nil)))))
+        (find-file (consult--find prompt builder nil))))
+
+    (defun sk-compile-scripts ()
+      (if-let ((sbin (find-file-in-tree default-directory ".sbin")))
+          (let ((files-alist)
+                (files (directory-files sbin t "\\.sh$"))
+                (cand (alist-get sbin sk-compile-history nil nil #'equal)))
+            (dolist (f files)
+              (setq files-alist
+                    (nconc files-alist
+                           (list (cons (file-name-nondirectory f) f)))))
+            (when cand
+              (push (cons (file-name-nondirectory cand) cand) files-alist))
+            (delete-dups files-alist))
+        (user-error "Couldn't find .sbin folder")))
+
+    (defun sk-compile (&optional dir)
+      (interactive)
+      (let* ((scripts (sk-compile-scripts))
+             (script (consult--read
+                      (mapcar #'car scripts)
+                      :prompt "Compile script: "
+                      :require-match t))
+             (cmd (alist-get script scripts nil nil #'string-equal))
+             (dir (file-name-directory cmd)))
+        (setf (alist-get dir sk-compile-history nil 'remove #'equal) cmd)
+        (compile cmd))))
 
   (use-package consult-yasnippet
     :commands sk-consult-yasnippet
