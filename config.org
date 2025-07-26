@@ -1519,9 +1519,6 @@ Defer code execution until the first command after initialization.
     (defun my-eshell-change-whole-line ()
       (interactive)
       (execute-kbd-macro (kbd "0C")))
-    (defun my-eshell-history ()
-      (interactive)
-      (my-comint-history eshell-history-ring))
     (defun my-eshell-setup ()
       (setenv "TERM" "screen-256color")
       (evil-define-key 'insert eshell-mode-map (kbd "C-a") 'eshell-bol)
@@ -1534,7 +1531,7 @@ Defer code execution until the first command after initialization.
         (kbd "M-n") (lambda () (interactive) nil)
         (kbd "RET") 'my-comint-return))
     (evil-leader/set-key-for-mode 'eshell-mode
-      "l"  'my-eshell-history))
+      "l"  'consult-history))
 
   (use-package term
     :ensure nil
@@ -1613,27 +1610,21 @@ Defer code execution until the first command after initialization.
 
   (use-package comint
     :ensure nil
-    :commands my-comint-history
+    :commands my-comint-return
     :config
-    (defun my-comint-history (&optional ring)
-      (interactive)
-      (let ((input-ring (if ring ring comint-input-ring)))
-        (cl-letf (((symbol-function 'ivy-completion-in-region-action)
-                   (lambda (cmd) (my-comint-return) (insert cmd))))
-          (counsel--browse-history input-ring
-                                   :caller #'counsel-shell-history))))
-    (defun my-comint-return ()
-      (interactive)
-      (evil-goto-line)
-      (evil-append-line 1))
     (evil-leader/set-key-for-map comint-mode-map
-      "l"  'my-comint-history)
+      "l"  'consult-history)
     (evil-define-key 'normal comint-mode-map
       "gj" 'comint-next-prompt
       "gk" 'comint-previous-prompt
       (kbd "RET") 'my-comint-return)
     (evil-define-key 'insert comint-mode-map
-      (kbd "RET") 'comint-send-input))
+      (kbd "RET") 'comint-send-input)
+
+    (defun my-comint-return ()
+      (interactive)
+      (evil-goto-line)
+      (evil-append-line 1)))
 
   (use-package package
     :ensure nil
@@ -2937,7 +2928,7 @@ Defer code execution until the first command after initialization.
       "css" 'sly-stickers-dwim
       "csF" 'sly-stickers-forget)
     (evil-leader/set-key-for-mode 'sly-mrepl-mode
-      "l"  'my-comint-history
+      "l"  'consult-history
       "z"  'sly-switch-to-most-recent
       "es" 'sly-mrepl-set-package)
     (evil-define-key 'normal sly-mode-map
@@ -3028,9 +3019,6 @@ Defer code execution until the first command after initialization.
           (haskell-indentation-newline-and-indent)
           (when (equal ch ?|)
             (insert "| ")))))
-    (defun my-haskell-prompt-history ()
-      (interactive)
-      (my-comint-history 'haskell-interactive-mode-history))
     (defun my-haskell-prompt-kill-whole-line ()
       (interactive)
       (haskell-interactive-mode-bol)
@@ -3059,7 +3047,7 @@ Defer code execution until the first command after initialization.
       "z"  'haskell-interactive-switch
       "ef" 'haskell-process-load-file)
     (evil-leader/set-key-for-mode 'haskell-interactive-mode
-      "l" 'my-haskell-prompt-history
+      "l" 'consult-history
       "z" 'haskell-interactive-switch-back))
 
   (use-package restclient
