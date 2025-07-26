@@ -2364,7 +2364,8 @@ Defer code execution until the first command after initialization.
     :config
     (setq vertico-count 15
           vertico-cycle nil
-          vertico-resize nil)
+          vertico-resize nil
+          vertico-sort-function nil)
     (keymap-set vertico-map "DEL" #'vertico-directory-delete-char)
     (keymap-set vertico-map "M-DEL" #'vertico-directory-delete-word)
     (vertico-multiform-mode 1))
