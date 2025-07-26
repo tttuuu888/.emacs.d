@@ -2372,6 +2372,23 @@ Defer code execution until the first command after initialization.
     (keymap-set vertico-map "M-DEL" #'vertico-directory-delete-word)
     (vertico-multiform-mode 1))
 
+  (use-package vertico-multiform
+    :ensure nil
+    :config
+    (setq vertico-multiform-categories
+          '((file (vertico-sort-function . vertico-sort-dir-first-alpha)
+                  (:keymap . vertico-directory-map))))
+    (defun vertico-sort-dir-first-alpha (lst)
+      "Sort directories before files, both sorted alphabetically."
+      (let (dirs files)
+        (dolist (x lst)
+          (if (string-suffix-p "/" x)
+              (push x dirs)
+            (push x files)))
+        (setq dirs (sort dirs #'string-lessp))
+        (setq files (sort files #'string-lessp))
+        (nconc dirs files))))
+
   (use-package vertico-posframe
     :if window-system
     :custom-face
