@@ -1937,7 +1937,6 @@ Defer code execution until the first command after initialization.
                sk-remove-known-project)
     :init
     (evil-leader/set-key
-      "jd" 'projectile-find-dir
       "jk" 'projectile-kill-buffers
       "jb" 'projectile-switch-to-buffer
       "js" 'projectile-switch-project
@@ -2408,6 +2407,8 @@ Defer code execution until the first command after initialization.
     (evil-leader/set-key
       "<SPC>" 'consult-M-x
       "M-m"   'consult-M-x
+      "jd"    'consult-fd-dir
+      "jD"    'consult-fd-dir-here
       "jf"    'consult-fd
       "jh"    'consult-fd-here)
     :defer-init (require 'consult)
@@ -2438,9 +2439,24 @@ Defer code execution until the first command after initialization.
         (setq real-this-command cmd)
         (command-execute cmd 'record)))
 
+    (defun consult-fd-dir ()
+      (interactive)
+      (pcase-let* ((consult-fd-args (append consult-fd-args '("-t d")))
+                   (`(,prompt ,paths ,dir) (consult--directory-prompt "Fd" nil))
+                   (default-directory dir)
+                   (builder (consult--fd-make-builder paths)))
+        (find-file (consult--find prompt builder nil))))
+
+    (defun consult-fd-dir-here ()
+      (interactive)
+      (let* ((consult-fd-args (append consult-fd-args '("-I" "-t d")))
+             (prompt "Fd: ")
+             (builder (consult--fd-make-builder '("."))))
+        (find-file (consult--find prompt builder nil))))
+
     (defun consult-fd-here ()
       (interactive)
-      (let* ((consult-fd-args '("fd" "--full-path --color=never" "--no-ignore"))
+      (let* ((consult-fd-args (append consult-fd-args '("-I")))
              (prompt "Fd: ")
              (builder (consult--fd-make-builder '("."))))
         (find-file (consult--find prompt builder nil)))))
