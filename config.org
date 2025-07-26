@@ -2360,10 +2360,6 @@ Defer code execution until the first command after initialization.
             ("<tab>" . vertico-insert)
             ("C-M-n" . vertico-next-group)
             ("C-M-p" . vertico-previous-group))
-    :custom
-    (vertico-multiform-commands
-     '((consult-line (vertico-posframe-mode . nil) (vertico-mode . t))
-       (sk-consult-yasnippet (vertico-posframe-mode . nil) (vertico-mode . t))))
     :defer-init (vertico-mode 1)
     :config
     (setq vertico-count 15
@@ -2378,7 +2374,10 @@ Defer code execution until the first command after initialization.
     :config
     (setq vertico-multiform-categories
           '((file (vertico-sort-function . vertico-sort-dir-first-alpha)
-                  (:keymap . vertico-directory-map))))
+                  (:keymap . vertico-directory-map)))
+          vertico-multiform-commands
+          '((consult-line (vertico-posframe-mode . nil) (vertico-mode . t))
+            (sk-consult-yasnippet (vertico-posframe-mode . nil) (vertico-mode . t))))
     (defun vertico-sort-dir-first-alpha (lst)
       "Sort directories before files, both sorted alphabetically."
       (let (dirs files)
