@@ -2409,8 +2409,8 @@ Defer code execution until the first command after initialization.
       "M-m"   'consult-M-x
       "jd"    'consult-fd-dir
       "jD"    'consult-fd-dir-here
-      "jf"    'consult-fd
-      "jh"    'consult-fd-here)
+      "jf"    'consult-fd-file
+      "jh"    'consult-fd-file-here)
     :defer-init (require 'consult)
     :config
     (require 'smex)
@@ -2455,9 +2455,17 @@ Defer code execution until the first command after initialization.
              (builder (consult--fd-make-builder '("."))))
         (find-file (consult--find prompt builder nil))))
 
-    (defun consult-fd-here ()
+    (defun consult-fd-file ()
       (interactive)
-      (let* ((consult-fd-args (append consult-fd-args '("-I")))
+      (pcase-let* ((consult-fd-args (append consult-fd-args '("-t f")))
+                   (`(,prompt ,paths ,dir) (consult--directory-prompt "Fd" nil))
+                   (default-directory dir)
+                   (builder (consult--fd-make-builder paths)))
+        (find-file (consult--find prompt builder nil))))
+
+    (defun consult-fd-file-here ()
+      (interactive)
+      (let* ((consult-fd-args (append consult-fd-args '("-I" "-t f")))
              (prompt "Fd: ")
              (builder (consult--fd-make-builder '("."))))
         (find-file (consult--find prompt builder nil)))))
