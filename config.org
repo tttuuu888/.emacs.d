@@ -969,9 +969,9 @@ Defer code execution until the first command after initialization.
             ("x"     . my-dired-do-flagged-delete)
             ("/"     . consult-line)
             ("^"     . dired-up-and-close-dir)
-            ("bo"    . dired-omit-mode)
             ("bp"    . my-dired-pdf-size-down)
-            ("<DEL>" . dired-up-and-close-dir))
+            ("<DEL>" . dired-up-and-close-dir)
+            ("M-o"   . dired-omit-mode))
     :init
     (add-to-list 'magic-mode-alist
                  '((lambda () (< large-file-warning-threshold (buffer-size)))
@@ -2407,6 +2407,7 @@ Defer code execution until the first command after initialization.
   (use-package consult
     :hook (completion-list-mode . consult-preview-at-point-mode)
     :bind (("M-x". consult-M-x))
+    :commands consult--read
     :config
     (require 'smex)
     (setq sk-compile-history nil
@@ -2452,9 +2453,10 @@ Defer code execution until the first command after initialization.
 
   (use-package embark
     :bind
-    (("M-o"   . embark-act)
-     ("C-M-o" . embark-act-1)
-     ("C-h B" . embark-bindings))
+    (("C-h B" . embark-bindings)
+     :map minibuffer-mode-map
+     ("M-o"   . embark-act)
+     ("C-M-o" . embark-act-1))
     :init
     (evil-leader/set-key
       "hb" 'embark-bindings)
@@ -2696,7 +2698,7 @@ Defer code execution until the first command after initialization.
     :ensure nil
     :mode (("\\.aidl\\'" . java-mode)
            ("\\.hal\\'" . c++-mode))
-    :bind (:map c-mode-base-map ("C-c o" . sk-find-other-file))
+    :bind (:map c-mode-base-map ("M-o" . sk-find-other-file))
     :config
     (c-add-style "my-bsd" '("bsd"
                             (c-offsets-alist
