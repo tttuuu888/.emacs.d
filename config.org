@@ -2374,8 +2374,7 @@ Defer code execution until the first command after initialization.
     :ensure nil
     :config
     (setq vertico-multiform-categories
-          '((file (vertico-sort-function . vertico-sort-dir-first-alpha)
-                  (:keymap . vertico-directory-map)))
+          '((file (vertico-sort-function . vertico-sort-dir-first-alpha)))
           vertico-multiform-commands
           '((consult-line (vertico-posframe-mode . nil) (vertico-mode . t))
             (sk-consult-yasnippet (vertico-posframe-mode . nil) (vertico-mode . t))))
