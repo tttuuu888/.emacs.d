@@ -1854,7 +1854,7 @@ Defer code execution until the first command after initialization.
 
   (use-package wgrep
     :config
-    (dolist (mode '(helm-git-grep-mode helm-ag-mode))
+    (dolist (mode '(grep-mode helm-git-grep-mode helm-ag-mode))
       (evil-leader/set-key-for-mode mode
         "ce" 'wgrep-finish-edit
         "ee" 'wgrep-change-to-wgrep-mode
