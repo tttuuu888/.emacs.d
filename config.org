@@ -2044,9 +2044,6 @@ Defer code execution until the first command after initialization.
 
   (use-package fzf
     :bind (("C-c j h" . fzf-here))
-    :init
-    (evil-leader/set-key
-      "jf" 'fzf-here)
     :config
     (setq fzf/args (concat fzf/args " --no-separator"))
     (defun fzf-here ()
@@ -2408,6 +2405,12 @@ Defer code execution until the first command after initialization.
     :hook (completion-list-mode . consult-preview-at-point-mode)
     :bind (("M-x". consult-M-x))
     :commands consult--read
+    :init
+    (evil-leader/set-key
+      "<SPC>" 'consult-M-x
+      "M-m"   'consult-M-x
+      "jf"    'consult-fd
+      "jh"    'consult-fd-here)
     :config
     (require 'smex)
     (setq sk-compile-history nil
@@ -2433,7 +2436,14 @@ Defer code execution until the first command after initialization.
         (setq prefix-arg current-prefix-arg)
         (setq this-command cmd)
         (setq real-this-command cmd)
-        (command-execute cmd 'record))))
+        (command-execute cmd 'record)))
+
+    (defun consult-fd-here ()
+      (interactive)
+      (let* ((consult-fd-args '("fd" "--full-path --color=never" "--no-ignore"))
+             (prompt "Fd: ")
+             (builder (consult--fd-make-builder '("."))))
+        (find-file (consult--find prompt builder nil)))))
 
   (use-package consult-yasnippet
     :commands sk-consult-yasnippet
