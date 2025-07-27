@@ -96,6 +96,7 @@ Instead of using =custom.el=, insert the contents of the file directly here.
    '(browse-url-browser-function 'browse-url-chrome)
    '(byte-compile-warnings '(not obsolete))
    '(completion-styles '(basic partial-completion emacs22 initials))
+   '(completion-ignored-extensions nil)
    '(css-indent-offset 2)
    '(fill-column 80)
    '(font-use-system-font t)
@@ -425,12 +426,12 @@ Instead of using =custom.el=, insert the contents of the file directly here.
               (others (or (my-find-file-in-dir regex)
                           (and (setq root (my-get-git-root-dir))
                                (my-find-file-in-git-project regex root)))))
-        (if (length= others 1)
-            (find-file (expand-file-name (car others) root))
-          (ivy-read "Switch to: " others
-                    :action (lambda (file)
-                              (find-file (expand-file-name file root)))
-                    :caller #'my-find-other-file))))
+        (find-file
+         (expand-file-name
+          (if (length= others 1)
+              (car others)
+            (consult--read others :prompt "Switch to: "))
+          root))))
 
   (defun sk-find-other-file (&optional FLEX-MATCHING)
     "Switch betwen .c|.cpp and .h|.hpp files."
@@ -729,11 +730,16 @@ Defer code execution until the first command after initialization.
     (evil-leader/set-leader "<SPC>")
     (evil-leader/set-key
       "<escape>" 'keyboard-quit
+      "<SPC>" 'execute-extended-command
+      "M-m"   'execute-extended-command
       "0"  'delete-window
       "1"  'delete-other-windows
       "2"  'split-window-below
       "3"  'split-window-right
       ","  'other-window
+      "b"  'switch-to-buffer
+      "d"  'find-file
+      "f"  'find-file
       "q"  'kill-current-buffer
       "Q"  'kill-emacs
       "u"  'pop-to-mark-command
@@ -745,8 +751,11 @@ Defer code execution until the first command after initialization.
       "eg" 'sk-google-search
       "st" 'tmux-new-window-here
       "sv" 'tmux-vim-current-file
+      "ha" 'describe-face
+      "hf" 'describe-function
       "hk" 'describe-key
       "hm" 'describe-mode
+      "hv" 'describe-variable
       "xq" 'read-only-mode
       "xv" 'evil-reload-file)
     (let ((leader (read-kbd-macro evil-leader/leader))
@@ -923,6 +932,8 @@ Defer code execution until the first command after initialization.
     :ensure nil
     :custom (recentf-max-saved-items 100)
     :defer-init (recentf-mode 1)
+    :init
+    (evil-leader/set-key "r" 'recentf)
     :config
     (add-to-list 'recentf-exclude
                  (expand-file-name "elpa/.*" emacs-config-dir)))
@@ -950,7 +961,6 @@ Defer code execution until the first command after initialization.
   (use-package dired
     :ensure nil
     :bind (:map dired-mode-map
-            ("M-o"   . dired-omit-mode)
             ("c"     . my-dired-compress)
             ("C"     . my-dired-do-copy)
             ("D"     . my-dired-do-delete)
@@ -958,10 +968,11 @@ Defer code execution until the first command after initialization.
             ("k"     . dired-previous-line)
             ("r"     . my-dired-rsync)
             ("x"     . my-dired-do-flagged-delete)
-            ("/"     . swiper)
+            ("/"     . consult-line)
             ("^"     . dired-up-and-close-dir)
             ("bp"    . my-dired-pdf-size-down)
-            ("<DEL>" . dired-up-and-close-dir))
+            ("<DEL>" . dired-up-and-close-dir)
+            ("M-o"   . dired-omit-mode))
     :init
     (add-to-list 'magic-mode-alist
                  '((lambda () (< large-file-warning-threshold (buffer-size)))
@@ -1082,9 +1093,9 @@ Defer code execution until the first command after initialization.
                                   (string= inital-name "~"))
                               "default"
                             inital-name))
-             (name (ivy-read "Compress file name: " nil
-                             :initial-input
-                             (concat inital-name ".zip")))
+             (name (consult--read nil
+                                  :prompt "Compress file name: "
+                                  :initial (concat inital-name ".zip")))
              (target (shell-quote-argument name))
              (ext (file-name-extension name))
              (cmd (pcase ext
@@ -1215,7 +1226,8 @@ Defer code execution until the first command after initialization.
     :ensure nil
     :init
     (evil-leader/set-key
-      "na" 'org-agenda)
+      "na" 'org-agenda
+      "nx" 'org-capture)
     :config
     (require 'ox)
     (require 'ox-beamer)
@@ -1508,9 +1520,6 @@ Defer code execution until the first command after initialization.
     (defun my-eshell-change-whole-line ()
       (interactive)
       (execute-kbd-macro (kbd "0C")))
-    (defun my-eshell-history ()
-      (interactive)
-      (my-comint-history eshell-history-ring))
     (defun my-eshell-setup ()
       (setenv "TERM" "screen-256color")
       (evil-define-key 'insert eshell-mode-map (kbd "C-a") 'eshell-bol)
@@ -1523,7 +1532,7 @@ Defer code execution until the first command after initialization.
         (kbd "M-n") (lambda () (interactive) nil)
         (kbd "RET") 'my-comint-return))
     (evil-leader/set-key-for-mode 'eshell-mode
-      "l"  'my-eshell-history))
+      "l"  'consult-history))
 
   (use-package term
     :ensure nil
@@ -1602,27 +1611,21 @@ Defer code execution until the first command after initialization.
 
   (use-package comint
     :ensure nil
-    :commands my-comint-history
+    :commands my-comint-return
     :config
-    (defun my-comint-history (&optional ring)
-      (interactive)
-      (let ((input-ring (if ring ring comint-input-ring)))
-        (cl-letf (((symbol-function 'ivy-completion-in-region-action)
-                   (lambda (cmd) (my-comint-return) (insert cmd))))
-          (counsel--browse-history input-ring
-                                   :caller #'counsel-shell-history))))
-    (defun my-comint-return ()
-      (interactive)
-      (evil-goto-line)
-      (evil-append-line 1))
     (evil-leader/set-key-for-map comint-mode-map
-      "l"  'my-comint-history)
+      "l"  'consult-history)
     (evil-define-key 'normal comint-mode-map
       "gj" 'comint-next-prompt
       "gk" 'comint-previous-prompt
       (kbd "RET") 'my-comint-return)
     (evil-define-key 'insert comint-mode-map
-      (kbd "RET") 'comint-send-input))
+      (kbd "RET") 'comint-send-input)
+
+    (defun my-comint-return ()
+      (interactive)
+      (evil-goto-line)
+      (evil-append-line 1)))
 
   (use-package package
     :ensure nil
@@ -1751,7 +1754,7 @@ Defer code execution until the first command after initialization.
   (use-package epa
     :ensure nil
     :bind (:map epa-key-list-mode-map
-            ("/" . swiper)))
+            ("/" . consult-line)))
 
   (use-package comp
     :ensure nil
@@ -1787,7 +1790,7 @@ Defer code execution until the first command after initialization.
      ("C-<f8>"       . (lambda () (interactive) (buffer-save-or-load 8)))
      ("S-SPC"        . toggle-input-method)
      :map minibuffer-local-map
-     ("<escape>"     . minibuffer-keyboard-quit))
+     ("<escape>"     . abort-minibuffers))
     (defun my-other-window ()
       (interactive)
       (if (minibufferp)
@@ -1924,18 +1927,14 @@ Defer code execution until the first command after initialization.
   (use-package projectile
     :commands (sk-add-known-project
                sk-remove-known-project)
-    :hook (c-mode-common
-           . (lambda () (local-set-key (kbd "M-o") 'sk-find-other-file)))
     :init
     (evil-leader/set-key
-      "jd" 'projectile-find-dir
       "jk" 'projectile-kill-buffers
       "jb" 'projectile-switch-to-buffer
       "js" 'projectile-switch-project
       "jS" 'projectile-save-project-buffers)
     :config
-    (setq projectile-completion-system 'ivy
-          projectile-require-project-root nil
+    (setq projectile-require-project-root nil
           projectile-switch-project-action 'projectile-dired
           projectile-track-known-projects-automatically nil)
     (projectile-load-known-projects)
@@ -2036,9 +2035,6 @@ Defer code execution until the first command after initialization.
 
   (use-package fzf
     :bind (("C-c j h" . fzf-here))
-    :init
-    (evil-leader/set-key
-      "jf" 'fzf-here)
     :config
     (setq fzf/args (concat fzf/args " --no-separator"))
     (defun fzf-here ()
@@ -2083,6 +2079,7 @@ Defer code execution until the first command after initialization.
         (apply #'call-process "rm" nil nil nil "-rf" to-remove))))
 
   (use-package ivy
+    :disabled
     :bind (("C-x C-b"   . ivy-switch-buffer)
            :map minibuffer-inactive-mode-map
            ("<escape>" . abort-recursive-edit)
@@ -2159,6 +2156,7 @@ Defer code execution until the first command after initialization.
      '(("d" (lambda (p) (projectile-remove-known-project p)) "delete"))))
 
   (use-package ivy-yasnippet
+    :disabled
     :init
     (evil-leader/set-key "/" 'ivy-yasnippet)
     :config
@@ -2166,6 +2164,7 @@ Defer code execution until the first command after initialization.
     (advice-add 'ivy-yasnippet :after 'evil-insert-state))
 
   (use-package ivy-posframe
+    :disabled
     :if window-system
     :custom-face
     (ivy-posframe
@@ -2185,6 +2184,7 @@ Defer code execution until the first command after initialization.
   (use-package posframe)
 
   (use-package counsel
+    :disabled
     :commands (counsel-find-dir-here
                counsel-fzf-here
                counsel--browse-history
@@ -2291,7 +2291,8 @@ Defer code execution until the first command after initialization.
                 :action #'counsel-find-file-action
                 :caller 'counsel-find-dir-here)))
 
-  (use-package swiper)
+  (use-package swiper
+    :disabled)
 
   (use-package which-key
     :custom (which-key-dont-use-unicode t)
@@ -2341,6 +2342,261 @@ Defer code execution until the first command after initialization.
 
 
   (use-package engrave-faces)
+
+  (use-package marginalia
+    :defer-init (marginalia-mode 1)
+    :custom-face
+    (marginalia-documentation
+     ((t :inherit font-lock-function-name-face :underline nil)))
+    :config
+    (setq marginalia-max-relative-age 0))
+
+  (use-package vertico
+    :bind (:map vertico-map
+            ("DEL"      . vertico-directory-delete-char)
+            ("M-DEL"    . vertico-directory-delete-word)
+            ("C-M-n"    . vertico-next-group)
+            ("C-M-p"    . vertico-previous-group)
+            ("<escape>" . abort-minibuffers)
+            ("<next>"   . vertico-scroll-up)
+            ("<prior>"  . vertico-scroll-down)
+            ("<tab>"    . vertico-insert))
+    :defer-init (vertico-mode 1)
+    :config
+    (setq vertico-count 15
+          vertico-cycle nil
+          vertico-resize nil
+          vertico-sort-function nil)
+    (vertico-multiform-mode 1))
+
+  (use-package vertico-multiform
+    :ensure nil
+    :config
+    (setq
+     vertico-multiform-categories
+     '((file (vertico-sort-function . vertico-sort-dir-first-alpha)))
+     vertico-multiform-commands
+     '((consult-line (vertico-posframe-mode . nil) (vertico-mode . t))
+       (sk-consult-yasnippet (vertico-posframe-mode . nil) (vertico-mode . t))))
+    (defun vertico-sort-dir-first-alpha (lst)
+      "Sort directories before files, both sorted alphabetically."
+      (let (dirs files)
+        (dolist (x lst)
+          (if (string-suffix-p "/" x)
+              (push x dirs)
+            (push x files)))
+        (setq dirs (sort dirs #'string-lessp))
+        (setq files (sort files #'string-lessp))
+        (nconc dirs files))))
+
+  (use-package vertico-posframe
+    :if window-system
+    :custom-face
+    (vertico-posframe
+     ((((background light)) :background "LightGray" :foreground "black")
+      (((background dark)) :background "#282a36" :foreground "gray80")))
+    (vertico-posframe-border
+     ((t (:inherit vertico-posframe))) face-defface-spec)
+    (vertico-posframe-border-2
+     ((t (:inherit vertico-posframe))) face-defface-spec)
+    (vertico-posframe-border-3
+     ((t (:inherit vertico-posframe))) face-defface-spec)
+    (vertico-posframe-border-4
+     ((t (:inherit vertico-posframe))) face-defface-spec)
+    :defer-init (vertico-posframe-mode 1)
+    :config
+    (setq vertico-posframe-border-width 20)
+    (advice-add 'vertico-posframe-get-size :around
+                (lambda (func &rest args)
+                  (plist-put (apply func args)
+                             :width (min (- (frame-width) 5) 140)))))
+
+  (use-package orderless
+    :custom
+    (completion-category-defaults nil)
+    (completion-styles '(basic partial-completion orderless)))
+
+  (use-package consult
+    :hook (completion-list-mode . consult-preview-at-point-mode)
+    :bind (("M-x"     . consult-M-x)
+           ("<f5>"    . sk-compile)
+           :map minibuffer-local-map
+           ("C-r"     . consult-history))
+    :init
+    (evil-leader/set-key
+      "<SPC>" 'consult-M-x
+      "M-m"   'consult-M-x
+      "jd"    'consult-fd-dir
+      "jD"    'consult-fd-dir-here
+      "jf"    'consult-fd-file
+      "jh"    'consult-fd-file-here)
+    :commands consult--read
+    :config
+    (require 'smex)
+    (setq sk-compile-history nil
+          consult-async-min-input 2
+          consult-async-refresh-delay 0.1
+          consult-preview-key nil
+          xref-show-xrefs-function #'consult-xref
+          xref-show-definitions-function #'consult-xref)
+    (advice-add #'register-preview :override #'consult-register-window)
+
+    (defun consult-M-x ()
+      (interactive)
+      ;; Initialize Smex
+      (unless smex-initialized-p
+        (smex-initialize))
+      (and smex-auto-update
+           (smex-detect-new-commands)
+           (smex-update))
+      ;; Execute command
+      (let ((cmd (consult--read smex-ido-cache :sort nil :prompt "M-x ")))
+        (setq cmd
+              (intern
+               (subst-char-in-string ?\s ?- (string-remove-prefix "^" cmd))))
+        (smex-rank cmd)
+        (setq prefix-arg current-prefix-arg)
+        (setq this-command cmd)
+        (setq real-this-command cmd)
+        (command-execute cmd 'record)))
+
+    (defun consult-fd-dir ()
+      (interactive)
+      (pcase-let* ((consult-fd-args (append consult-fd-args '("-t d")))
+                   (`(,prompt ,paths ,dir) (consult--directory-prompt "Fd" nil))
+                   (default-directory dir)
+                   (builder (consult--fd-make-builder paths)))
+        (find-file (consult--find prompt builder nil))))
+
+    (defun consult-fd-dir-here ()
+      (interactive)
+      (let* ((consult-fd-args (append consult-fd-args '("-I" "-t d")))
+             (prompt "Fd: ")
+             (builder (consult--fd-make-builder '("."))))
+        (find-file (consult--find prompt builder nil))))
+
+    (defun consult-fd-file ()
+      (interactive)
+      (pcase-let* ((consult-fd-args (append consult-fd-args '("-t f")))
+                   (`(,prompt ,paths ,dir) (consult--directory-prompt "Fd" nil))
+                   (default-directory dir)
+                   (builder (consult--fd-make-builder paths)))
+        (find-file (consult--find prompt builder nil))))
+
+    (defun consult-fd-file-here ()
+      (interactive)
+      (let* ((consult-fd-args (append consult-fd-args '("-I" "-t f")))
+             (prompt "Fd: ")
+             (builder (consult--fd-make-builder '("."))))
+        (find-file (consult--find prompt builder nil))))
+
+    (defun sk-compile-scripts ()
+      (if-let ((sbin (find-file-in-tree default-directory ".sbin")))
+          (let ((files-alist)
+                (files (directory-files sbin t "\\.sh$"))
+                (cand (alist-get sbin sk-compile-history nil nil #'equal)))
+            (dolist (f files)
+              (setq files-alist
+                    (nconc files-alist
+                           (list (cons (file-name-nondirectory f) f)))))
+            (when cand
+              (push (cons (file-name-nondirectory cand) cand) files-alist))
+            (delete-dups files-alist))
+        (user-error "Couldn't find .sbin folder")))
+
+    (defun sk-compile (&optional dir)
+      (interactive)
+      (let* ((scripts (sk-compile-scripts))
+             (script (consult--read
+                      (mapcar #'car scripts)
+                      :prompt "Compile script: "
+                      :require-match t))
+             (cmd (alist-get script scripts nil nil #'string-equal))
+             (dir (file-name-directory cmd)))
+        (setf (alist-get dir sk-compile-history nil 'remove #'equal) cmd)
+        (compile cmd))))
+
+  (use-package consult-yasnippet
+    :commands sk-consult-yasnippet
+    :init
+    (evil-leader/set-key "/" 'sk-consult-yasnippet)
+    :config
+    (defun sk-consult-yasnippet (arg)
+      (interactive "P")
+      (unless yas-minor-mode
+        (yas-minor-mode 1))
+      (let ((consult-preview-key 'any))
+        (call-interactively 'consult-yasnippet))))
+
+  (use-package consult-ls-git
+    :init
+    (evil-leader/set-key "o" 'consult-ls-git-ls-files))
+
+  (use-package embark
+    :bind
+    (("C-h B" . embark-bindings)
+     :map minibuffer-mode-map
+     ("M-o"   . embark-act)
+     ("C-M-o" . embark-act-1))
+    :init
+    (evil-leader/set-key
+      "hb" 'embark-bindings
+      "xo" 'embark-act)
+    :config
+    (setq embark-cycle-key "M-o"
+          embark-indicators
+          '(embark-which-key-indicator
+            embark-highlight-indicator
+            embark-isearch-highlight-indicator)
+          prefix-help-command #'embark-prefix-help-command)
+
+    ;; Remove embark--confirm
+    (dolist (item '(delete-file delete-directory kill-buffer))
+      (setq embark-pre-action-hooks
+            (delete (assoc item embark-pre-action-hooks)
+                    embark-pre-action-hooks)))
+
+    (defun embark-act-1 ()
+      (interactive)
+      (embark-act 1))
+
+    (defun embark-which-key-indicator ()
+      "An embark indicator that displays keymaps using which-key.
+  The which-key help message will show the type and value of the
+  current target followed by an ellipsis if there are further
+  targets."
+      (lambda (&optional keymap targets prefix)
+        (if (null keymap)
+            (which-key--hide-popup-ignore-command)
+          (which-key--show-keymap
+           (if (eq (plist-get (car targets) :type) 'embark-become)
+               "Become"
+             (format "Act on %s '%s'%s"
+                     (plist-get (car targets) :type)
+                     (embark--truncate-target (plist-get (car targets) :target))
+                     (if (cdr targets) "…" "")))
+           (if prefix
+               (pcase (lookup-key keymap prefix 'accept-default)
+                 ((and (pred keymapp) km) km)
+                 (_ (key-binding prefix 'accept-default)))
+             keymap)
+           nil nil t (lambda (binding)
+                       (not (string-suffix-p "-argument" (cdr binding))))))))
+
+    (defun embark-hide-which-key-indicator (fn &rest args)
+      "Hide the which-key indicator immediately when using the completing-read
+  prompter."
+      (which-key--hide-popup-ignore-command)
+      (let ((embark-indicators
+             (remq #'embark-which-key-indicator embark-indicators)))
+        (apply fn args)))
+
+    (advice-add #'embark-completing-read-prompter
+                :around #'embark-hide-which-key-indicator))
+
+  (use-package embark-consult
+    :hook
+    (embark-collect-mode . consult-preview-at-point-mode))
 #+END_SRC
 * Development packages - built-in
 #+BEGIN_SRC emacs-lisp
@@ -2526,6 +2782,7 @@ Defer code execution until the first command after initialization.
     :ensure nil
     :mode (("\\.aidl\\'" . java-mode)
            ("\\.hal\\'" . c++-mode))
+    :bind (:map c-mode-base-map ("M-o" . sk-find-other-file))
     :config
     (c-add-style "my-bsd" '("bsd"
                             (c-offsets-alist
@@ -2726,7 +2983,7 @@ Defer code execution until the first command after initialization.
       "css" 'sly-stickers-dwim
       "csF" 'sly-stickers-forget)
     (evil-leader/set-key-for-mode 'sly-mrepl-mode
-      "l"  'my-comint-history
+      "l"  'consult-history
       "z"  'sly-switch-to-most-recent
       "es" 'sly-mrepl-set-package)
     (evil-define-key 'normal sly-mode-map
@@ -2817,9 +3074,6 @@ Defer code execution until the first command after initialization.
           (haskell-indentation-newline-and-indent)
           (when (equal ch ?|)
             (insert "| ")))))
-    (defun my-haskell-prompt-history ()
-      (interactive)
-      (my-comint-history 'haskell-interactive-mode-history))
     (defun my-haskell-prompt-kill-whole-line ()
       (interactive)
       (haskell-interactive-mode-bol)
@@ -2848,7 +3102,7 @@ Defer code execution until the first command after initialization.
       "z"  'haskell-interactive-switch
       "ef" 'haskell-process-load-file)
     (evil-leader/set-key-for-mode 'haskell-interactive-mode
-      "l" 'my-haskell-prompt-history
+      "l" 'consult-history
       "z" 'haskell-interactive-switch-back))
 
   (use-package restclient
