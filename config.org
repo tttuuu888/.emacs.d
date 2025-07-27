@@ -2396,7 +2396,14 @@ Defer code execution until the first command after initialization.
     (vertico-posframe
      ((((background light)) :background "LightGray" :foreground "black")
       (((background dark)) :background "#282a36" :foreground "gray80")))
-    (vertico-posframe-border ((t (:inherit vertico-posframe))) face-defface-spec)
+    (vertico-posframe-border
+     ((t (:inherit vertico-posframe))) face-defface-spec)
+    (vertico-posframe-border-2
+     ((t (:inherit vertico-posframe))) face-defface-spec)
+    (vertico-posframe-border-3
+     ((t (:inherit vertico-posframe))) face-defface-spec)
+    (vertico-posframe-border-4
+     ((t (:inherit vertico-posframe))) face-defface-spec)
     :defer-init (vertico-posframe-mode 1)
     :config
     (setq vertico-posframe-border-width 20)
