@@ -2353,20 +2353,20 @@ Defer code execution until the first command after initialization.
 
   (use-package vertico
     :bind (:map vertico-map
+            ("DEL"      . vertico-directory-delete-char)
+            ("M-DEL"    . vertico-directory-delete-word)
+            ("C-M-n"    . vertico-next-group)
+            ("C-M-p"    . vertico-previous-group)
             ("<escape>" . abort-minibuffers)
-            ("<next>"  . 'vertico-scroll-up)
-            ("<prior>" . 'vertico-scroll-down)
-            ("<tab>" . vertico-insert)
-            ("C-M-n" . vertico-next-group)
-            ("C-M-p" . vertico-previous-group))
+            ("<next>"   . vertico-scroll-up)
+            ("<prior>"  . vertico-scroll-down)
+            ("<tab>"    . vertico-insert))
     :defer-init (vertico-mode 1)
     :config
     (setq vertico-count 15
           vertico-cycle nil
           vertico-resize nil
           vertico-sort-function nil)
-    (keymap-set vertico-map "DEL" #'vertico-directory-delete-char)
-    (keymap-set vertico-map "M-DEL" #'vertico-directory-delete-word)
     (vertico-multiform-mode 1))
 
   (use-package vertico-multiform
