@@ -2349,8 +2349,7 @@ Defer code execution until the first command after initialization.
     (marginalia-documentation
      ((t :inherit font-lock-function-name-face :underline nil)))
     :config
-    (setq marginalia-align 'right
-          marginalia-max-relative-age 0))
+    (setq marginalia-max-relative-age 0))
 
   (use-package vertico
     :bind (:map vertico-map
