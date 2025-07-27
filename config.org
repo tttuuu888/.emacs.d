@@ -2597,6 +2597,21 @@ Defer code execution until the first command after initialization.
   (use-package embark-consult
     :hook
     (embark-collect-mode . consult-preview-at-point-mode))
+
+  (use-package popper
+    :bind (("M-`"   . popper-toggle)
+           ("C-M-`" . popper-cycle)
+           ("M-~"   . popper-toggle-type))
+    :defer-init (require 'popper)
+    :config
+    (setq popper-reference-buffers
+          '("Output\\*$"
+            "\\*Async Shell Command\\*"
+            help-mode
+            compilation-mode)
+          popper-window-height 20)
+    (popper-mode +1)
+    (popper-echo-mode +1))
 #+END_SRC
 * Development packages - built-in
 #+BEGIN_SRC emacs-lisp
