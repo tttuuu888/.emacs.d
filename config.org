@@ -2413,7 +2413,9 @@ Defer code execution until the first command after initialization.
   (use-package consult
     :hook (completion-list-mode . consult-preview-at-point-mode)
     :bind (("M-x"     . consult-M-x)
-           ("<f5>"    . sk-compile))
+           ("<f5>"    . sk-compile)
+           :map minibuffer-local-map
+           ("C-r"     . consult-history))
     :init
     (evil-leader/set-key
       "<SPC>" 'consult-M-x
