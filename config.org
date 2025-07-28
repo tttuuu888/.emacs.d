@@ -2371,10 +2371,15 @@ Defer code execution until the first command after initialization.
 
   (use-package vertico-multiform
     :ensure nil
+    :bind (:map vertico-directory-map
+            ("RET"      . exit-minibuffer)
+            ("~"        . my-vertico-directory-tilde))
     :config
+    (require 'vertico-directory)
     (setq
      vertico-multiform-categories
-     '((file (vertico-sort-function . vertico-sort-dir-first-alpha)))
+     '((file (vertico-sort-function . vertico-sort-dir-first-alpha)
+             (:keymap . vertico-directory-map)))
      vertico-multiform-commands
      '((consult-line (vertico-posframe-mode . nil) (vertico-mode . t))
        (sk-consult-yasnippet (vertico-posframe-mode . nil) (vertico-mode . t))))
@@ -2387,7 +2392,12 @@ Defer code execution until the first command after initialization.
             (push x files)))
         (setq dirs (sort dirs #'string-lessp))
         (setq files (sort files #'string-lessp))
-        (nconc dirs files))))
+        (nconc dirs files)))
+    (defun my-vertico-directory-tilde ()
+      (interactive)
+      (if (string-suffix-p  "/" (car vertico--input))
+          (insert "~/")
+        (insert "~"))))
 
   (use-package vertico-posframe
     :if window-system
