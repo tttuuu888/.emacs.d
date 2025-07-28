@@ -2436,6 +2436,7 @@ Defer code execution until the first command after initialization.
     (setq sk-compile-history nil
           consult-async-min-input 2
           consult-async-refresh-delay 0.1
+          consult-fd-args '("fd" "--color=never")
           consult-preview-key "M-."
           xref-show-xrefs-function #'consult-xref
           xref-show-definitions-function #'consult-xref)
