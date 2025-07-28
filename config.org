@@ -2548,7 +2548,9 @@ Defer code execution until the first command after initialization.
     (("C-h B" . embark-bindings)
      :map minibuffer-mode-map
      ("M-o"   . embark-act)
-     ("C-M-o" . embark-act-1))
+     ("C-M-o" . embark-act-1)
+     :map embark-file-map
+     ("k"     . make-directory))
     :init
     (evil-leader/set-key
       "hb" 'embark-bindings
