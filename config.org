@@ -972,7 +972,7 @@ Defer code execution until the first command after initialization.
             ("^"     . dired-up-and-close-dir)
             ("bp"    . my-dired-pdf-size-down)
             ("<DEL>" . dired-up-and-close-dir)
-            ("M-o"   . dired-omit-mode))
+            ("M-l"   . dired-omit-mode))
     :init
     (add-to-list 'magic-mode-alist
                  '((lambda () (< large-file-warning-threshold (buffer-size)))
@@ -2545,16 +2545,14 @@ Defer code execution until the first command after initialization.
 
   (use-package embark
     :bind
-    (("C-h B" . embark-bindings)
+    (("M-o"   . embark-act)
+     ("C-h B" . embark-bindings)
      :map minibuffer-mode-map
-     ("M-o"   . embark-act)
      ("C-M-o" . embark-act-1)
      :map embark-file-map
      ("k"     . make-directory))
     :init
-    (evil-leader/set-key
-      "hb" 'embark-bindings
-      "xo" 'embark-act)
+    (evil-leader/set-key "hb" 'embark-bindings)
     :config
     (setq embark-cycle-key "M-o"
           embark-indicators
@@ -2810,7 +2808,6 @@ Defer code execution until the first command after initialization.
     :ensure nil
     :mode (("\\.aidl\\'" . java-mode)
            ("\\.hal\\'" . c++-mode))
-    :bind (:map c-mode-base-map ("M-o" . sk-find-other-file))
     :config
     (c-add-style "my-bsd" '("bsd"
                             (c-offsets-alist
@@ -2818,7 +2815,9 @@ Defer code execution until the first command after initialization.
                              (inextern-lang . 0))))
     (setq c-basic-offset tab-width
           c-default-style "my-bsd")
-    (defvaralias 'c-basic-offset 'tab-width))
+    (defvaralias 'c-basic-offset 'tab-width)
+    (evil-leader/set-key-for-map c-mode-base-map
+      "co" 'sk-find-other-file))
 
   (use-package compile
     :ensure nil
