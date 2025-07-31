@@ -2622,6 +2622,7 @@ Defer code execution until the first command after initialization.
   (use-package popper
     :bind (("M-`"   . popper-toggle)
            ("C-M-`" . popper-cycle)
+           ("C-M-@" . popper-cycle)
            ("M-~"   . popper-toggle-type))
     :defer-init (require 'popper)
     :config
