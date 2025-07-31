@@ -587,7 +587,7 @@ Simple color setting function which has 'dark' and 'light' theme.
       (set-face-attribute 'fringe nil
                           :background base-bg-color)
       (set-face-attribute 'header-line nil
-                          :background base-bg-color :underline nil)
+                          :inherit 'font-lock-function-name-face)
       (set-face-attribute 'vertical-border nil
                           :background base-bg-color)
       (set-face-attribute 'region nil
@@ -1768,6 +1768,12 @@ Defer code execution until the first command after initialization.
   (use-package text
     :ensure nil
     :mode ("\\.lst\\'" . text-mode))
+
+  (use-package hexl
+    :ensure nil
+    :custom-face
+    (hexl-address-region ((t :inherit 'font-lock-function-name-face))
+                         face-defface-spec))
 #+END_SRC
 * General packages - external
 #+BEGIN_SRC emacs-lisp
