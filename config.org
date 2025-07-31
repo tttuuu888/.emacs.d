@@ -586,8 +586,6 @@ Simple color setting function which has 'dark' and 'light' theme.
                           :foreground base-fg-color :background base-bg-color)
       (set-face-attribute 'fringe nil
                           :background base-bg-color)
-      (set-face-attribute 'header-line nil
-                          :inherit 'font-lock-function-name-face)
       (set-face-attribute 'vertical-border nil
                           :background base-bg-color)
       (set-face-attribute 'region nil
@@ -928,6 +926,11 @@ Defer code execution until the first command after initialization.
       (add-to-list 'company-backends 'company-sql)))
 
   ;;; Built-in packages
+  (use-package emacs
+    :ensure nil
+    :custom-face
+    (header-line ((t (:inherit font-lock-function-name-face :underline nil)))))
+
   (use-package recentf
     :ensure nil
     :custom (recentf-max-saved-items 100)
