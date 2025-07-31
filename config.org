@@ -1580,6 +1580,7 @@ Defer code execution until the first command after initialization.
 
   (use-package tramp
     :ensure nil
+    :defer-init (require 'tramp)
     :config
     (setq remote-file-name-inhibit-cache nil
           tramp-auto-save-directory "/tmp/tramp/"
