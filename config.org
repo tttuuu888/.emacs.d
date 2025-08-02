@@ -2438,14 +2438,11 @@ Defer code execution until the first command after initialization.
 
   (use-package consult
     :hook (completion-list-mode . consult-preview-at-point-mode)
-    :bind (("M-x"     . consult-M-x)
-           ("<f5>"    . sk-compile)
+    :bind (("<f5>"    . sk-compile)
            :map minibuffer-local-map
            ("C-r"     . consult-history))
     :init
     (evil-leader/set-key
-      "<SPC>" 'consult-M-x
-      "M-m"   'consult-M-x
       "jd"    'consult-fd-dir
       "jD"    'consult-fd-dir-here
       "jf"    'consult-fd-file
@@ -2461,6 +2458,7 @@ Defer code execution until the first command after initialization.
           xref-show-xrefs-function #'consult-xref
           xref-show-definitions-function #'consult-xref)
     (advice-add #'register-preview :override #'consult-register-window)
+    (defalias 'execute-extended-command 'consult-M-x)
 
     (defun consult-M-x ()
       (interactive)
