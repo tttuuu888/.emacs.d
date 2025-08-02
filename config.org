@@ -327,8 +327,9 @@ Instead of using =custom.el=, insert the contents of the file directly here.
         (ctrl-map-search target (list ?\c))
         (dolist (e ret)
           (let ((key (mapconcat 'single-key-description (car e) "")))
-            (unless (and exceptions
-                         (cl-some (lambda (e) (string-prefix-p e key)) exceptions))
+            (unless
+                (and exceptions
+                     (cl-some (lambda (e) (string-prefix-p e key)) exceptions))
               (evil-leader/set-key-for-mode mode key (cdr e))))))))
 
   (defun tmux-running-p (&optional notice)
@@ -758,7 +759,8 @@ Defer code execution until the first command after initialization.
       "xv" 'evil-reload-file)
     (let ((leader (read-kbd-macro evil-leader/leader))
           (sub-leader (read-kbd-macro evil-leader/sub-leader))
-          (no-prefix-rx (mapconcat #'identity evil-leader/no-prefix-mode-rx "\\|")))
+          (no-prefix-rx
+           (mapconcat #'identity evil-leader/no-prefix-mode-rx "\\|")))
       (defun sk-evil-leader-mode ()
         (let* ((mode-map (cdr (assoc major-mode evil-leader--mode-maps)))
                (map (or mode-map evil-leader--default-map)))
@@ -1658,7 +1660,8 @@ Defer code execution until the first command after initialization.
                     (apply func r))))
     (defun package-vc-upgrade (pkg-desc)
       "Attempt to upgrade the package PKG-DESC."
-      (interactive (list (package-vc--read-package-desc "Upgrade VC package: " t)))
+      (interactive
+       (list (package-vc--read-package-desc "Upgrade VC package: " t)))
       (cl-assert (package-vc-p pkg-desc))
       (let* ((vc-handled-backends '(Git))
              (pkg-dir (package-desc-dir pkg-desc))
