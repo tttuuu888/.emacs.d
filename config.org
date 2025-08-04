@@ -2463,6 +2463,8 @@ Defer code execution until the first command after initialization.
     (advice-add #'register-preview :override #'consult-register-window)
     (defalias 'execute-extended-command 'consult-M-x)
 
+    (consult-customize consult-line :preview-key 'any)
+
     (defun consult-M-x ()
       (interactive)
       ;; Initialize Smex
