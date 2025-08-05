@@ -2437,7 +2437,7 @@ Defer code execution until the first command after initialization.
   (use-package orderless
     :custom
     (completion-category-defaults nil)
-    (completion-styles '(basic partial-completion orderless)))
+    (completion-styles '(orderless basic)))
 
   (use-package consult
     :hook (completion-list-mode . consult-preview-at-point-mode)
