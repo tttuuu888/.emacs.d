@@ -2625,9 +2625,11 @@ Defer code execution until the first command after initialization.
             "\\*Async Shell Command\\*"
             help-mode
             compilation-mode)
-          popper-window-height 20)
+          popper-window-height #'my-popper-window-height)
     (popper-mode +1)
-    (popper-echo-mode +1))
+    (popper-echo-mode +1)
+    (defun my-popper-window-height (win)
+      (floor (frame-height) 2)))
 #+END_SRC
 * Development packages - built-in
 #+BEGIN_SRC emacs-lisp
