@@ -1715,7 +1715,12 @@ Defer code execution until the first command after initialization.
     (put 'sk-vc-mode 'permanent-local t)
     (defun sk-vc-refresh-state ()
       (setq sk-vc-mode (git-branch-of-file (buffer-file-name))))
-    (defalias 'vc-refresh-state 'sk-vc-refresh-state))
+    (defalias 'vc-refresh-state 'sk-vc-refresh-state)
+    :config
+    (advice-add 'vc-region-history :around
+                (lambda (func &rest r)
+                  (let ((vc-handled-backends '(Git)))
+                    (apply func r)))))
 
   (use-package tex-mode
     :ensure nil
