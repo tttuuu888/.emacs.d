@@ -2440,9 +2440,22 @@ Defer code execution until the first command after initialization.
                              :width (min (- (frame-width) 5) 140)))))
 
   (use-package orderless
-    :custom
-    (completion-category-defaults nil)
-    (completion-styles '(basic partial-completion orderless)))
+    :defer-init (require 'orderless)
+    :config
+    (orderless-define-completion-style orderless+initialism
+      (orderless-matching-styles
+       '(orderless-initialism orderless-literal orderless-regexp)))
+
+    (setq completion-category-defaults nil
+          completion-category-overrides
+          '((file (styles partial-completion orderless+initialism))
+            (buffer (styles orderless+initialism))
+            (consult-multi (styles orderless+initialism))
+            (command (styles orderless+initialism))
+            (variable (styles orderless+initialism))
+            (symbol (styles orderless+initialism)))
+          completion-styles '(basic partial-completion orderless)
+          orderless-matching-styles '(orderless-literal orderless-regexp)))
 
   (use-package consult
     :hook (completion-list-mode . consult-preview-at-point-mode)
