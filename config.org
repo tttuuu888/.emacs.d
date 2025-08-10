@@ -2435,10 +2435,9 @@ Defer code execution until the first command after initialization.
                              :width (min (- (frame-width) 5) 140)))))
 
   (use-package orderless
-    :disabled
     :custom
     (completion-category-defaults nil)
-    (completion-styles '(orderless basic)))
+    (completion-styles '(basic partial-completion orderless)))
 
   (use-package consult
     :hook (completion-list-mode . consult-preview-at-point-mode)
