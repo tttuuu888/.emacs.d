@@ -3200,6 +3200,15 @@ Defer code execution until the first command after initialization.
     (evil-define-minor-mode-key 'normal 'eglot--managed-mode
       "gh" 'eldoc-doc-buffer))
 
+  (use-package eglot-booster
+    :vc (:url "https://github.com/jdtsmith/eglot-booster"
+              :rev :newest)
+    :after eglot
+    :demand t
+    :config
+    ;; cargo install emacs-lsp-booster
+    (eglot-booster-mode))
+
   (use-package rust-mode
     :hook (rust-mode . eglot-ensure)
     :config
