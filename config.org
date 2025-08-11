@@ -2097,13 +2097,12 @@ Defer code execution until the first command after initialization.
         (apply #'call-process "rm" nil nil nil "-rf" to-remove))))
 
   (use-package ivy
-    :bind (("C-x C-b"   . ivy-switch-buffer)
-           :map minibuffer-inactive-mode-map
-           ("<escape>" . abort-recursive-edit)
-           :map ivy-minibuffer-map
-           ("<escape>" . minibuffer-keyboard-quit)
-           ("C-j"      . ivy-partial)
-           ("TAB"      . ivy-alt-done))
+    :bind (:map minibuffer-inactive-mode-map
+            ("<escape>" . abort-recursive-edit)
+            :map ivy-minibuffer-map
+            ("<escape>" . minibuffer-keyboard-quit)
+            ("C-j"      . ivy-partial)
+            ("TAB"      . ivy-alt-done))
     :init
     (evil-leader/set-key
       "b" 'ivy-switch-buffer)
@@ -2159,8 +2158,6 @@ Defer code execution until the first command after initialization.
   (use-package posframe)
 
   (use-package counsel
-    :bind (("C-x d"   . counsel-find-file)
-           ("C-x C-f" . counsel-find-file))
     :init
     (evil-leader/set-key
       "d"     'counsel-find-file
