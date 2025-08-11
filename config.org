@@ -2097,7 +2097,6 @@ Defer code execution until the first command after initialization.
         (apply #'call-process "rm" nil nil nil "-rf" to-remove))))
 
   (use-package ivy
-    :disabled
     :bind (("C-x C-b"   . ivy-switch-buffer)
            :map minibuffer-inactive-mode-map
            ("<escape>" . abort-recursive-edit)
@@ -2108,7 +2107,6 @@ Defer code execution until the first command after initialization.
     :init
     (evil-leader/set-key
       "b" 'ivy-switch-buffer)
-    :defer-init (ivy-mode 1)
     :config
     (setq ivy-height 15
           ivy-height-alist '((t . 15))
@@ -2127,54 +2125,14 @@ Defer code execution until the first command after initialization.
                   (if (> (- (pos-eol) (pos-bol)) 10000)
                       ""
                     (apply old r))))
-    (defun sk-ivy-buffer-transformer (str)
-      (let* ((nmax 35)
-             (buf (get-buffer str))
-             (buf-name (if (>= (length str) (+ nmax 2))
-                           (concat (substring str 0 (- nmax 2)) "..")
-                         str))
-             (buf-len (length buf-name))
-             (buf-dir (buffer-local-value 'default-directory buf))
-             (buf-mode (buffer-local-value 'major-mode buf))
-             (mode (capitalize
-                    (string-remove-suffix "-mode" (symbol-name buf-mode))))
-             (max-path-len
-              (max 0 (min 100 (- (frame-width)
-                                 (+ nmax 30)
-                                 (max 0 (- buf-len nmax))))))
-             (path-dir (abbreviate-file-name (or buf-dir "~/")))
-             (path-file (when-let ((name (buffer-file-name buf)))
-                          (abbreviate-file-name name)))
-             (path-opt (or path-file
-                           (when (or (string-match-p "shell" str)
-                                     (equal buf-mode 'dired-mode))
-                             path-dir)))
-             (path-prefix (if (string-prefix-p "~" path-opt)
-                              "~/"
-                            "/"))
-             (path-len (length path-opt))
-             (path-mod (if (<= path-len max-path-len)
-                           nil
-                         (substring path-opt (- path-len max-path-len) path-len)))
-             (path-margin (max 0 (- 20 (max 0 (- buf-len nmax)))))
-             (path (if path-mod
-                       (concat path-prefix
-                               "…"
-                               (replace-regexp-in-string
-                                (rx bol (* (not (or "~" "/"))))
-                                ""
-                                path-mod))
-                     path-opt))
-             (form (format "%%-%ds  %%-%ds  %%s" nmax path-margin)))
-        (format form buf-name mode (or path ""))))
-    (ivy-configure 'ivy-switch-buffer
-      :display-transformer-fn 'sk-ivy-buffer-transformer)
+    (ivy-add-actions
+     'ivy-switch-buffer
+     '(("d" ivy--kill-buffer-action "delete")))
     (ivy-add-actions
      'projectile-switch-project
      '(("d" (lambda (p) (projectile-remove-known-project p)) "delete"))))
 
   (use-package ivy-yasnippet
-    :disabled
     :init
     (evil-leader/set-key "/" 'ivy-yasnippet)
     :config
@@ -2182,7 +2140,6 @@ Defer code execution until the first command after initialization.
     (advice-add 'ivy-yasnippet :after 'evil-insert-state))
 
   (use-package ivy-posframe
-    :disabled
     :if window-system
     :custom-face
     (ivy-posframe
@@ -2202,41 +2159,13 @@ Defer code execution until the first command after initialization.
   (use-package posframe)
 
   (use-package counsel
-    :disabled
-    :commands (counsel-find-dir-here
-               counsel-fzf-here
-               counsel--browse-history
-               my-counsel-fzf
-               my-counsel-fzf-here
-               my-counsel-switch-shell-buffer)
-    :bind (("M-x"     . counsel-M-x)
-           ("C-x d"   . counsel-find-file)
-           ("C-x C-f" . counsel-find-file)
-           ("C-h b"   . counsel-descbinds)
-           ("C-h v"   . counsel-describe-variable)
-           ("C-h f"   . counsel-describe-function)
-           ("<f5>"    . sk-compile)
-           :map minibuffer-local-map
-           ("C-r"     . counsel-minibuffer-history))
+    :bind (("C-x d"   . counsel-find-file)
+           ("C-x C-f" . counsel-find-file))
     :init
     (evil-leader/set-key
-      "<SPC>" 'counsel-M-x
-      "M-m"   'counsel-M-x
       "d"     'counsel-find-file
-      "f"     'counsel-find-file
-      "o"     'counsel-git
-      "r"     'counsel-recentf
-      "ha"    'counsel-describe-face
-      "hb"    'counsel-descbinds
-      "hv"    'counsel-describe-variable
-      "hf"    'counsel-describe-function
-      "nx"    'counsel-org-capture
-      "jD"    'counsel-find-dir-here
-      "jh"    'my-counsel-fzf-here
-      "jo"    'my-counsel-fzf
-      "sb"    'my-counsel-switch-shell-buffer)
+      "f"     'counsel-find-file)
     :config
-    (setq sk-compile-history nil)
     (ivy-add-actions
      'counsel-shell-history
      '(("d" (lambda (x) (ring-remove comint-input-ring
@@ -2246,68 +2175,7 @@ Defer code execution until the first command after initialization.
      'counsel-find-file
      '(("d" counsel-find-file-delete "delete")
        ("k" counsel-find-file-mkdir-action "mkdir")
-       ("e" (lambda (_) (find-file ".dir-locals.el")) ".dir-locals")))
-    (ivy-add-actions
-     'ivy-switch-buffer
-     '(("d" ivy--kill-buffer-action "delete")))
-    (ivy-add-actions
-     'counsel-describe-variable
-     '(("s" (lambda (v) (counsel-read-setq-expression (intern v))) "setq")))
-
-    (defun my-counsel-fzf ()
-      "Fzf on project root."
-      (interactive)
-      (counsel-fzf nil (sk-project-root)))
-    (defun my-counsel-fzf-here ()
-      "Fzf on current directory."
-      (interactive)
-      (counsel-fzf nil default-directory))
-    (defun my-counsel-switch-shell-buffer ()
-      "Switch to a shell buffer, or create one."
-      (interactive)
-      (ivy-read "Shell buffer: "
-                (append (counsel--buffers-with-mode #'shell-mode)
-                        (counsel--buffers-with-mode #'eshell-mode))
-                :action #'counsel--switch-to-shell
-                :caller 'ivy-switch-buffer))
-
-    (defun sk-compile-candidates ()
-      (if-let ((sbin (find-file-in-tree default-directory ".sbin")))
-          (let ((files-alist)
-                (files (directory-files sbin t "\\.sh$"))
-                (cand (alist-get sbin sk-compile-history nil nil #'equal)))
-            (dolist (f files)
-              (setq files-alist
-                    (nconc files-alist
-                           (list (cons (file-name-nondirectory f) f)))))
-            (when cand
-              (push (cons (file-name-nondirectory cand) cand) files-alist))
-            (delete-dups files-alist))
-        (user-error "Couldn't find .sbin folder")))
-
-    (defun sk-compile-action (cmd-alist)
-      (let* ((cmd (cdr cmd-alist))
-             (dir (file-name-directory cmd)))
-        (setf (alist-get dir sk-compile-history nil 'remove #'equal) cmd)
-        (compile cmd)))
-
-    (defun sk-compile (&optional dir)
-      (interactive)
-      (ivy-read "Compile script: "
-                (sk-compile-candidates)
-                :require-match t
-                :action  #'sk-compile-action
-                :keymap counsel-compile-map
-                :caller 'sk-compile))
-
-    (defun counsel-find-dir-here ()
-      "Find all folders under current directory."
-      (interactive)
-      (ivy-read "Find dir: "
-                (split-string
-                 (shell-command-to-string "find * ! -path '*.*' -type d"))
-                :action #'counsel-find-file-action
-                :caller 'counsel-find-dir-here)))
+       ("e" (lambda (_) (find-file ".dir-locals.el")) ".dir-locals"))))
 
   (use-package swiper
     :disabled)
@@ -2358,7 +2226,6 @@ Defer code execution until the first command after initialization.
     :vc
     (:url "https://github.com/tttuuu888/inf-gptel" :branch "main" :rev :newest))
 
-
   (use-package engrave-faces)
 
   (use-package marginalia
@@ -2367,7 +2234,9 @@ Defer code execution until the first command after initialization.
     (marginalia-documentation
      ((t :inherit font-lock-function-name-face :underline nil)))
     :config
-    (setq marginalia-max-relative-age 0))
+    (setq marginalia-max-relative-age 0)
+    ;; For counsel-find-file
+    (push '(file none) marginalia-annotators))
 
   (use-package vertico
     :bind (:map vertico-map
@@ -2550,6 +2419,7 @@ Defer code execution until the first command after initialization.
         (compile cmd))))
 
   (use-package consult-yasnippet
+    :disabled
     :commands sk-consult-yasnippet
     :init
     (evil-leader/set-key "/" 'sk-consult-yasnippet)
