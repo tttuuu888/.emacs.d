@@ -937,8 +937,6 @@ Defer code execution until the first command after initialization.
     :ensure nil
     :custom (recentf-max-saved-items 100)
     :defer-init (recentf-mode 1)
-    :init
-    (evil-leader/set-key "r" 'recentf)
     :config
     (add-to-list 'recentf-exclude
                  (expand-file-name "elpa/.*" emacs-config-dir)))
@@ -2161,7 +2159,8 @@ Defer code execution until the first command after initialization.
     :init
     (evil-leader/set-key
       "d"     'counsel-find-file
-      "f"     'counsel-find-file)
+      "f"     'counsel-find-file
+      "r"     'counsel-recentf)
     :config
     (ivy-add-actions
      'counsel-shell-history
