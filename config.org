@@ -2122,6 +2122,50 @@ Defer code execution until the first command after initialization.
                   (if (> (- (pos-eol) (pos-bol)) 10000)
                       ""
                     (apply old r))))
+
+    (defun sk-ivy-buffer-transformer (str)
+      (let* ((nmax 35)
+             (buf (get-buffer str))
+             (buf-name (if (>= (length str) (+ nmax 2))
+                           (concat (substring str 0 (- nmax 2)) "..")
+                         str))
+             (buf-len (length buf-name))
+             (buf-dir (buffer-local-value 'default-directory buf))
+             (buf-mode (buffer-local-value 'major-mode buf))
+             (mode (capitalize
+                    (string-remove-suffix "-mode" (symbol-name buf-mode))))
+             (max-path-len
+              (max 0 (min 100 (- (frame-width)
+                                 (+ nmax 30)
+                                 (max 0 (- buf-len nmax))))))
+             (path-dir (abbreviate-file-name (or buf-dir "~/")))
+             (path-file (when-let ((name (buffer-file-name buf)))
+                          (abbreviate-file-name name)))
+             (path-opt (or path-file
+                           (when (or (string-match-p "shell" str)
+                                     (equal buf-mode 'dired-mode))
+                             path-dir)))
+             (path-prefix (if (string-prefix-p "~" path-opt)
+                              "~/"
+                            "/"))
+             (path-len (length path-opt))
+             (path-mod (if (<= path-len max-path-len)
+                           nil
+                         (substring path-opt (- path-len max-path-len) path-len)))
+             (path-margin (max 0 (- 20 (max 0 (- buf-len nmax)))))
+             (path (if path-mod
+                       (concat path-prefix
+                               "…"
+                               (replace-regexp-in-string
+                                (rx bol (* (not (or "~" "/"))))
+                                ""
+                                path-mod))
+                     path-opt))
+             (form (format "%%-%ds  %%-%ds  %%s" nmax path-margin)))
+        (format form buf-name mode (or path ""))))
+
+    (ivy-configure 'ivy-switch-buffer
+      :display-transformer-fn 'sk-ivy-buffer-transformer)
     (ivy-add-actions
      'ivy-switch-buffer
      '(("d" ivy--kill-buffer-action "delete")))
@@ -2236,7 +2280,8 @@ Defer code execution until the first command after initialization.
     :config
     (setq marginalia-max-relative-age 0)
     ;; For counsel-find-file
-    (push '(file none) marginalia-annotators))
+    (push '(file none) marginalia-annotators)
+    (push '(buffer none) marginalia-annotators))
 
   (use-package vertico
     :bind (:map vertico-map
