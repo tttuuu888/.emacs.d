@@ -2030,9 +2030,19 @@ Defer code execution until the first command after initialization.
 
   (use-package expand-region
     :bind (("C-="   . er/expand-region))
-    :init
+    :defer-init (require 'expand-region)
+    :config
     (evil-leader/set-key
-      "=" 'er/expand-region))
+      "=" 'er/expand-region)
+    (defun er/add-text-mode-expansions ()
+      (unless (member major-mode expand-region-exclude-text-mode-expansions)
+        (set (make-local-variable 'er/try-expand-list)
+             (append
+              er/try-expand-list
+              '(er/mark-text-sentence
+                er/mark-text-paragraph)))))
+    (eval-after-load 'the-org-mode-expansions
+      '(defalias 'er/add-org-mode-expansions 'er/add-text-mode-expansions)))
 
   (use-package smex)
 
