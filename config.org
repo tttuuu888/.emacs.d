@@ -736,9 +736,6 @@ Defer code execution until the first command after initialization.
       "2"  'split-window-below
       "3"  'split-window-right
       ","  'other-window
-      "b"  'switch-to-buffer
-      "d"  'find-file
-      "f"  'find-file
       "q"  'kill-current-buffer
       "Q"  'kill-emacs
       "u"  'pop-to-mark-command
@@ -1450,7 +1447,8 @@ Defer code execution until the first command after initialization.
 
   (use-package ibuffer
     :ensure nil
-    :bind ("C-x b" . ibuffer)
+    :bind ("C-x b"    . ibuffer)
+    :bind ("C-x C-b"  . switch-to-buffer)
     :config
     (setq ibuffer-expert t
           ibuffer-sorting-mode 'ibuffer-do-sort-by-mode-name-then-filename
