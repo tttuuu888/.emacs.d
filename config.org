@@ -2296,6 +2296,7 @@ Defer code execution until the first command after initialization.
     :bind (:map vertico-map
             ("DEL"      . vertico-directory-delete-char)
             ("M-DEL"    . vertico-directory-delete-word)
+            ("C-M-j"    . vertico-exit-input)
             ("C-M-n"    . vertico-next-group)
             ("C-M-p"    . vertico-previous-group)
             ("<escape>" . abort-minibuffers)
