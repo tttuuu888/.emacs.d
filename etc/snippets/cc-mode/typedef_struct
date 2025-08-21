@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: tpst
+# key: tpst
+# --
+typedef struct $1 {
+    $0
+} ${1:Name};
