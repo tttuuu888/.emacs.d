@@ -2883,6 +2883,7 @@ Defer code execution until the first command after initialization.
     (sk-C-c-map-to-leader-c-map 'clojurescript-mode cider-mode-map)
     (dolist (m (list clojure-mode-map clojurescript-mode-map))
       (evil-define-key* 'normal m
+        "]e"  'cider-jump-to-compilation-error
         "gd"  'cider-find-dwim
         "gh"  'cider-doc
         "gp"  'cider-pop-back))
