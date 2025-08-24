@@ -2949,6 +2949,7 @@ Defer code execution until the first command after initialization.
       "z"   'my-sly-mrepl
       "cb"  'sly-compile-file
       "cf"  'sly-compile-defun
+      "cq"  'sly-quit-lisp
       "cr"  'sly-compile-region
       "eb"  'sly-eval-buffer
       "ee"  'sk-sly-eval
