@@ -2944,11 +2944,18 @@ Defer code execution until the first command after initialization.
     (defun my-sly-mrepl ()
       (interactive)
       (call-interactively (if (sly-connected-p) 'sly-mrepl 'sly)))
+    (defun my-sly-start-repl ()
+      (interactive)
+      (call-interactively
+       (if (sly-connected-p)
+           'sly-restart-inferior-lisp
+         'sly)))
     (sk-C-c-map-to-leader-c-map 'lisp-mode sly-mode-map)
     (evil-leader/set-key-minor-mode 'sly-mode
       "z"   'my-sly-mrepl
       "cb"  'sly-compile-file
       "cf"  'sly-compile-defun
+      "cj"  'my-sly-start-repl
       "cq"  'sly-quit-lisp
       "cr"  'sly-compile-region
       "eb"  'sly-eval-buffer
