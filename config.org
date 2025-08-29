@@ -2030,6 +2030,8 @@ Defer code execution until the first command after initialization.
       (transient-append-suffix 'magit-diff "w"
         '("V" "Save vc-diff" sk-git-diff))))
 
+  (use-package git-modes)
+
   (use-package expand-region
     :bind (("C-="   . er/expand-region))
     :defer-init (require 'expand-region)
