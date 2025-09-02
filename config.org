@@ -2219,7 +2219,8 @@ Defer code execution until the first command after initialization.
     (evil-leader/set-key
       "d"     'counsel-find-file
       "f"     'counsel-find-file
-      "r"     'counsel-recentf)
+      "r"     'counsel-recentf
+      "nx"    'counsel-org-capture)
     :config
     (ivy-add-actions
      'counsel-shell-history
