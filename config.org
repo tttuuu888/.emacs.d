@@ -573,6 +573,16 @@ Instead of using =custom.el=, insert the contents of the file directly here.
     (unless (file-exists-p dir)
       (make-directory dir t))
     dir)
+
+  (defun goto-first-korean-letter ()
+    (interactive)
+    (let (pos)
+      (save-excursion
+        (goto-char (point-min))
+        (setq pos (re-search-forward "[ㄱ-ㅎㅏ-ㅣ가-힣]" nil t)))
+      (if pos
+          (goto-char pos)
+        (message "No Korean letter found."))))
 #+END_SRC
 
 ** Color setting
