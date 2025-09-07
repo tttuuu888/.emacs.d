@@ -2486,19 +2486,6 @@ Defer code execution until the first command after initialization.
         (setf (alist-get dir sk-compile-history nil 'remove #'equal) cmd)
         (compile cmd))))
 
-  (use-package consult-yasnippet
-    :disabled
-    :commands sk-consult-yasnippet
-    :init
-    (evil-leader/set-key "/" 'sk-consult-yasnippet)
-    :config
-    (defun sk-consult-yasnippet (arg)
-      (interactive "P")
-      (unless yas-minor-mode
-        (yas-minor-mode 1))
-      (let ((consult-preview-key 'any))
-        (call-interactively 'consult-yasnippet))))
-
   (use-package consult-ls-git
     :init
     (evil-leader/set-key "o" 'consult-ls-git-ls-files))
