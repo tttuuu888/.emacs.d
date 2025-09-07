@@ -2319,7 +2319,7 @@ Defer code execution until the first command after initialization.
     :defer-init (vertico-mode 1)
     :config
     (setq vertico-count 15
-          vertico-cycle nil
+          vertico-cycle t
           vertico-resize nil
           vertico-sort-function nil)
     (vertico-multiform-mode 1))
