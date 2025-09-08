@@ -1358,8 +1358,6 @@ Defer code execution until the first command after initialization.
      org-todo-keywords
      '((sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "|" "DONE(d)" "KILL(k)")))
 
-    (add-to-list 'safe-local-variable-values '(org-html-inline-images . embed))
-
     (sk-C-c-map-to-leader-c-map 'org-mode org-mode-map '("cc" "ck"))
     (evil-leader/set-key-for-mode 'org-mode
       "c <SPC>" 'org-table-blank-field
@@ -1444,6 +1442,12 @@ Defer code execution until the first command after initialization.
                       (apply func (list source attributes info))
                     (apply #'org-html--embed-image
                            (list source attributes info)))))
+    (let* ((html-backend (org-export-get-backend 'html))
+           (options (org-export-backend-options html-backend))
+           (inline (assoc :html-inline-images options)))
+      (when inline
+        (setcdr inline '(nil "html-inline-images" org-html-inline-images))))
+
     (defun org-goto-bottom-heading ()
       (interactive)
       (goto-char (point-max))
