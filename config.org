@@ -1244,10 +1244,6 @@ Defer code execution until the first command after initialization.
       "na" 'org-agenda
       "nx" 'org-capture)
     :config
-    (require 'ox)
-    (require 'ox-beamer)
-    (require 'ox-latex)
-    (require 'counsel)
     (require 'ob-janet)
     (setq
      my-org-path "~/Dropbox/org/"
