@@ -1425,13 +1425,19 @@ Defer code execution until the first command after initialization.
         (when (file-exists-p img)
           (insert (concat "[[file:" img "]]")))))
     (defun org-html--embed-image (source attributes info)
-      (format "<img src=\"data:image/%s;base64,%s\"%s />"
-              (or (file-name-extension source) "")
-              (base64-encode-string
-               (with-temp-buffer
-                 (insert-file-contents-literally source)
-                 (buffer-string)))
-              (file-name-nondirectory source)))
+      (let* ((url-p (ffap-url-p source))
+             (ext (file-name-extension source))
+             (prefix (if (string= "svg" ext)
+                         "data:image/svg+xml;base64,"
+                       "data:;base64,"))
+             (data (with-temp-buffer
+                     (if url-p
+                         (url-insert-file-contents source)
+                       (insert-file-contents-literally source))
+                     (buffer-string)))
+             (data-url (concat prefix (base64-encode-string data)))
+             (attr (org-combine-plists `(:src ,data-url) attributes)))
+        (org-html-close-tag "img" (org-html--make-attribute-string attr) info)))
     (advice-add 'org-html--format-image :around
                 (lambda (func source attributes info)
                   (if (not (equal 'embed (plist-get info :html-inline-images)))
