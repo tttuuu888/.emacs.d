@@ -1284,7 +1284,6 @@ Defer code execution until the first command after initialization.
                                 (plantuml . t)
                                 (python . t)
                                 (shell . t))
-     org-confirm-babel-evaluate nil
      org-capture-templates
      `(("i" "Inbox"
         entry (file+headline ,my-org-gtd "Inbox") "* %?\n%U")
@@ -1312,6 +1311,7 @@ Defer code execution until the first command after initialization.
         :tree-type week)
        ("wd" "Work Daily" entry (file+olp+datetree ,my-org-work) "* Daily\n%U"
         :immediate-finish t :jump-to-captured t :time-prompt t :tree-type week))
+     org-confirm-babel-evaluate nil
      org-default-notes-file my-org-gtd
      org-directory my-org-path
      org-element-use-cache nil
@@ -1322,14 +1322,14 @@ Defer code execution until the first command after initialization.
      org-export-with-section-numbers nil
      org-export-with-sub-superscripts nil
      org-export-with-toc 1
-     org-html-style-default
-     (html-head-css
-       (file-to-string (expand-file-name "org.css" emacs-etc-dir)))
      org-html-inline-image-rules
      '(("file" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")
        ("http" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'")
        ("https" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'"))
      org-html-metadata-timestamp-format "%Y-%m-%d"
+     org-html-style-default
+     (html-head-css
+       (file-to-string (expand-file-name "org.css" emacs-etc-dir)))
      org-html-validation-link ""
      org-imenu-depth 4
      org-latex-engraved-theme "default"
