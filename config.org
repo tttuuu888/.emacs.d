@@ -2004,6 +2004,8 @@ Defer code execution until the first command after initialization.
           org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js"
           org-reveal-title-slide "<h2>%t</h2><h4>%a&nbsp(%e)</h4>"))
 
+  (use-package transient)
+
   (use-package magit
     :bind ("<f12>" . magit-status)
     :hook (with-editor-mode . evil-normal-state)
