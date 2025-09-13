@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: bsrc
-# key: ;src
-# --
-#+begin_src $0
-#+end_src
