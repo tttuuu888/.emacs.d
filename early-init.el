@@ -7,6 +7,7 @@
                             (horizontal-scroll-bars . nil)
                             (vertical-scroll-bars . nil))
       package-enable-at-startup nil
+      package-install-upgrade-built-in t
       package-native-compile t
       sk-early-init t)
 

@@ -1655,7 +1655,6 @@ Defer code execution until the first command after initialization.
     :defer-init (package-read-all-archive-contents)
     :config
     (require 'package-vc)
-    (setq package-install-upgrade-built-in t)
     (defun sk-package-upgrade-all ()
       "Upgrade all packages without asking the user."
       (interactive)
