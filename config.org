@@ -35,7 +35,10 @@ start up to use of updated =package-archives=.
 
   (setq package-archives
         '(("gnu"   . "https://elpa.gnu.org/packages/")
-          ("melpa" . "https://melpa.org/packages/")))
+          ("melpa" . "https://melpa.org/packages/"))
+        package-archive-priorities
+        '(("gnu"   . 5)
+          ("melpa" . 10)))
 #+END_SRC
 
 ** User-emacs-directory setting
