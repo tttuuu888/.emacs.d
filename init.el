@@ -4,8 +4,9 @@
 
 (let ((file-name-handler-alist nil)
       (gc-cons-threshold most-positive-fixnum)
-      (config-el  (expand-file-name "config.el"  user-emacs-directory))
-      (config-org (expand-file-name "config.org" user-emacs-directory)))
+      (config-el    (expand-file-name "config.el"  user-emacs-directory))
+      (config-org   (expand-file-name "config.org" user-emacs-directory))
+      (config-local (expand-file-name "config-local.el" user-emacs-directory)))
 
   (unless (boundp 'sk-early-init)
     (startup-redirect-eln-cache ".local/eln-cache/"))
@@ -15,6 +16,8 @@
     (require 'org)
     (org-babel-tangle-file config-org))
 
-  (require 'config config-el))
+  (require 'config config-el)
+
+  (load config-local t))
 
 ;;; init.el ends here
