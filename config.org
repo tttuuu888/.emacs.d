@@ -1930,6 +1930,8 @@ Defer code execution until the first command after initialization.
                 (lambda (&rest _) (which-func-update))))
 
   (use-package helm-ag
+    :vc
+    (:url "https://github.com/emacsattic/helm-ag" :branch "master" :rev :newest)
     :commands (helm-ag-project-or-here helm-ag-here)
     :init
     (evil-leader/set-key
@@ -1952,6 +1954,8 @@ Defer code execution until the first command after initialization.
       (helm-do-ag default-directory)))
 
   (use-package helm-git-grep
+    :vc
+    (:url "https://github.com/yasuyk/helm-git-grep" :branch "master" :rev :newest)
     :init
     (evil-leader/set-key
       "p" 'helm-git-grep-at-point)
