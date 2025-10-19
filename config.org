@@ -1597,7 +1597,7 @@ Defer code execution until the first command after initialization.
                  face-defface-spec)
     (line-number-current-line ((t (:inherit 'default))) face-defface-spec)
     :hook
-    ((prog-mode text-mode) . display-line-numbers-mode)
+    ((find-file prog-mode text-mode) . display-line-numbers-mode)
     :config
     (setq-default display-line-numbers-width 3
                   display-line-numbers-type 'visual
