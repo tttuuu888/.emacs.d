@@ -2837,6 +2837,13 @@ Defer code execution until the first command after initialization.
     :ensure nil
     :config
     (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode))
+
+  (use-package js
+    :ensure nil
+    :hook (js-json-mode . my-js-json-mode-hook)
+    :config
+    (defun my-js-json-mode-hook ()
+      (setq js-indent-level 2)))
 #+END_SRC
 * Development packages - external
 #+BEGIN_SRC emacs-lisp
