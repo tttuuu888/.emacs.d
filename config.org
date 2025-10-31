@@ -3311,6 +3311,8 @@ Defer code execution until the first command after initialization.
     :demand t
     :after magit
     :config (envrc-global-mode 1))
+
+  (use-package ztree)
 #+END_SRC
 * End
 ** Provide a feature
