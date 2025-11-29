@@ -2419,7 +2419,9 @@ Defer code execution until the first command after initialization.
       "jd"    'consult-fd-dir
       "jD"    'consult-fd-dir-here
       "jf"    'consult-fd-file
-      "jh"    'consult-fd-file-here)
+      "jh"    'consult-fd-file-here
+      "xri"   'consult-register-store
+      "xrj"   'consult-register-load)
     :defer-init (require 'consult)
     :config
     (require 'smex)
