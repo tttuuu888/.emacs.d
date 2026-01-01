@@ -1357,6 +1357,9 @@ Defer code execution until the first command after initialization.
      org-todo-keywords
      '((sequence "TODO(t)" "NEXT(n)" "WAIT(w)" "|" "DONE(d)" "KILL(k)")))
 
+    ;; Open org link in the current window instead of a new one
+    (setf (cdr (assoc 'file org-link-frame-setup)) 'find-file)
+
     (sk-C-c-map-to-leader-c-map 'org-mode org-mode-map '("cc" "ck"))
     (evil-leader/set-key-for-mode 'org-mode
       "c <SPC>" 'org-table-blank-field
@@ -1377,6 +1380,9 @@ Defer code execution until the first command after initialization.
       "gl" 'org-down-element
       "gj" 'org-forward-element
       "gk" 'org-backward-element)
+    (evil-define-key 'normal org-mode-map
+      "gd" 'org-open-at-point
+      "gp" 'org-mark-ring-goto)
     (add-hook 'org-mode-hook
               (lambda ()
                 (evil-local-set-key 'insert (kbd "<tab>") 'my-org-tab)
