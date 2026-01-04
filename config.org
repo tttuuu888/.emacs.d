@@ -939,6 +939,36 @@ Defer code execution until the first command after initialization.
     :custom-face
     (header-line ((t (:inherit font-lock-function-name-face :underline nil)))))
 
+  (use-package bind-key
+    :ensure nil
+    :init
+    (bind-keys*
+     ("C-c <escape>" . keyboard-quit)
+     ("C-x <escape>" . keyboard-quit)
+     ("M-,"          . my-other-window)
+     ("M-<f5>"       . sk-sbin-dired)
+     ("C-M-,"        . transpose-windows)
+     ("M-S-<up>"     . (lambda (&optional arg)
+                         (interactive "p")
+                         (move-line (- (or arg 1)))))
+     ("M-S-<down>"   . (lambda (&optional arg)
+                         (interactive "p")
+                         (move-line (or arg 1))))
+     ("<f7>"         . (lambda () (interactive) (buffer-save-or-load 7 t)))
+     ("<f8>"         . (lambda () (interactive) (buffer-save-or-load 8 t)))
+     ("C-<f7>"       . (lambda () (interactive) (buffer-save-or-load 7)))
+     ("C-<f8>"       . (lambda () (interactive) (buffer-save-or-load 8)))
+     ("S-SPC"        . toggle-input-method)
+     :map minibuffer-local-map
+     ("<escape>"     . abort-minibuffers))
+    (defun my-other-window ()
+      (interactive)
+      (if (minibufferp)
+          (abort-recursive-edit)
+        (when (or (evil-insert-state-p) (evil-visual-state-p))
+          (evil-normal-state))
+        (call-interactively 'other-window))))
+
   (use-package recentf
     :ensure nil
     :custom (recentf-max-saved-items 100)
@@ -1804,35 +1834,6 @@ Defer code execution until the first command after initialization.
 #+END_SRC
 * General packages - external
 #+BEGIN_SRC emacs-lisp
-  (use-package bind-key
-    :init
-    (bind-keys*
-     ("C-c <escape>" . keyboard-quit)
-     ("C-x <escape>" . keyboard-quit)
-     ("M-,"          . my-other-window)
-     ("M-<f5>"       . sk-sbin-dired)
-     ("C-M-,"        . transpose-windows)
-     ("M-S-<up>"     . (lambda (&optional arg)
-                         (interactive "p")
-                         (move-line (- (or arg 1)))))
-     ("M-S-<down>"   . (lambda (&optional arg)
-                         (interactive "p")
-                         (move-line (or arg 1))))
-     ("<f7>"         . (lambda () (interactive) (buffer-save-or-load 7 t)))
-     ("<f8>"         . (lambda () (interactive) (buffer-save-or-load 8 t)))
-     ("C-<f7>"       . (lambda () (interactive) (buffer-save-or-load 7)))
-     ("C-<f8>"       . (lambda () (interactive) (buffer-save-or-load 8)))
-     ("S-SPC"        . toggle-input-method)
-     :map minibuffer-local-map
-     ("<escape>"     . abort-minibuffers))
-    (defun my-other-window ()
-      (interactive)
-      (if (minibufferp)
-          (abort-recursive-edit)
-        (when (or (evil-insert-state-p) (evil-visual-state-p))
-          (evil-normal-state))
-        (call-interactively 'other-window))))
-
   (use-package package-loading-notifier
     :custom  (package-loading-notifier-packages '(helm org magit yasnippet))
     :defer-init
