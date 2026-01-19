@@ -1115,9 +1115,9 @@ Defer code execution until the first command after initialization.
             "-sOutputFile=" temp " " file " && "
             "mv " temp " " file)))))
 
-    (defun my-dired-compress ()
+    (defun my-dired-compress (&optional arg)
       "Compress files asynchronously."
-      (interactive)
+      (interactive "p")
       (let* ((defaults (dired-dwim-target-defaults nil nil))
              (minibuffer-default defaults)
              (files (mapcar #'file-name-nondirectory (dired-get-marked-files)))
@@ -1137,12 +1137,15 @@ Defer code execution until the first command after initialization.
                                   :initial (concat inital-name ".zip")))
              (target (shell-quote-argument name))
              (ext (file-name-extension name))
+             (pw (when (and (> arg 1) (member ext '("zip" "7z")))
+                   (password-read "Password: ")))
              (cmd (pcase ext
-                    ("zip" "zip -r ")
-                    ("7z" "7z a ")
-                    ("7zs" (concat "7z a -mhe=on -p"
-                                   (password-read "Password: ")
-                                   " "))
+                    ("zip" (concat "zip"
+                                   (when pw (concat " -P " pw))
+                                   " -r "))
+                    ("7z" (concat "7z a "
+                                  (when pw
+                                    (concat "-mhe=on -p" pw " "))))
                     (_ "tar acvf "))))
         (when ext
           (async-shell-command-callback
