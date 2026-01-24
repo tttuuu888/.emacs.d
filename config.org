@@ -1257,13 +1257,6 @@ Defer code execution until the first command after initialization.
             (dir2 (my-dired-get-target "Dir2 : ")))
         (start-process "meld" nil "meld" dir1 dir2))))
 
-  (use-package ob-janet
-    :ensure nil
-    :vc (:url "https://github.com/tttuuu888/ob-janet"
-              :rev :newest)
-    :config
-    (add-to-list 'org-babel-load-languages '(janet . t)))
-
   (use-package org
     :ensure nil
     :init
@@ -2267,6 +2260,12 @@ Defer code execution until the first command after initialization.
     :defer-init (which-key-mode 1))
 
   (use-package auctex)
+
+  (use-package ob-janet
+    :vc (:url "https://github.com/tttuuu888/ob-janet"
+              :rev :newest)
+    :config
+    (add-to-list 'org-babel-load-languages '(janet . t)))
 
   (use-package org-roam
     :custom
