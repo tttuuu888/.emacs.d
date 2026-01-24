@@ -23,6 +23,8 @@
 
 ;;; Code:
 
+(require 'use-package)
+
 (defvar pinstall-process-number 8)
 
 (defvar pinstall-package-list nil)
@@ -36,7 +38,6 @@
   (package-initialize))
 
 (defun get-package-list ()
-  (require 'use-package)
   (defmacro use-package (pkg &rest args)
     (let ((ensure (memq :ensure args))
           (disabled (memq :disabled args))
@@ -46,16 +47,12 @@
                       (and ensure (eq nil (cadr ensure)))
                     (or (not ensure) (eq nil (cadr ensure)))))
         `(add-to-list 'pinstall-package-list ',pkg))))
-
-  (provide 'use-package)
   (cl-letf (((symbol-function 'package-install)
              (lambda (&rest _) nil))
             ((symbol-function 'package-refresh-contents)
              (lambda (&rest _)) nil))
     (load "~/.emacs.d/init.el"))
-
   (package-archives-init)
-
   pinstall-package-list)
 
 (defun remove-duplicate-packages-in-depth (packages &optional depth)
@@ -124,19 +121,20 @@
 (defun async-install-packages (package-list)
   (let* ((proc-list nil)
          (proc-pkgs-list (make-list pinstall-process-number nil))
-         (idx 1))
+         (idx 0))
     (dolist (pkg (reverse package-list))
       (cl-pushnew (symbol-name pkg) (nth idx proc-pkgs-list))
       (setq idx (if (= idx (1- pinstall-process-number)) 0 (1+ idx))))
     (dolist (pkgs proc-pkgs-list)
-      (let ((proc (apply
-                   #'start-process
-                   "Install"
-                   nil
-                   "emacs" "-batch"
-                   "-l" pinstall-file
-                   "-install" pkgs)))
-        (cl-pushnew proc proc-list)))
+      (when pkgs
+        (let ((proc (apply
+                     #'start-process
+                     "Install"
+                     nil
+                     "emacs" "-batch" "-Q"
+                     "-l" pinstall-file
+                     "-install" pkgs)))
+          (cl-pushnew proc proc-list))))
     (init-process-check package-list proc-list)))
 
 (defun init-function (&rest _)
@@ -158,12 +156,14 @@
   (delete "-install" command-line-args)
   (package-archives-init)
   (dolist (pkg command-line-args-left)
-    (package-install (intern pkg) t)))
-
+    (unless (package-installed-p (intern pkg))
+      (condition-case err
+          (package-install (intern pkg) nil) ;; Do not refresh
+        (error (message "Failed to install %s: %s"
+                        pkg (error-message-string err)))))))
 
 (add-to-list 'command-switch-alist '("-install" . install-function))
 (add-to-list 'command-switch-alist '("-init" . init-function))
-
 
 ;;;###autoload
 (defun pinstall-init ()
@@ -173,6 +173,5 @@
     (call-process "emacs" nil  output-buffer t
                   "-l" pinstall-file "-batch" "-init")
     (package-initialize)))
-
 
 (provide 'pinstall)
