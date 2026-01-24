@@ -29,6 +29,8 @@
 
 (defvar pinstall-package-list nil)
 
+(defvar pinstall-vc-package-list nil)
+
 (defconst pinstall-file load-file-name)
 
 (defun package-archives-init ()
@@ -40,13 +42,16 @@
 (defun get-package-list ()
   (defmacro use-package (pkg &rest args)
     (let ((ensure (memq :ensure args))
+          (vc-arg (plist-get args :vc))
           (disabled (memq :disabled args))
           (always-ensure (bound-and-true-p use-package-always-ensure)))
       (unless (or disabled
                   (if always-ensure
                       (and ensure (eq nil (cadr ensure)))
                     (or (not ensure) (eq nil (cadr ensure)))))
-        `(add-to-list 'pinstall-package-list ',pkg))))
+        (if vc-arg
+            `(add-to-list 'pinstall-vc-package-list (cons ',pkg ',vc-arg))
+          `(add-to-list 'pinstall-package-list ',pkg)))))
   (cl-letf (((symbol-function 'package-install)
              (lambda (&rest _) nil))
             ((symbol-function 'package-refresh-contents)
@@ -147,9 +152,20 @@
     ;; (message (format "Packages to install : %s" packages-list))
     (if (zerop all-packages-count)
         (message (format "\nAll packages are already installed.\n"))
-      (message (format "\n%s packages will be installed.\n" all-packages-count))
+      (message (format "\nInstall %s packages...\n" all-packages-count))
       (dolist (packages packages-list)
         (async-install-packages packages)))
+
+    (when pinstall-vc-package-list
+      (message "\nInstall %s VC packages..." (length pinstall-vc-package-list))
+      (dolist (vc-spec pinstall-vc-package-list)
+        (let ((pkg (car vc-spec)))
+          (unless (package-installed-p pkg)
+            (condition-case err
+                (package-vc-install vc-spec)
+              (error (message "Failed to install VC package %s: %s"
+                              pkg (error-message-string err))))))))
+
     (message "Init done.")))
 
 (defun install-function (&rest _)
