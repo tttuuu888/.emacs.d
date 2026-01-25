@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2026 Seungki Kim
 
-;; Author: SeungKi Kim <tttuuu888@gmail.com>
+;; Author: Seungki Kim <tttuuu888@gmail.com>
 ;; URL: https://github.com/tttuuu888/.emacs.d
 ;; Version: 0.7.0
 
@@ -153,8 +153,8 @@
 
     (dolist (specs proc-pkgs-list)
       (when specs
-        (let ((proc (apply #'start-process "VC-Install" nil "emacs" "-batch" "-Q"
-                           "-l" pinstall-file "-vc-install" specs)))
+        (let ((proc (apply #'start-process "VC-Install" nil "emacs" "-batch"
+                           "-Q" "-l" pinstall-file "-vc-install" specs)))
           (push proc proc-list))))
     (init-process-check (mapcar #'car vc-package-list) proc-list)))
 
