@@ -151,16 +151,21 @@
          (all-packages-count (length (apply #'append packages-list))))
     ;; (message (format "Packages to install : %s" packages-list))
     (if (zerop all-packages-count)
-        (message (format "\nAll packages are already installed.\n"))
-      (message (format "\nInstall %s packages...\n" all-packages-count))
+        (message "\nAll packages are already installed.")
+      (message (format "\nInstall %s packages..." all-packages-count))
       (dolist (packages packages-list)
         (async-install-packages packages)))
 
-    (when pinstall-vc-package-list
-      (message "\nInstall %s VC packages..." (length pinstall-vc-package-list))
-      (dolist (vc-spec pinstall-vc-package-list)
-        (let ((pkg (car vc-spec)))
-          (unless (package-installed-p pkg)
+    (let ((vc-pkgs
+           (seq-filter (lambda (spec) (not (package-installed-p (car spec))))
+                       pinstall-vc-package-list)))
+      ;; (message (format "VC packages to install : %s" vc-pkgs))
+      (if (null vc-pkgs)
+          (when pinstall-vc-package-list
+            (message "\nAll VC packages are already installed."))
+        (message "\nInstall %s VC packages..." (length vc-pkgs))
+        (dolist (vc-spec vc-pkgs)
+          (let ((pkg (car vc-spec)))
             (condition-case err
                 (package-vc-install vc-spec)
               (error (message "Failed to install VC package %s: %s"
