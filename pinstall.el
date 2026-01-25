@@ -121,6 +121,7 @@
       (package-initialize t)
       (setq remained-packages (packages-installed-p remained-packages))
       (sleep-for 0.5))
+    (package-initialize t)
     (packages-installed-p remained-packages)))
 
 (defun async-install-packages (package-list)
