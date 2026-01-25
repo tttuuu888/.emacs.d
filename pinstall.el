@@ -142,6 +142,21 @@
           (cl-pushnew proc proc-list))))
     (init-process-check package-list proc-list)))
 
+(defun async-install-vc-packages (vc-package-list)
+  (let* ((proc-list nil)
+         (proc-pkgs-list (make-list pinstall-process-number nil))
+         (idx 0))
+    (dolist (spec vc-package-list)
+      (cl-pushnew (format "%S" spec) (nth idx proc-pkgs-list))
+      (setq idx (mod (1+ idx) pinstall-process-number)))
+
+    (dolist (specs proc-pkgs-list)
+      (when specs
+        (let ((proc (apply #'start-process "VC-Install" nil "emacs" "-batch" "-Q"
+                           "-l" pinstall-file "-vc-install" specs)))
+          (push proc proc-list))))
+    (init-process-check (mapcar #'car vc-package-list) proc-list)))
+
 (defun init-function (&rest _)
   (delete "-init" command-line-args)
   (package-archives-init)
@@ -154,24 +169,17 @@
         (message "\nAll packages are already installed.")
       (message (format "\nInstall %s packages..." all-packages-count))
       (dolist (packages packages-list)
-        (async-install-packages packages)))
-
-    (let ((vc-pkgs
-           (seq-filter (lambda (spec) (not (package-installed-p (car spec))))
-                       pinstall-vc-package-list)))
-      ;; (message (format "VC packages to install : %s" vc-pkgs))
-      (if (null vc-pkgs)
-          (when pinstall-vc-package-list
-            (message "\nAll VC packages are already installed."))
-        (message "\nInstall %s VC packages..." (length vc-pkgs))
-        (dolist (vc-spec vc-pkgs)
-          (let ((pkg (car vc-spec)))
-            (condition-case err
-                (package-vc-install vc-spec)
-              (error (message "Failed to install VC package %s: %s"
-                              pkg (error-message-string err))))))))
-
-    (message "Init done.")))
+        (async-install-packages packages))))
+  (let ((vc-pkgs
+         (seq-filter (lambda (spec) (not (package-installed-p (car spec))))
+                     pinstall-vc-package-list)))
+    ;; (message (format "VC packages to install : %s" vc-pkgs))
+    (if (null vc-pkgs)
+        (when pinstall-vc-package-list
+          (message "\nAll VC packages are already installed."))
+      (message "\nInstall %s VC packages..." (length vc-pkgs))
+      (async-install-vc-packages vc-pkgs)))
+  (message "Init done."))
 
 (defun install-function (&rest _)
   (delete "-install" command-line-args)
@@ -183,8 +191,20 @@
         (error (message "Failed to install %s: %s"
                         pkg (error-message-string err)))))))
 
-(add-to-list 'command-switch-alist '("-install" . install-function))
+(defun install-vc-function (&rest _)
+  (delete "-vc-install" command-line-args)
+  (package-archives-init)
+  (dolist (spec-raw command-line-args-left)
+    (let ((spec (read spec-raw)))
+      (unless (package-installed-p (car spec))
+        (condition-case err
+            (package-vc-install spec)
+          (error (message "Failed to install VC %s: %s"
+                          (car spec) (error-message-string err))))))))
+
 (add-to-list 'command-switch-alist '("-init" . init-function))
+(add-to-list 'command-switch-alist '("-install" . install-function))
+(add-to-list 'command-switch-alist '("-vc-install" . install-vc-function))
 
 ;;;###autoload
 (defun pinstall-init ()
