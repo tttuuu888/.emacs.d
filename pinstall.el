@@ -25,7 +25,7 @@
 
 (require 'use-package)
 
-(defvar pinstall-process-number 8)
+(defvar pinstall-process-number (max 8 (1- (num-processors))))
 
 (defvar pinstall-package-list nil)
 
