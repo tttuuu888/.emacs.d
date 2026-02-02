@@ -2416,6 +2416,7 @@ Defer code execution until the first command after initialization.
            ("C-r"     . consult-history))
     :init
     (evil-leader/set-key
+      "I"     'consult-imenu
       "jd"    'consult-fd-dir
       "jD"    'consult-fd-dir-here
       "jf"    'consult-fd-file
