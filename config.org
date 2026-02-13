@@ -1143,7 +1143,7 @@ Defer code execution until the first command after initialization.
                     ("zip" (concat "zip"
                                    (when pw (concat " -P " pw))
                                    " -r "))
-                    ("7z" (concat "7z a "
+                    ("7z" (concat "7z a -md=1m "
                                   (when pw
                                     (concat "-mhe=on -p" pw " "))))
                     (_ "tar acvf "))))
