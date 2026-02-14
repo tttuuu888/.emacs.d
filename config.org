@@ -2342,8 +2342,9 @@ Defer code execution until the first command after initialization.
   (use-package vertico-multiform
     :ensure nil
     :bind (:map vertico-directory-map
-            ("RET"      . exit-minibuffer)
-            ("~"        . my-vertico-directory-tilde))
+            ("RET" . exit-minibuffer)
+            ("~"   . my-vertico-directory-tilde)
+            ("M-i" . my-vertico-insert-literal))
     :config
     (require 'vertico-directory)
     (setq
@@ -2367,7 +2368,18 @@ Defer code execution until the first command after initialization.
       (interactive)
       (if (string-suffix-p  "/" (car vertico--input))
           (insert "~/")
-        (insert "~"))))
+        (insert "~")))
+    (defun my-vertico-insert-literal ()
+      "Insert candidate without trailing slash."
+      (interactive)
+      (let* ((index (max 0 vertico--index))
+             (cand (elt vertico--candidates index))
+             (clean-cand (string-remove-suffix "/" cand))
+             (content (minibuffer-contents))
+             (dir (when (string-match "/" content)
+                    (file-name-directory content))))
+        (delete-minibuffer-contents)
+        (insert (concat dir clean-cand)))))
 
   (use-package vertico-posframe
     :if window-system
