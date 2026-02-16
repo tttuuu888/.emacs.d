@@ -2660,10 +2660,7 @@ Defer code execution until the first command after initialization.
       (setq-local tab-width 4)
       (eglot-ensure))
     (sk-switch-buffer-repl sk-python-buffer-repl-toggle
-      python-mode inferior-python-mode
-      (lambda ()
-        (interactive)
-        (pop-to-buffer (call-interactively 'run-python))))
+      python-mode inferior-python-mode run-python)
     (defun my-python-shell-send-line-or-region (n)
       (interactive "p")
       (if (region-active-p)
