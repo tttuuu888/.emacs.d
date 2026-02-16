@@ -56,7 +56,7 @@
              (lambda (&rest _) nil))
             ((symbol-function 'package-refresh-contents)
              (lambda (&rest _)) nil))
-    (load "~/.emacs.d/init.el"))
+    (load (expand-file-name "init.el" user-emacs-directory)))
   (package-archives-init)
   pinstall-package-list)
 
