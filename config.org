@@ -2990,7 +2990,6 @@ Defer code execution until the first command after initialization.
     (evil-set-initial-state 'sly-inspector-mode         'emacs)
     (evil-set-initial-state 'sly-stickers--replay-mode  'emacs)
     (evil-set-initial-state 'sly-xref-mode              'emacs)
-    (evil-set-initial-state 'sly-xref-mode              'emacs)
     (add-hook 'sly-mrepl-mode-hook #'enable-paredit-mode)
     (sk-define-lisp-eval sk-sly-eval sly-eval-region)
     (defun my-sly-mrepl ()
