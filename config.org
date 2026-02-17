@@ -2337,6 +2337,15 @@ Defer code execution until the first command after initialization.
           vertico-cycle t
           vertico-resize nil
           vertico-sort-function nil)
+    (defun vertico-next (&optional n)
+      "Go forward N candidates, skipping the prompt."
+      (interactive "p")
+      (let ((index (+ vertico--index (or n 1))))
+        (vertico--goto
+         (cond
+          ((= vertico--total 0) -1)
+          (vertico-cycle (mod index vertico--total))
+          (t (max 0 (min index (1- vertico--total))))))))
     (vertico-multiform-mode 1))
 
   (use-package vertico-multiform
