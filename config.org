@@ -1030,6 +1030,8 @@ Defer code execution until the first command after initialization.
                  '("*Async Shell Command*" display-buffer-no-window))
     (add-hook 'dired-mode-hook 'dired-omit-mode)
     (add-hook 'wdired-mode-hook 'turn-on-undo-tree-mode)
+    (advice-add 'dired-do-shell-command :after
+                (lambda (&rest _) (revert-buffer)))
 
     (evil-set-initial-state 'dired-mode 'emacs)
     (evil-leader/set-key-for-mode 'dired-mode
