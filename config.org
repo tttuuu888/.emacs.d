@@ -2372,9 +2372,10 @@ Defer code execution until the first command after initialization.
       (let* ((input (file-name-nondirectory (minibuffer-contents)))
              (sort-ivy-or-string
               (lambda (name cands)
-                (if (string-empty-p name)
-                    (sort cands #'string-lessp)
-                  (ivy--sort name cands))))
+                (let ((sorted-cands (sort cands #'string-lessp)))
+                  (if (string-empty-p name)
+                      sorted-cands
+                    (ivy--sort name sorted-cands)))))
              dirs files)
         (dolist (x lst)
           (if (string-suffix-p "/" x)
