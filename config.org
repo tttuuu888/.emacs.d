@@ -2340,7 +2340,11 @@ Defer code execution until the first command after initialization.
     (defun vertico-next (&optional n)
       "Go forward N candidates, skipping the prompt."
       (interactive "p")
-      (let ((index (+ vertico--index (or n 1))))
+      (let* ((n (or n 1))
+             (v-index (if (< n 0)
+                          (max 0 vertico--index)
+                        vertico--index))
+             (index (+ v-index n)))
         (vertico--goto
          (cond
           ((= vertico--total 0) -1)
