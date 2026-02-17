@@ -2254,9 +2254,6 @@ Defer code execution until the first command after initialization.
        ("k" counsel-find-file-mkdir-action "mkdir")
        ("e" (lambda (_) (find-file ".dir-locals.el")) ".dir-locals"))))
 
-  (use-package swiper
-    :disabled)
-
   (use-package which-key
     :custom (which-key-dont-use-unicode t)
     :defer-init (which-key-mode 1))
