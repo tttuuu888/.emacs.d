@@ -2780,6 +2780,7 @@ Defer code execution until the first command after initialization.
 
   (use-package elisp-mode
     :ensure nil
+    :hook (emacs-lisp-mode . enable-paredit-mode)
     :config
     (defun my-describe-symbol-at-point ()
       (interactive)
@@ -2866,11 +2867,6 @@ Defer code execution until the first command after initialization.
     (add-hook 'inferior-emacs-lisp-mode-hook #'enable-paredit-mode)
     (evil-define-key 'insert inferior-emacs-lisp-mode-map
       (kbd "<return>") 'ielm-return))
-
-  (use-package elisp-mode
-    :ensure nil
-    :config
-    (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode))
 
   (use-package js
     :ensure nil
