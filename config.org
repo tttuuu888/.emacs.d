@@ -2371,7 +2371,8 @@ Defer code execution until the first command after initialization.
      '((consult-line (vertico-posframe-mode . nil) (vertico-mode . t))
        (sk-consult-yasnippet (vertico-posframe-mode . nil) (vertico-mode . t))))
     (cl-defmethod vertico--format-candidate :around
-      (cand prefix suffix index start &context ((not +vertico-transform-functions) null))
+      (cand prefix suffix index start
+            &context ((not +vertico-transform-functions) null))
       (dolist (fun (ensure-list +vertico-transform-functions))
         (setq cand (funcall fun cand)))
       (cl-call-next-method cand prefix suffix index start))
@@ -2388,7 +2389,7 @@ Defer code execution until the first command after initialization.
           (ivy--sort input candidates))))
     (defun vertico-sort-dirs-and-files (lst)
       "Sort dirs first and files, prioritizing prefix matches."
-      (let* ((input (file-name-nondirectory (minibuffer-contents)))
+      (let* ((input (file-name-nondirectory (minibuffer-contents-no-properties)))
              (sort-ivy-or-string
               (lambda (name cands)
                 (let ((sorted-cands (sort cands #'string-lessp)))
