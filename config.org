@@ -2365,7 +2365,8 @@ Defer code execution until the first command after initialization.
      vertico-multiform-categories
      '((file (vertico-sort-function . vertico-sort-dirs-and-files)
              (+vertico-transform-functions . +vertico-highlight-directory)
-             (:keymap . vertico-directory-map)))
+             (:keymap . vertico-directory-map))
+       (t (vertico-sort-function . vertico-sort-ivy-style)))
      vertico-multiform-commands
      '((consult-line (vertico-posframe-mode . nil) (vertico-mode . t))
        (sk-consult-yasnippet (vertico-posframe-mode . nil) (vertico-mode . t))))
@@ -2379,6 +2380,12 @@ Defer code execution until the first command after initialization.
       (if (string-suffix-p "/" file)
           (propertize file 'face 'dired-directory)
         file))
+    (defun vertico-sort-ivy-style (candidates)
+      "Sort candidates using `ivy--sort', or return as-is if input is empty."
+      (let ((input (minibuffer-contents-no-properties)))
+        (if (string-empty-p input)
+            candidates
+          (ivy--sort input candidates))))
     (defun vertico-sort-dirs-and-files (lst)
       "Sort dirs first and files, prioritizing prefix matches."
       (let* ((input (file-name-nondirectory (minibuffer-contents)))
