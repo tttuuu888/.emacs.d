@@ -2358,6 +2358,7 @@ Defer code execution until the first command after initialization.
             ("~"   . my-vertico-directory-tilde)
             ("M-i" . my-vertico-insert-literal))
     :config
+    (require 'dired)
     (require 'vertico-directory)
     (setq
      +vertico-transform-functions nil
