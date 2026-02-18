@@ -2336,6 +2336,7 @@ Defer code execution until the first command after initialization.
           vertico-cycle t
           vertico-resize nil
           vertico-sort-function nil)
+    (vertico-multiform-mode 1)
     (defun vertico-next (&optional n)
       "Go forward N candidates, skipping the prompt."
       (interactive "p")
@@ -2348,8 +2349,7 @@ Defer code execution until the first command after initialization.
          (cond
           ((= vertico--total 0) -1)
           (vertico-cycle (mod index vertico--total))
-          (t (max 0 (min index (1- vertico--total))))))))
-    (vertico-multiform-mode 1))
+          (t (max 0 (min index (1- vertico--total)))))))))
 
   (use-package vertico-multiform
     :ensure nil
@@ -2360,12 +2360,24 @@ Defer code execution until the first command after initialization.
     :config
     (require 'vertico-directory)
     (setq
+     +vertico-transform-functions nil
      vertico-multiform-categories
      '((file (vertico-sort-function . vertico-sort-dirs-and-files)
+             (+vertico-transform-functions . +vertico-highlight-directory)
              (:keymap . vertico-directory-map)))
      vertico-multiform-commands
      '((consult-line (vertico-posframe-mode . nil) (vertico-mode . t))
        (sk-consult-yasnippet (vertico-posframe-mode . nil) (vertico-mode . t))))
+    (cl-defmethod vertico--format-candidate :around
+      (cand prefix suffix index start &context ((not +vertico-transform-functions) null))
+      (dolist (fun (ensure-list +vertico-transform-functions))
+        (setq cand (funcall fun cand)))
+      (cl-call-next-method cand prefix suffix index start))
+    (defun +vertico-highlight-directory (file)
+      "If FILE ends with a slash, highlight it as a directory."
+      (if (string-suffix-p "/" file)
+          (propertize file 'face 'dired-directory)
+        file))
     (defun vertico-sort-dirs-and-files (lst)
       "Sort dirs first and files, prioritizing prefix matches."
       (let* ((input (file-name-nondirectory (minibuffer-contents)))
