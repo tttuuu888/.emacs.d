@@ -2294,13 +2294,7 @@ Defer code execution until the first command after initialization.
                       #'stillness-mode--handle-point '(depth 90))
         (advice-remove 'read-from-minibuffer #'stillness-mode--handle-point))))
 
-  (use-package gptel
-    :config
-    (setq-default gptel-model 'gemini-2.0-flash
-                  gptel-backend
-                  (gptel-make-gemini "Gemini"
-                    :key (getenv "GEMINI_API_KEY")
-                    :stream t)))
+  (use-package gptel)
 
   (use-package inf-gptel
     :vc
