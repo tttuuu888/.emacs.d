@@ -2321,6 +2321,26 @@ Defer code execution until the first command after initialization.
       (dolist (fun (ensure-list +vertico-transform-functions))
         (setq cand (funcall fun cand)))
       (cl-call-next-method cand prefix suffix index start))
+    (defun my-vertico-sort (input candidates)
+      (let ((sort-func
+             (lambda (a b)
+               (if (string-empty-p input)
+                   ;; Default sort when no input is provided
+                   (string-lessp a b)
+                 (let ((a-prefix (string-prefix-p input a t))
+                       (b-prefix (string-prefix-p input b t)))
+                   (cond
+                    ;; Both match the prefix: prioritize the shorter one
+                    ((and a-prefix b-prefix)
+                     (if (= (length a) (length b))
+                         (string-lessp a b)
+                       (< (length a) (length b))))
+                    ;; Only one matches the prefix: prioritize that one
+                    (a-prefix t)
+                    (b-prefix nil)
+                    ;; Neither matches the prefix: fall back to default sort
+                    (t (string-lessp a b))))))))
+        (sort (copy-sequence candidates) sort-func)))
     (defun +vertico-highlight-directory (file)
       "If FILE ends with a slash, highlight it as a directory."
       (if (string-suffix-p "/" file)
@@ -2334,33 +2354,14 @@ Defer code execution until the first command after initialization.
           (ivy--sort input candidates))))
     (defun vertico-sort-dirs-and-files (lst)
       "Sort dirs first and files, prioritizing prefix matches."
-      (let* ((input (file-name-nondirectory (minibuffer-contents-no-properties)))
-             (sort-func
-              (lambda (a b)
-                (if (string-empty-p input)
-                    ;; Default sort when no input is provided
-                    (string-lessp a b)
-                  (let ((a-prefix (string-prefix-p input a t))
-                        (b-prefix (string-prefix-p input b t)))
-                    (cond
-                     ;; Both match the prefix: prioritize the shorter one
-                     ((and a-prefix b-prefix)
-                      (if (= (length a) (length b))
-                          (string-lessp a b)
-                        (< (length a) (length b))))
-                     ;; Only one matches the prefix: prioritize that one
-                     (a-prefix t)
-                     (b-prefix nil)
-                     ;; Neither matches the prefix: fall back to default sort
-                     (t (string-lessp a b)))))))
-             dirs files)
+      (let ((input (file-name-nondirectory (minibuffer-contents-no-properties)))
+            dirs files)
         (dolist (x lst)
           (if (string-suffix-p "/" x)
               (push x dirs)
             (push x files)))
-        (setq dirs (sort dirs sort-func))
-        (setq files (sort files sort-func))
-        (nconc dirs files)))
+        (nconc (my-vertico-sort input dirs)
+               (my-vertico-sort input files))))
     (defun my-vertico-directory-tilde ()
       (interactive)
       (if (string-suffix-p  "/" (car vertico--input))
