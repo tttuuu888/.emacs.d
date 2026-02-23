@@ -2332,9 +2332,11 @@ Defer code execution until the first command after initialization.
                    (cond
                     ;; Both match the prefix: prioritize the shorter one
                     ((and a-prefix b-prefix)
-                     (if (= (length a) (length b))
-                         (string-lessp a b)
-                       (< (length a) (length b))))
+                     (let ((len-a (length a))
+                           (len-b (length b)))
+                       (if (/= len-a len-b)
+                           (< len-a len-b)
+                         (string-lessp a b))))
                     ;; Only one matches the prefix: prioritize that one
                     (a-prefix t)
                     (b-prefix nil)
