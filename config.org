@@ -2351,7 +2351,7 @@ Defer code execution until the first command after initialization.
       (let ((input (minibuffer-contents-no-properties)))
         (if (string-empty-p input)
             candidates
-          (ivy--sort input candidates))))
+          (my-vertico-sort input candidates))))
     (defun vertico-sort-dirs-and-files (lst)
       "Sort dirs first and files, prioritizing prefix matches."
       (let ((input (file-name-nondirectory (minibuffer-contents-no-properties)))
