@@ -2327,27 +2327,20 @@ Defer code execution until the first command after initialization.
           (propertize file 'face 'dired-directory)
         file))
     (defun my-vertico-sort (input candidates)
-      (let ((sort-func
-             (lambda (a b)
-               (if (string-empty-p input)
-                   ;; Default sort when no input is provided
-                   (string-lessp a b)
-                 (let ((a-prefix (string-prefix-p input a t))
-                       (b-prefix (string-prefix-p input b t)))
-                   (cond
-                    ;; Both match the prefix: prioritize the shorter one
-                    ((and a-prefix b-prefix)
-                     (let ((len-a (length a))
-                           (len-b (length b)))
-                       (if (/= len-a len-b)
-                           (< len-a len-b)
-                         (string-lessp a b))))
-                    ;; Only one matches the prefix: prioritize that one
-                    (a-prefix t)
-                    (b-prefix nil)
-                    ;; Neither matches the prefix: fall back to default sort
-                    (t (string-lessp a b))))))))
-        (sort (copy-sequence candidates) sort-func)))
+      (if (string-empty-p input)
+          (sort candidates #'string-lessp)
+        (let* ((trimmed (string-trim input))
+               (first-word (car (split-string trimmed " ")))
+               res-prefix res-others)
+          (dolist (cand candidates)
+            (if (string-prefix-p first-word cand t)
+                (push cand res-prefix)
+              (push cand res-others)))
+          (nconc
+           (sort (nreverse res-prefix)
+                 (lambda (a b) (string-collate-lessp a b nil t)))
+           (sort (nreverse res-others)
+                 (lambda (a b) (string-collate-lessp a b nil t)))))))
     (defun vertico-default-sort (candidates)
       "Sort candidates with `my-vertico-sort', or return as-is if input is empty."
       (let ((input (minibuffer-contents-no-properties)))
