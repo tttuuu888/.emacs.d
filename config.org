@@ -2321,6 +2321,11 @@ Defer code execution until the first command after initialization.
       (dolist (fun (ensure-list +vertico-transform-functions))
         (setq cand (funcall fun cand)))
       (cl-call-next-method cand prefix suffix index start))
+    (defun +vertico-highlight-directory (file)
+      "If FILE ends with a slash, highlight it as a directory."
+      (if (string-suffix-p "/" file)
+          (propertize file 'face 'dired-directory)
+        file))
     (defun my-vertico-sort (input candidates)
       (let ((sort-func
              (lambda (a b)
@@ -2343,11 +2348,6 @@ Defer code execution until the first command after initialization.
                     ;; Neither matches the prefix: fall back to default sort
                     (t (string-lessp a b))))))))
         (sort (copy-sequence candidates) sort-func)))
-    (defun +vertico-highlight-directory (file)
-      "If FILE ends with a slash, highlight it as a directory."
-      (if (string-suffix-p "/" file)
-          (propertize file 'face 'dired-directory)
-        file))
     (defun vertico-default-sort (candidates)
       "Sort candidates with `my-vertico-sort', or return as-is if input is empty."
       (let ((input (minibuffer-contents-no-properties)))
