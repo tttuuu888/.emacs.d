@@ -2335,19 +2335,31 @@ Defer code execution until the first command after initialization.
     (defun vertico-sort-dirs-and-files (lst)
       "Sort dirs first and files, prioritizing prefix matches."
       (let* ((input (file-name-nondirectory (minibuffer-contents-no-properties)))
-             (sort-ivy-or-string
-              (lambda (name cands)
-                (let ((sorted-cands (sort cands #'string-lessp)))
-                  (if (string-empty-p name)
-                      sorted-cands
-                    (ivy--sort name sorted-cands)))))
+             (sort-func
+              (lambda (a b)
+                (if (string-empty-p input)
+                    ;; Default sort when no input is provided
+                    (string-lessp a b)
+                  (let ((a-prefix (string-prefix-p input a t))
+                        (b-prefix (string-prefix-p input b t)))
+                    (cond
+                     ;; Both match the prefix: prioritize the shorter one
+                     ((and a-prefix b-prefix)
+                      (if (= (length a) (length b))
+                          (string-lessp a b)
+                        (< (length a) (length b))))
+                     ;; Only one matches the prefix: prioritize that one
+                     (a-prefix t)
+                     (b-prefix nil)
+                     ;; Neither matches the prefix: fall back to default sort
+                     (t (string-lessp a b)))))))
              dirs files)
         (dolist (x lst)
           (if (string-suffix-p "/" x)
               (push x dirs)
             (push x files)))
-        (setq dirs (funcall sort-ivy-or-string input dirs))
-        (setq files (funcall sort-ivy-or-string input files))
+        (setq dirs (sort dirs sort-func))
+        (setq files (sort files sort-func))
         (nconc dirs files)))
     (defun my-vertico-directory-tilde ()
       (interactive)
