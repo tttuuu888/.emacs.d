@@ -1445,7 +1445,7 @@ Defer code execution until the first command after initialization.
     (defun sk-org-capture-image ()
       (interactive)
       (let* ((img (file-relative-name
-                   (counsel--find-file-1 "Image file name: " nil nil nil)
+                   (read-file-name "Image file name: ")
                    default-directory))
              (dir (file-name-directory img)))
         (when dir (ensure-dir dir))
