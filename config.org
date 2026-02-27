@@ -2529,6 +2529,8 @@ Defer code execution until the first command after initialization.
           '(embark-which-key-indicator
             embark-highlight-indicator
             embark-isearch-highlight-indicator)
+          embark-transformer-alist
+          (assq-delete-all 'project-file embark-transformer-alist)
           prefix-help-command #'embark-prefix-help-command)
 
     ;; Remove embark--confirm
@@ -2573,7 +2575,14 @@ Defer code execution until the first command after initialization.
         (apply fn args)))
 
     (advice-add #'embark-completing-read-prompter
-                :around #'embark-hide-which-key-indicator))
+                :around #'embark-hide-which-key-indicator)
+
+    (defvar-keymap embark-project-actions
+      :doc "Keymap for Embark project actions."
+      :parent embark-general-map
+      "d" #'projectile-remove-known-project)
+
+    (add-to-list 'embark-keymap-alist '(project-file . embark-project-actions)))
 
   (use-package embark-consult
     :hook
