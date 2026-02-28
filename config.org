@@ -586,6 +586,24 @@ Instead of using =custom.el=, insert the contents of the file directly here.
       (if pos
           (goto-char pos)
         (message "No Korean letter found."))))
+
+  (defun sk-add-comment-start ()
+    "Add `comment-start' setting to the buffer header."
+    (interactive)
+    (let* ((cs (or comment-start
+                   (read-string "No comment syntax is defined.  Use: ")))
+           (comment-format (format " -*- comment-start: \"%s\"; -*-" cs cs)))
+      (setq-local comment-start cs)
+      (save-excursion
+        (goto-char (point-min))
+        (when (looking-at "#!") (forward-line 1))
+        (if (re-search-forward "-*- comment-start:" (line-end-position) t)
+            (message "Comment setting already present on first line.")
+          (if (not (looking-at cs))
+              (insert cs comment-format "\n")
+            (end-of-line)
+            (insert comment-format))
+          (message "Added comment-start: %s" cs)))))
 #+END_SRC
 
 ** Color setting
