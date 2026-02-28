@@ -612,7 +612,7 @@ Simple color setting function which has 'dark' and 'light' theme.
 #+BEGIN_SRC emacs-lisp
   (defun my-theme-setting (&optional light-theme)
     (let ((base-fg-color   (if light-theme "Black" "Gray80"))
-          (base-bg-color   (if light-theme "White" "Gray23"))
+          (base-bg-color   (if light-theme "FloralWhite" "Gray23"))
           (region-bg-color (if light-theme "PowderBlue" "DodgerBlue4")))
       (set-face-attribute 'default nil
                           :foreground base-fg-color :background base-bg-color)
@@ -2187,7 +2187,7 @@ Defer code execution until the first command after initialization.
     :if window-system
     :custom-face
     (ivy-posframe
-     ((((background light)) :background "LightGray" :foreground "black")
+     ((((background light)) :background "#e6f2ff" :foreground "black")
       (((background dark)) :background "#282a36" :foreground "gray80")))
     (ivy-posframe-border ((t (:inherit ivy-posframe))) face-defface-spec)
     :defer-init (ivy-posframe-mode 1)
@@ -2396,7 +2396,7 @@ Defer code execution until the first command after initialization.
     :if window-system
     :custom-face
     (vertico-posframe
-     ((((background light)) :background "LightGray" :foreground "black")
+     ((((background light)) :background "#e6f2ff" :foreground "black")
       (((background dark)) :background "#282a36" :foreground "gray80")))
     (vertico-posframe-border
      ((t (:inherit vertico-posframe))) face-defface-spec)
