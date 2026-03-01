@@ -612,7 +612,7 @@ Simple color setting function which has 'dark' and 'light' theme.
 #+BEGIN_SRC emacs-lisp
   (defun my-theme-setting (&optional light-theme)
     (let ((base-fg-color   (if light-theme "Black" "Gray80"))
-          (base-bg-color   (if light-theme "FloralWhite" "Gray23"))
+          (base-bg-color   (if light-theme "Gray95" "Gray23"))
           (region-bg-color (if light-theme "PowderBlue" "DodgerBlue4")))
       (set-face-attribute 'default nil
                           :foreground base-fg-color :background base-bg-color)
