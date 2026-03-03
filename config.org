@@ -221,24 +221,24 @@ Instead of using =custom.el=, insert the contents of the file directly here.
 
   (defun find-file-in-tree (dir files &optional return-only-dir)
     "Find first matching file of FILES up to HOME or ROOT folder.
-  FILES can be a file name string or list of files."
-    (let ((default-directory (file-name-as-directory (expand-file-name dir)))
+  FILES can be a file name string or list of files.
+  If RETURN-ONLY-DIR is non-nil, return the directory containing the
+  file instead of the full path to the file itself."
+    (let ((cur-dir (file-name-as-directory (expand-file-name dir)))
           (files (ensure-list files))
-          (home (expand-file-name "~/"))
-          (root "/"))
-      (cl-loop for file = (cl-find-if (lambda (f) (file-exists-p f)) files)
-               if file return (let ((file (expand-file-name file)))
-                                (cond (return-only-dir default-directory)
-                                      ((file-directory-p file)
-                                       (file-name-as-directory file))
-                                      (t file)))
-               else if (or (not (file-exists-p default-directory))
-                           (equal default-directory home)
-                           (equal default-directory root))
-               return nil
-               else do (setq default-directory
-                             (file-name-directory
-                              (directory-file-name default-directory))))))
+          (home (expand-file-name "~/")))
+      (cl-loop
+       for all-files = (and (file-readable-p cur-dir)
+                            (directory-files cur-dir))
+       for found = (cl-intersection files all-files :test #'string=)
+       if found return (if return-only-dir
+                           cur-dir
+                         (expand-file-name (car found) cur-dir))
+       else if (or (equal cur-dir home)
+                   (equal cur-dir "/"))
+       return nil
+       else do (setq cur-dir
+                     (file-name-directory (directory-file-name cur-dir))))))
 
   (defun sk-sbin-dired ()
     (interactive)
