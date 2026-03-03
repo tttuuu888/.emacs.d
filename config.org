@@ -2036,13 +2036,17 @@ Defer code execution until the first command after initialization.
       "gs" 'magit-status)
     :config
     (setq magit-log-section-commit-count 5)
+
     (evil-leader/set-key-minor-mode 'with-editor-mode
       "ck" 'with-editor-cancel)
     (bind-key "<escape>" 'transient-quit-one transient-map)
+
     (evil-make-overriding-map magit-blame-read-only-mode-map 'normal)
     (add-hook 'magit-blame-mode-hook 'evil-normalize-keymaps)
     (add-hook 'with-editor-mode-hook 'flyspell-mode)
     (remove-hook 'git-commit-setup-hook 'git-commit-setup-changelog-support)
+    (advice-add 'magit-diff-visit-file :around #'my-magit-diff-visit)
+
     (defun sk-git-diff (&rest _)
       "Run git-diff"
       (interactive)
@@ -2060,6 +2064,18 @@ Defer code execution until the first command after initialization.
           (message "No staged files")
         (call-process "git" nil `(:file ,diff-file) nil
                       "--no-pager" "diff" "--cached")))
+    (defun my-magit-diff-visit (orig-fun &rest args)
+      "Visit worktree file unless the current line starts with '-'."
+      (let* ((line-text (buffer-substring-no-properties
+                         (line-beginning-position)
+                         (line-end-position)))
+             (first-char (if (> (length line-text) 0)
+                             (substring line-text 0 1)
+                           "")))
+        (if (string= first-char "-")
+            (apply orig-fun args)
+          (call-interactively #'magit-diff-visit-worktree-file))))
+
     (if (transient--locate-child 'magit-diff "v")
         (error "Layout conflict occured!")
       (transient-append-suffix 'magit-diff "p"
