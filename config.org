@@ -2226,6 +2226,10 @@ Defer code execution until the first command after initialization.
       "r"     'counsel-recentf
       "nx"    'counsel-org-capture)
     :config
+    (defun my-create-dir-locals (path)
+      (find-file (expand-file-name ".dir-locals.el" path)))
+    (defun my-create-projectile (path)
+      (write-region "" nil (expand-file-name ".projectile" path) t))
     (ivy-add-actions
      'counsel-shell-history
      '(("d" (lambda (x) (ring-remove comint-input-ring
@@ -2236,11 +2240,7 @@ Defer code execution until the first command after initialization.
      '(("d" counsel-find-file-delete "delete")
        ("k" counsel-find-file-mkdir-action "mkdir")
        ("e" my-create-dir-locals "Create .dir-locals.el")
-       ("p" my-create-projectile "Create .projectile")))
-    (defun my-create-dir-locals (path)
-      (find-file (expand-file-name ".dir-locals.el" path)))
-    (defun my-create-projectile (path)
-      (write-region "" nil (expand-file-name ".projectile" path) t)))
+       ("p" my-create-projectile "Create .projectile"))))
 
   (use-package which-key
     :custom (which-key-dont-use-unicode t)
