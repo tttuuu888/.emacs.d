@@ -1073,15 +1073,9 @@ Defer code execution until the first command after initialization.
 
     (defun dired-up-and-close-dir (n)
       (interactive "p")
-      (let* ((buf (get-buffer (buffer-name)))
-             (curr (dired-current-directory))
-             (dest (file-name-directory (directory-file-name curr))))
-        (dotimes (_ (- n 1))
-          (setq curr dest)
-          (setq dest (file-name-directory (directory-file-name dest))))
-        (dired dest)
-        (dired-goto-file curr)
-        (kill-buffer buf)))
+      (if (= n 0)
+          (dired-up-directory t)
+        (dotimes (_ n) (dired-up-directory))))
 
     (defun my-dired-get-target (prompt &optional files)
       (let ((files (if files files '(nil)))
