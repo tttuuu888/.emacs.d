@@ -2235,8 +2235,10 @@ Defer code execution until the first command after initialization.
      'counsel-find-file
      '(("d" counsel-find-file-delete "delete")
        ("k" counsel-find-file-mkdir-action "mkdir")
-       ("e" (lambda (_) (find-file ".dir-locals.el")) ".dir-locals")
-       ("p" my-create-projectile ".projectile")))
+       ("e" my-create-dir-locals "Create .dir-locals.el")
+       ("p" my-create-projectile "Create .projectile")))
+    (defun my-create-dir-locals (path)
+      (find-file (expand-file-name ".dir-locals.el" path)))
     (defun my-create-projectile (path)
       (write-region "" nil (expand-file-name ".projectile" path) t)))
 
