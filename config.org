@@ -1176,44 +1176,42 @@ Defer code execution until the first command after initialization.
            (expand-file-name name default-directory)))))
 
     (defun my-dired-do-copy (&optional arg)
-      "Copy files asynchronously."
+      "Copy files asynchronously for local, and synchronously for remote.
+  - Default: normal copy.
+  - M-0 : toggle dereference.
+  - M-1 : sudo copy.
+  - M-10: toggle dereference + sudo copy."
       (interactive "p")
       (let* ((files (dired-get-marked-files))
-             (source (mapcar #'shell-quote-argument files))
              (target (my-dired-get-target "Copy to: " files))
-             (dst (shell-quote-argument target))
              (remote (or (file-remote-p default-directory)
                          (file-remote-p target)))
-             (target-files
-              (if (not (directory-name-p target))
-                  (list target)
-                (mapcar
-                 (lambda (f) (expand-file-name (file-name-nondirectory f) target))
-                 files)))
+             (is-dir (directory-name-p target))
+             (target-files (if (not is-dir)
+                               (list target)
+                             (mapcar
+                              (lambda (f) (expand-file-name
+                                           (file-name-nondirectory f) target))
+                              files)))
              (dired-copy-dereference (if (zerop (% arg 10))
                                          (not dired-copy-dereference)
-                                       dired-copy-dereference)))
-        (if (not remote)
+                                       dired-copy-dereference))
+             (refresh-dired (lambda (&rest _)
+                              (dolist (dest target-files)
+                                (dired-remove-file dest)
+                                (dired-add-file dest ?C))
+                              (message "Copy files done."))))
+        (if remote
+            (progn
+              (dolist (f files)
+                (dired-copy-file f (if is-dir target (car target-files)) t))
+              (funcall refresh-dired))
+          (let* ((deref-opt (if dired-copy-dereference "-L " ""))
+                 (source (mapconcat #'shell-quote-argument files " "))
+                 (dest (shell-quote-argument target))
+                 (cmd (concat "cp -rf " deref-opt source " " dest)))
             (async-shell-command-callback
-             (add-sudo-to-command
-              (> arg 1)
-              (concat "cp -rf "
-                      (when dired-copy-dereference " -L ")
-                      (string-join source " ") " "
-                      dst))
-             (lambda (target-files)
-               (mapc (lambda (f)
-                       (dired-remove-file f)
-                       (dired-add-file f ?C))
-                     target-files)
-               (message "Copy files done."))
-             target-files)
-          (mapc (lambda (f) (copy-file f target t)) files)
-          (mapc (lambda (f)
-                  (dired-remove-file f)
-                  (dired-add-file f ?C))
-                target-files)
-          (message "Copy files done."))))
+             (add-sudo-to-command (> arg 1) cmd) refresh-dired target-files)))))
 
     (defun my-dired-do-delete (&optional arg)
       "Delete files asynchronously."
