@@ -1216,30 +1216,29 @@ Defer code execution until the first command after initialization.
              (add-sudo-to-command (> arg 1) cmd) refresh-dired target-files)))))
 
     (defun my-dired-do-delete (&optional arg)
-      "Delete files asynchronously."
+      "Delete files asynchronously for local, and synchronously for remote."
       (interactive "p")
       (let* ((remote (file-remote-p default-directory))
              (files (dired-get-marked-files))
-             (source (mapcar #'shell-quote-argument files)))
+             (refresh-dired (lambda (&rest _)
+                              (dolist (f files)
+                                (dired-delete-entry f))
+                              (message "Delete files done."))))
+
         (when (and files
                    (dired-mark-pop-up
                     " *Deletions*" 'delete files #'yes-or-no-p "Delete files? "))
-          (if (not remote)
+          (if remote
+              (progn
+                (dolist (f files)
+                  (if (file-directory-p f)
+                      (delete-directory f t)
+                    (delete-file f)))
+                (funcall refresh-dired))
+            (let* ((source (mapconcat #'shell-quote-argument files " "))
+                   (cmd (concat "rm -rf " source)))
               (async-shell-command-callback
-               (add-sudo-to-command
-                (> arg 1)
-                (concat "rm -rf " (string-join source " ")))
-               (lambda (files)
-                 (mapc (lambda (f) (dired-delete-entry f)) files)
-                 (message "Delete files done."))
-               files)
-            (mapc (lambda (f)
-                    (if (file-accessible-directory-p f)
-                        (delete-directory f t)
-                      (delete-file f)))
-                  files)
-            (mapc (lambda (f) (dired-delete-entry f)) files)
-            (message "Delete files done.")))))
+               (add-sudo-to-command (> arg 1) cmd) refresh-dired))))))
 
     (defun my-dired-do-flagged-delete (&optional arg)
       "Delete files flagged for deletion asynchronously."
