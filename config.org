@@ -1073,7 +1073,7 @@ Defer code execution until the first command after initialization.
 
     (defun dired-up-and-close-dir (n)
       (interactive "p")
-      (let* ((buf (get-buffer (buffer-name)))
+      (let* ((buf (current-buffer))
              (curr (dired-current-directory))
              (dest (file-name-directory (directory-file-name curr))))
         (dotimes (_ (- n 1))
