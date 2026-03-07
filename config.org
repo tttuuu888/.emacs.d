@@ -1702,12 +1702,18 @@ Defer code execution until the first command after initialization.
       "Upgrade all packages without asking the user."
       (interactive)
       (package-refresh-contents)
-      (let* ((upgradeable (package--upgradeable-packages))
+      (let* ((vc-pkgs (my-vc-packages))
+             (vc-upgradable (my-upgradable-vc-packages))
+             (vc-upgraded (my-upgrade-vc-packages vc-upgradable))
+             (upgradeable-tmp (package--upgradeable-packages))
+             (upgradeable (seq-remove (lambda (pkg) (memq pkg vc-pkgs))
+                                      upgradeable-tmp))
              (upgraded (cl-remove-if-not #'package-upgrade upgradeable))
-             (pkg-cnt (length upgraded)))
-        (if (not upgraded)
+             (upgraded-all (append upgradeable vc-upgradable))
+             (pkg-cnt (length upgraded-all)))
+        (if (not upgraded-all)
             (message "No packages to upgrade")
-          (message (format "%s packages upgraded. %s" pkg-cnt upgraded))))))
+          (message (format "%s packages upgraded. %s" pkg-cnt upgraded-all))))))
 
   (use-package package-vc
     :ensure nil
@@ -1730,7 +1736,43 @@ Defer code execution until the first command after initialization.
              (post-hash (shell-command-to-string "git rev-parse HEAD")))
         (when (not (equal pre-hash post-hash))
           (with-demoted-errors "Failed to activate: %S"
-            (package-vc--unpack-1 pkg-desc pkg-dir))))))
+            (package-vc--unpack-1 pkg-desc pkg-dir)))))
+
+    (defun my-vc-packages ()
+      "Return a list of VC packages under `package-user-dir'."
+      (let ((default-directory (expand-file-name package-user-dir)))
+        (mapcar
+         #'intern
+         (split-string
+          (shell-command-to-string
+           (concat "find . -maxdepth 2 -name .git -type d -printf '%P\n' | "
+                   "sed 's|/.git||'"))))))
+
+    (defun my-upgradable-vc-packages ()
+      "Update all VC packages and return the list of updated ones."
+      (let* ((default-directory (expand-file-name package-user-dir))
+             (vc-pkgs (my-vc-packages))
+             (script (concat "cd \"$1\" && "
+                             "PRE=$(git rev-parse HEAD) && "
+                             "git pull -q && "
+                             "POST=$(git rev-parse HEAD) && "
+                             "[ \"$PRE\" != \"$POST\" ] && echo \"$1\""))
+             ;; Parallel execution via xargs
+             (command (format "echo %s | xargs -n 1 -P 8 sh -c '%s' --"
+                              (mapconcat #'shell-quote-argument
+                                         (mapcar #'symbol-name vc-pkgs) " ")
+                              (replace-regexp-in-string "\n" "" script))))
+        (mapcar #'intern
+                (split-string (shell-command-to-string command) "\n" t))))
+
+    (cl-defun my-upgrade-vc-packages
+        (&optional (vc-pkgs (my-upgradable-vc-packages)))
+      "Attempt to upgrade VC packages and return the list of upgraded ones."
+      (interactive)
+      (dolist (pkg vc-pkgs)
+        (when (package-installed-p pkg)
+          (package-recompile pkg)))
+      vc-pkgs))
 
   (use-package diff-mode
     :ensure nil
