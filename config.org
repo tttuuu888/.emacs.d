@@ -1741,12 +1741,11 @@ Defer code execution until the first command after initialization.
     (defun my-vc-packages ()
       "Return a list of VC packages under `package-user-dir'."
       (let ((default-directory (expand-file-name package-user-dir)))
-        (mapcar
-         #'intern
-         (split-string
-          (shell-command-to-string
-           (concat "find . -maxdepth 2 -name .git -type d -printf '%P\n' | "
-                   "sed 's|/.git||'"))))))
+        (seq-filter
+         (lambda (pkg)
+           (file-directory-p
+            (expand-file-name (concat (symbol-name pkg) "/.git"))))
+         (mapcar #'intern (directory-files "." nil (rx bos (not ".")))))))
 
     (defun my-upgradable-vc-packages ()
       "Update all VC packages and return the list of updated ones."
