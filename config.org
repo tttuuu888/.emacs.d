@@ -1763,8 +1763,8 @@ Defer code execution until the first command after initialization.
       "Attempt to upgrade VC packages and return the list of upgraded ones."
       (let ((vc-pkgs (my-upgradable-vc-packages)))
         (dolist (pkg vc-pkgs)
-          (when (package-installed-p pkg)
-            (package-recompile pkg)))
+          (when-let ((desc (package-get-descriptor pkg)))
+            (package-vc--unpack-1 desc (package-desc-dir desc))))
         vc-pkgs)))
 
   (use-package diff-mode
