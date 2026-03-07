@@ -1750,20 +1750,20 @@ Defer code execution until the first command after initialization.
 
     (defun my-upgradable-vc-packages ()
       "Update all VC packages and return the list of updated ones."
-      (let* ((default-directory (expand-file-name package-user-dir))
-             (vc-pkgs (my-vc-packages))
-             (script (concat "cd \"$1\" && "
-                             "PRE=$(git rev-parse HEAD) && "
-                             "git pull -q && "
-                             "POST=$(git rev-parse HEAD) && "
-                             "[ \"$PRE\" != \"$POST\" ] && echo \"$1\""))
-             ;; Parallel execution via xargs
-             (command (format "echo %s | xargs -n 1 -P 8 sh -c '%s' --"
-                              (mapconcat #'shell-quote-argument
-                                         (mapcar #'symbol-name vc-pkgs) " ")
-                              (replace-regexp-in-string "\n" "" script))))
-        (mapcar #'intern
-                (split-string (shell-command-to-string command) "\n" t))))
+      (let* ((vc-pkgs (my-vc-packages))
+             (futures
+              (mapcar
+               (lambda (pkg)
+                 (async-start
+                  (lambda ()
+                    (let* ((default-directory
+                            (expand-file-name (symbol-name pkg) package-user-dir))
+                           (pre (shell-command-to-string "git rev-parse HEAD"))
+                           (_ (call-process "git" nil nil nil "pull" "-q"))
+                           (post (shell-command-to-string "git rev-parse HEAD")))
+                      (unless (string= pre post) pkg)))))
+               vc-pkgs)))
+        (delq nil (mapcar #'async-get futures))))
 
     (cl-defun my-upgrade-vc-packages
         (&optional (vc-pkgs (my-upgradable-vc-packages)))
