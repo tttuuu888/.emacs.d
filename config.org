@@ -1750,20 +1750,18 @@ Defer code execution until the first command after initialization.
 
     (defun my-upgradable-vc-packages ()
       "Update all VC packages and return the list of updated ones."
-      (let* ((vc-pkgs (my-vc-packages))
-             (futures
-              (mapcar
-               (lambda (pkg)
-                 (async-start
-                  (lambda ()
-                    (let* ((default-directory
-                            (expand-file-name (symbol-name pkg) package-user-dir))
-                           (pre (shell-command-to-string "git rev-parse HEAD"))
-                           (_ (call-process "git" nil nil nil "pull" "-q"))
-                           (post (shell-command-to-string "git rev-parse HEAD")))
-                      (unless (string= pre post) pkg)))))
-               vc-pkgs)))
-        (delq nil (mapcar #'async-get futures))))
+      (cl-labels
+          ((pull-vc-pkg (pkg)
+             (async-start
+              (lambda ()
+                (let* ((default-directory
+                        (expand-file-name (symbol-name pkg) package-user-dir))
+                       (pre (shell-command-to-string "git rev-parse HEAD"))
+                       (_ (call-process "git" nil nil nil "pull" "-q"))
+                       (post (shell-command-to-string "git rev-parse HEAD")))
+                  (unless (string= pre post) pkg))))))
+        (let ((futures (mapcar #'pull-vc-pkg (my-vc-packages))))
+          (delq nil (mapcar #'async-get futures)))))
 
     (cl-defun my-upgrade-vc-packages
         (&optional (vc-pkgs (my-upgradable-vc-packages)))
