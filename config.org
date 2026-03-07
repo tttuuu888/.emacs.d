@@ -1144,19 +1144,19 @@ Defer code execution until the first command after initialization.
              (minibuffer-default defaults)
              (files (mapcar #'file-name-nondirectory (dired-get-marked-files)))
              (source (mapcar #'shell-quote-argument files))
-             (inital-name (if (equal (length files) 1)
+             (initial-name (if (equal (length files) 1)
                               (if (dired-nondirectory-p (car files))
                                   (file-name-base (car files))
                                 (file-name-nondirectory (car files)))
                             (file-name-nondirectory
                              (directory-file-name default-directory))))
-             (inital-name (if (or (string-empty-p inital-name)
-                                  (string= inital-name "~"))
+             (initial-name (if (or (string-empty-p initial-name)
+                                  (string= initial-name "~"))
                               "default"
-                            inital-name))
+                            initial-name))
              (name (consult--read nil
                                   :prompt "Compress file name: "
-                                  :initial (concat inital-name ".zip")))
+                                  :initial (concat initial-name ".zip")))
              (target (shell-quote-argument name))
              (ext (file-name-extension name))
              (pw (when (and (> arg 1) (member ext '("zip" "7z")))
