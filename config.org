@@ -1703,8 +1703,7 @@ Defer code execution until the first command after initialization.
       (interactive)
       (package-refresh-contents)
       (let* ((vc-pkgs (my-vc-packages))
-             (upgradable-vc (my-upgradable-vc-packages))
-             (upgraded-vc (my-upgrade-vc-packages upgradable-vc))
+             (upgraded-vc (my-upgrade-vc-packages))
              (upgradeable-std (seq-difference (package--upgradeable-packages)
                                               vc-pkgs))
              (upgraded-std (cl-remove-if-not #'package-upgrade upgradeable-std))
@@ -1760,14 +1759,13 @@ Defer code execution until the first command after initialization.
         (let ((futures (mapcar #'pull-vc-pkg (my-vc-packages))))
           (delq nil (mapcar #'async-get futures)))))
 
-    (cl-defun my-upgrade-vc-packages
-        (&optional (vc-pkgs (my-upgradable-vc-packages)))
+    (defun my-upgrade-vc-packages ()
       "Attempt to upgrade VC packages and return the list of upgraded ones."
-      (interactive)
-      (dolist (pkg vc-pkgs)
-        (when (package-installed-p pkg)
-          (package-recompile pkg)))
-      vc-pkgs))
+      (let ((vc-pkgs (my-upgradable-vc-packages)))
+        (dolist (pkg vc-pkgs)
+          (when (package-installed-p pkg)
+            (package-recompile pkg)))
+        vc-pkgs)))
 
   (use-package diff-mode
     :ensure nil
