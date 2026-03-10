@@ -1622,13 +1622,8 @@ Defer code execution until the first command after initialization.
 
   (use-package ansi-color
     :ensure nil
-    :hook (compilation-filter . my-ansi-colorize-buffer)
     :custom-face
-    (ansi-color-blue ((t :foreground "skyblue3" :background "skyblue3")))
-    :config
-    (defun my-ansi-colorize-buffer ()
-      (let ((buffer-read-only nil))
-        (ansi-color-apply-on-region (point-min) (point-max)))))
+    (ansi-color-blue ((t :foreground "skyblue3" :background "skyblue3"))))
 
   (use-package display-line-numbers
     :ensure nil
@@ -2862,6 +2857,7 @@ Defer code execution until the first command after initialization.
 
   (use-package compile
     :ensure nil
+    :hook (compilation-filter . ansi-color-compilation-filter)
     :init
     (evil-leader/set-key
       "jC" 'compile
