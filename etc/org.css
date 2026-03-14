@@ -7,7 +7,7 @@ html {
 }
 
 body {
-  font-family: sans-serif;
+  font-family: "Noto Sans", "Segoe UI", Roboto, Arial, sans-serif;
   font-size: 1rem;
   line-height: 180%;
   color: black;
@@ -74,6 +74,10 @@ tr:nth-child(even) {
 
 tr:nth-child(odd) {
   background: #ffffff;
+}
+
+pre, code, .src {
+  font-family: ui-monospace, "Liberation Mono", Consolas, monospace;
 }
 
 code {
