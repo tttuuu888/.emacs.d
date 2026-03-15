@@ -146,9 +146,9 @@ Instead of using =custom.el=, insert the contents of the file directly here.
 ** Custom macros
 #+begin_src emacs-lisp
 (defmacro sk-switch-buffer-repl (name mode repl run-repl &optional nobind)
-  "Create NAME function which switch between a file of MODE and a REPL. Open
-  REPL with RUN-REPL function if REPL is not yet opened. Evil-Leader z binding
-  will be added to toggle MODE and REPL buffer unless NOBIND is not nil."
+  "Create NAME function which switch between a file of MODE and a REPL.
+Open REPL with RUN-REPL function if REPL is not yet opened. Evil-Leader z
+binding will be added to toggle MODE and REPL buffer unless NOBIND is not nil."
   (declare (indent defun))
   `(let ((last-mode "")
          (last-repl ""))
@@ -221,9 +221,9 @@ Instead of using =custom.el=, insert the contents of the file directly here.
 
 (defun find-file-in-tree (dir files &optional return-only-dir)
   "Find first matching file of FILES up to HOME or ROOT folder.
-  FILES can be a file name string or list of files.
-  If RETURN-ONLY-DIR is non-nil, return the directory containing the
-  file instead of the full path to the file itself."
+FILES can be a file name string or list of files. If RETURN-ONLY-DIR is
+non-nil, return the directory containing the file instead of the full
+path to the file itself."
   (let ((cur-dir (file-name-as-directory (expand-file-name dir)))
         (files (ensure-list files))
         (home (expand-file-name "~/")))
@@ -275,8 +275,7 @@ Instead of using =custom.el=, insert the contents of the file directly here.
   (delete-other-windows))
 
 (defun hide-ctrl-M ()
-  "Hides the disturbing '^M' showing up in files containing mixed UNIX and DOS
-  line endings."
+  "Hides the '^M' in files containing mixed UNIX and DOS line endings."
   (interactive)
   (setq buffer-display-table (make-display-table))
   (aset buffer-display-table ?\^M []))
@@ -336,8 +335,9 @@ Instead of using =custom.el=, insert the contents of the file directly here.
             (evil-leader/set-key-for-mode mode key (cdr e))))))))
 
 (defun tmux-running-p (&optional notice)
-  "Check if Tmux is currently running. If NOTICE is non-nil and Tmux is not
-  running, print the message: \"Tmux is not running!\""
+  "Check if Tmux is currently running.
+If NOTICE is non-nil and Tmux is not running, print the message:
+\"Tmux is not running!\""
   (let ((running (zerop (call-process "tmux" nil nil nil "has-session"))))
     (when (and (not running) notice)
       (message "Tmux is not running!"))
@@ -495,8 +495,8 @@ Instead of using =custom.el=, insert the contents of the file directly here.
     (current-buffer)))
 
 (defun sk-alist-to-js-obj (alist &optional omit-curly-braces)
-  "Convert ALIST to javascript object string. When OMIT-CURLY-BRACES is non-nil,
-  omit curly braces wrapping."
+  "Convert ALIST to javascript object string.
+When OMIT-CURLY-BRACES is non-nil, omit curly braces wrapping."
   (concat
    (unless omit-curly-braces "{ ")
    (string-join
@@ -539,8 +539,9 @@ Instead of using =custom.el=, insert the contents of the file directly here.
     (browse-url (format "https://www.google.com/search?q=%s&ie=UTF-8" target))))
 
 (defun align-columns (beg end)
-  "Align columns in region BEG END, treating quoted strings and balanced
-  parentheses, brackets, and braces as single units."
+  "Align columns in region BEG END.
+Treat quoted strings and balanced parentheses, brackets, and braces as
+single units."
   (interactive "r")
   (align-regexp beg end
                 (rx (group (* space))
@@ -645,11 +646,11 @@ Enable dark theme.
 Simple mode line setting function.
 
 #+BEGIN_SRC emacs-lisp
-  ;;; mode-line face setting
+;;; mode-line face setting
 (face-spec-set 'mode-line '((t (:box nil))))
 (face-spec-set 'mode-line-inactive '((t (:box nil))))
 
-  ;;; sk-mode-line
+;;; sk-mode-line
 (defun sk-mode-line ()
   (setq-default
    mode-line-format
@@ -951,7 +952,7 @@ Defer code execution until the first command after initialization.
 #+END_SRC
 * General packages - built-in
 #+BEGIN_SRC emacs-lisp
-  ;;; Built-in packages
+;;; Built-in packages
 (use-package emacs
   :ensure nil
   :custom-face
@@ -1179,10 +1180,10 @@ Defer code execution until the first command after initialization.
 
   (defun my-dired-do-copy (&optional arg)
     "Copy files asynchronously for local, and synchronously for remote.
-  - Default: normal copy.
-  - M-0 : toggle dereference.
-  - M-1 : sudo copy.
-  - M-10: toggle dereference + sudo copy."
+- Default: normal copy.
+- M-0 : toggle dereference.
+- M-1 : sudo copy.
+- M-10: toggle dereference + sudo copy."
     (interactive "p")
     (let* ((files (dired-get-marked-files))
            (target (my-dired-get-target "Copy to: " files))
@@ -1531,8 +1532,9 @@ Defer code execution until the first command after initialization.
                        (name . "\*Apropos\*")
                        (name . "\*info\*"))))))
   (define-ibuffer-sorter mode-name-then-filename
-    "Sort the buffers first by their mode name, then by their file name or
-  process name."
+    "Sort buffers by mode name, then by file or process name.
+Sort the buffers first by their mode name, then by their file name or
+process name."
     (:description "mode name, then file name")
     (let* ((mode-a (with-current-buffer (car a) (format-mode-line mode-name)))
            (mode-b (with-current-buffer (car b) (format-mode-line mode-name)))
@@ -2602,9 +2604,8 @@ Defer code execution until the first command after initialization.
 
   (defun embark-which-key-indicator ()
     "An embark indicator that displays keymaps using which-key.
-  The which-key help message will show the type and value of the
-  current target followed by an ellipsis if there are further
-  targets."
+The which-key help message will show the type and value of the current
+target followed by an ellipsis if there are further targets."
     (lambda (&optional keymap targets prefix)
       (if (null keymap)
           (which-key--hide-popup-ignore-command)
@@ -2624,8 +2625,7 @@ Defer code execution until the first command after initialization.
                      (not (string-suffix-p "-argument" (cdr binding))))))))
 
   (defun embark-hide-which-key-indicator (fn &rest args)
-    "Hide the which-key indicator immediately when using the completing-read
-  prompter."
+    "Hide the which-key indicator when using the completing-read prompter."
     (which-key--hide-popup-ignore-command)
     (let ((embark-indicators
            (remq #'embark-which-key-indicator embark-indicators)))
@@ -2686,8 +2686,9 @@ Defer code execution until the first command after initialization.
   :hook (prog-mode . electric-pair-mode)
   :config
   (defun electric-pair-delete-pair (arg &optional killp)
-    "Custom pair-delete. Delete a closing braket in case of (|), delete a pair
-  of inner braket in case of ((|))."
+    "Custom pair-delete.
+Delete a closing braket in case of (|), delete a pair of inner braket
+in case of ((|))."
     (interactive "*p\nP")
     (if (memq (char-after (1+ (point))) '(?\) ?\" ?\] ?\} ?\$))
         (delete-char 1)
@@ -3393,5 +3394,5 @@ Make =config.el= available to load by =require=.
 #+BEGIN_SRC emacs-lisp
 (provide 'config)
 
-  ;;; config.el ends here
+;;; config.el ends here
 #+END_SRC
