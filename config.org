@@ -1383,6 +1383,7 @@ Defer code execution until the first command after initialization.
      org-refile-targets '((nil :maxlevel . 5))
      org-refile-use-outline-path t
      org-src-lang-modes (cons '("dot" . graphviz-dot) org-src-lang-modes)
+     org-src-preserve-indentation t
      org-src-window-setup 'current-window
      org-startup-folded t
      org-startup-indented t
