@@ -1352,6 +1352,7 @@ Defer code execution until the first command after initialization.
    org-confirm-babel-evaluate nil
    org-default-notes-file my-org-gtd
    org-directory my-org-path
+   org-edit-src-content-indentation 0
    org-element-use-cache nil
    org-export-default-language "kr"
    org-export-headline-levels 2
