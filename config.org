@@ -2454,7 +2454,13 @@ process name."
   (advice-add 'vertico-posframe-get-size :around
               (lambda (func &rest args)
                 (plist-put (apply func args)
-                           :width (min (- (frame-width) 5) 140)))))
+                           :width (min (- (frame-width) 5) 140))))
+  (advice-add 'vertico-posframe--show
+              :before
+              (lambda (func &rest args)
+                (setq vertico-posframe-truncate-lines
+                      (< (point)
+                         (* 0.8 (window-width (active-minibuffer-window))))))))
 
 (use-package orderless
   :defer-init (require 'orderless)
