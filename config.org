@@ -3224,6 +3224,7 @@ in case of ((|))."
     "gh" 'eldoc-doc-buffer))
 
 (use-package eglot-booster
+  :disabled
   :vc (:url "https://github.com/jdtsmith/eglot-booster"
             :rev :newest)
   :after eglot
