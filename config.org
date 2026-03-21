@@ -3214,25 +3214,10 @@ in case of ((|))."
           :documentSymbolProvider
           :inlayHintProvider
           :signatureHelpProvider)
-        eglot-server-programs
-        (append
-         `((python-mode
-            . (eglot-pyright . ("pyright-langserver" "--stdio"))))
-         eglot-server-programs)
+        eglot-server-programs (append `((python-mode . ("ty" "server")))
+                                      eglot-server-programs)
         eglot-sync-connect 0)
   (fset #'jsonrpc--log-event #'ignore)
-  (defun my-find-python-project-root ()
-    (find-file-in-tree default-directory '("setup.py" "requirements.txt") t))
-  (defclass eglot-pyright (eglot-lsp-server) ()
-    :documentation "MS pyright Language Server.")
-  (cl-defmethod eglot-client-capabilities ((server eglot-pyright))
-    "EGLOT LSP client supports for pyright."
-    `(:workspace
-      (:didChangeWatchedFiles
-       (:dynamicRegistration
-        ,(if (my-find-python-project-root)
-             t
-           :json-false)))))
   (evil-leader/set-key-minor-mode 'eglot--managed-mode
     "ex" 'eglot-code-action-quickfix)
   (evil-define-minor-mode-key 'normal 'eglot--managed-mode
