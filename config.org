@@ -1897,6 +1897,14 @@ process name."
   :custom-face
   (hexl-address-region ((t :inherit 'font-lock-function-name-face))
                        face-defface-spec))
+
+(use-package dabbrev
+  :config
+  (advice-add 'dabbrev-capf :before
+              (lambda (&rest _)
+                (unless dabbrev--abbrev-char-regexp
+                  (setq dabbrev--abbrev-char-regexp
+                        (or dabbrev-abbrev-char-regexp "\\sw\\|\\s_"))))))
 #+END_SRC
 * General packages - external
 #+BEGIN_SRC emacs-lisp
