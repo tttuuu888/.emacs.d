@@ -979,6 +979,7 @@ Defer code execution until the first command after initialization.
   :config
   (setq-default bidi-paragraph-direction 'left-to-right)
   (setq bidi-inhibit-bpa t
+        kill-do-not-save-duplicates t
         save-interprogram-paste-before-kill t))
 
 (use-package bind-key
