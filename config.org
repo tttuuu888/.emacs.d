@@ -975,7 +975,10 @@ Defer code execution until the first command after initialization.
 (use-package emacs
   :ensure nil
   :custom-face
-  (header-line ((t (:inherit font-lock-function-name-face :underline nil)))))
+  (header-line ((t (:inherit font-lock-function-name-face :underline nil))))
+  :config
+  (setq-default bidi-paragraph-direction 'left-to-right)
+  (setq bidi-inhibit-bpa t))
 
 (use-package bind-key
   :ensure nil
