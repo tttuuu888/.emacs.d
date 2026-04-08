@@ -978,7 +978,8 @@ Defer code execution until the first command after initialization.
   (header-line ((t (:inherit font-lock-function-name-face :underline nil))))
   :config
   (setq-default bidi-paragraph-direction 'left-to-right)
-  (setq bidi-inhibit-bpa t))
+  (setq bidi-inhibit-bpa t
+        save-interprogram-paste-before-kill t))
 
 (use-package bind-key
   :ensure nil
