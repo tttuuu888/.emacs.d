@@ -2278,7 +2278,6 @@ process name."
   (evil-leader/set-key
     "d"     'counsel-find-file
     "f"     'counsel-find-file
-    "r"     'counsel-recentf
     "nx"    'counsel-org-capture)
   :config
   (defun my-create-dir-locals (path)
@@ -2552,6 +2551,7 @@ that completion tables which supply a meaningful ordering (e.g.
   :init
   (evil-leader/set-key
     "I"     'consult-imenu
+    "r"     'consult-recent-file
     "jd"    'consult-fd-dir
     "jD"    'consult-fd-dir-here
     "jf"    'consult-fd-file
@@ -2570,6 +2570,7 @@ that completion tables which supply a meaningful ordering (e.g.
   (defalias 'execute-extended-command 'consult-M-x)
 
   (consult-customize consult-line :preview-key 'any)
+  (consult-customize consult-recent-file :category 'recent-file)
 
   (defun consult-M-x ()
     (interactive)
@@ -2709,8 +2710,14 @@ target followed by an ellipsis if there are further targets."
     :doc "Keymap for Embark project actions."
     :parent embark-general-map
     "d" #'projectile-remove-known-project)
+  (add-to-list 'embark-keymap-alist '(project-file . embark-project-actions))
 
-  (add-to-list 'embark-keymap-alist '(project-file . embark-project-actions)))
+  (defvar-keymap embark-recent-file-map
+    :doc "Keymap for Embark actions on consult-recent-file."
+    :parent embark-file-map
+    "d" #'embark-recentf-remove
+    "D" #'delete-file)
+  (add-to-list 'embark-keymap-alist '(recent-file . embark-recent-file-map)))
 
 (use-package embark-consult)
 
