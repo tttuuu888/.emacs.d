@@ -2417,9 +2417,13 @@ process name."
       (setq cand (funcall fun cand)))
     (cl-call-next-method cand prefix suffix index start))
   (defun +vertico-highlight-directory (file)
-    "If FILE ends with a slash, highlight it as a directory."
+    "If FILE ends with a slash, highlight it as a directory.
+Layer the `dired-directory' face underneath any existing face
+properties so completion match highlighting remains visible."
     (if (string-suffix-p "/" file)
-        (propertize file 'face 'dired-directory)
+        (let ((copy (copy-sequence file)))
+          (add-face-text-property 0 (length copy) 'dired-directory 'append copy)
+          copy)
       file))
   (defun my-vertico-sort (input candidates)
     "Sort CANDIDATES with exact match first, then prefix matches of
