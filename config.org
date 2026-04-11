@@ -178,6 +178,7 @@ binding will be added to toggle MODE and REPL buffer unless NOBIND is not nil."
          (call-interactively ',eval-region)
        (let* ((curr (min (1+ (point)) (point-max)))
               (back (save-excursion (goto-char curr) (backward-sexp) (point))))
+         (setq this-command ',eval-region)
          (,eval-region back curr)))
      (setq deactivate-mark t)))
 
