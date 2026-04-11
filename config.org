@@ -2399,6 +2399,7 @@ process name."
   :config
   (require 'dired)
   (require 'vertico-directory)
+  (require 'vertico-sort)
   (setq
    +vertico-transform-functions nil
    vertico-multiform-categories
@@ -2421,22 +2422,31 @@ process name."
         (propertize file 'face 'dired-directory)
       file))
   (defun my-vertico-sort (input candidates)
-    (if (string-empty-p input)
-        (sort candidates #'string-lessp)
-      (let* ((trimmed (string-trim input))
-             (first-word (car (split-string trimmed " ")))
-             res-prefix res-others)
+    "Sort CANDIDATES with exact match first, then prefix matches of
+INPUT's first word, then the rest.  Within each bucket, sort
+alphabetically via `vertico-sort-alpha'."
+    (if (or (string-empty-p input)
+            (eq (aref input 0) ?^))
+        (vertico-sort-alpha candidates)
+      (let ((first-word (car (split-string input)))
+            res-exact res-prefix res-others)
         (dolist (cand candidates)
-          (if (string-prefix-p first-word cand t)
-              (push cand res-prefix)
-            (push cand res-others)))
+          (cond
+           ((eq t (compare-strings input nil nil cand nil nil t))
+            (push cand res-exact))
+           ((string-prefix-p first-word cand t)
+            (push cand res-prefix))
+           (t
+            (push cand res-others))))
         (nconc
-         (sort (nreverse res-prefix)
-               (lambda (a b) (string-collate-lessp a b nil t)))
-         (sort (nreverse res-others)
-               (lambda (a b) (string-collate-lessp a b nil t)))))))
+         (vertico-sort-alpha res-exact)
+         (vertico-sort-alpha res-prefix)
+         (vertico-sort-alpha res-others)))))
   (defun vertico-default-sort (candidates)
-    "Sort candidates with `my-vertico-sort', or return as-is if input is empty."
+    "Sort candidates with `my-vertico-sort'.
+When the input is empty, return CANDIDATES in their original order so
+that completion tables which supply a meaningful ordering (e.g.
+`describe-face') are preserved."
     (let ((input (minibuffer-contents-no-properties)))
       (if (string-empty-p input)
           candidates
@@ -2449,8 +2459,8 @@ process name."
         (if (string-suffix-p "/" x)
             (push x dirs)
           (push x files)))
-      (nconc (my-vertico-sort input dirs)
-             (my-vertico-sort input files))))
+      (nconc (my-vertico-sort input (nreverse dirs))
+             (my-vertico-sort input (nreverse files)))))
   (defun my-vertico-directory-tilde ()
     (interactive)
     (if (string-suffix-p  "/" (car vertico--input))
