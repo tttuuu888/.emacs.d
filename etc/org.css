@@ -42,8 +42,6 @@ a {
   color: #0366d6;
 }
 a:visited {
-  text-decoration: none;
-  font-weight: 400;
 }
 a:hover {
   text-decoration: underline;
@@ -99,14 +97,10 @@ img {
 
 .share img {
   opacity: 0.4;
-  -moz-opacity: 0.4;
-  filter: alpha(opacity=40);
 }
 
 .share img:hover {
   opacity: 1;
-  -moz-opacity: 1;
-  filter: alpha(opacity=100);
 }
 
 #table-of-contents, .outline-2 {
