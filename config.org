@@ -1188,9 +1188,11 @@ Defer code execution until the first command after initialization.
            (ext (file-name-extension name))
            (pw (when (and (> arg 1) (member ext '("zip" "7z")))
                  (password-read "Password: ")))
-           (cmd (concat "7z a "
-                        (when (equal ext "7z") "-md=1m ")
-                        (when pw (concat "-mhe=on -p" pw " ")))))
+           (cmd (if (string-match-p (rx ".tar." (+ (not ".")) eos) name)
+                    "tar acvf "
+                  (concat "7z a "
+                          (when (equal ext "7z") "-md=1m ")
+                          (when pw (concat "-mhe=on -p" pw " "))))))
       (when ext
         (async-shell-command-callback
          (concat cmd target " " (string-join source " "))
@@ -1214,19 +1216,20 @@ Defer code execution until the first command after initialization.
     "Decompress files asynchronously."
     (interactive "p")
     (let* ((files (dired-get-marked-files))
-           (cmds (mapcar
-                  (lambda (f)
-                    (let* ((name (file-name-nondirectory f))
-                           (qname (shell-quote-argument name))
-                           (ext (file-name-extension name))
-                           (pw (when (and (> arg 1)
-                                          (member ext '("zip" "7z" "001")))
-                                 (password-read "Password: "))))
-                      (pcase ext
-                        ((or "zip" "7z" "rar" "001")
-                         (concat "7z x -y " (concat "-p" pw " ") qname))
-                        (_ (concat "tar xvf " qname)))))
-                  files))
+           (cmds
+            (mapcar
+             (lambda (f)
+               (let* ((name (file-name-nondirectory f))
+                      (qname (shell-quote-argument name))
+                      (ext (file-name-extension name))
+                      (pw (when (and (> arg 1) (member ext '("zip" "7z" "001")))
+                            (password-read "Password: "))))
+                 (if (string-match-p (rx ".tar." (+ (not ".")) eos) name)
+                     (concat "tar xvf " qname)
+                   (concat "7z x -y "
+                           (if pw (concat "-p" pw " ") "-p ")
+                           qname))))
+             files))
            (cmd (string-join cmds " && ")))
       (async-shell-command-callback
        cmd
