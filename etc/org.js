@@ -4,7 +4,9 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.className = 'copy-btn';
     btn.textContent = 'Copy';
     btn.addEventListener('click', function() {
-      navigator.clipboard.writeText(pre.textContent.replace(/^Copy/, ''));
+      var clone = pre.cloneNode(true);
+      clone.querySelectorAll('.copy-btn').forEach(function(b) { b.remove(); });
+      navigator.clipboard.writeText(clone.textContent);
       btn.textContent = 'Copied!';
       setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
     });
