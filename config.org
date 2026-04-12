@@ -1188,14 +1188,9 @@ Defer code execution until the first command after initialization.
            (ext (file-name-extension name))
            (pw (when (and (> arg 1) (member ext '("zip" "7z")))
                  (password-read "Password: ")))
-           (cmd (pcase ext
-                  ("zip" (concat "zip"
-                                 (when pw (concat " -P " pw))
-                                 " -r "))
-                  ("7z" (concat "7z a -md=1m "
-                                (when pw
-                                  (concat "-mhe=on -p" pw " "))))
-                  (_ "tar acvf "))))
+           (cmd (concat "7z a "
+                        (when (equal ext "7z") "-md=1m ")
+                        (when pw (concat "-mhe=on -p" pw " ")))))
       (when ext
         (async-shell-command-callback
          (concat cmd target " " (string-join source " "))
