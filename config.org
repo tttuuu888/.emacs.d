@@ -1051,6 +1051,7 @@ Defer code execution until the first command after initialization.
           ("k"     . dired-previous-line)
           ("r"     . my-dired-rsync)
           ("x"     . my-dired-do-flagged-delete)
+          ("X"     . my-dired-do-shell-command)
           ("/"     . consult-line)
           ("^"     . dired-up-and-close-dir)
           ("bp"    . my-dired-pdf-size-down)
@@ -1202,6 +1203,41 @@ Defer code execution until the first command after initialization.
            (dired-add-file file ?Z)
            (message "Compress files done."))
          (expand-file-name name default-directory)))))
+
+  (defun my-dired-do-shell-command (&optional arg)
+    "Decompress if archive, otherwise run `dired-do-shell-command'."
+    (interactive "p")
+    (let* ((files (dired-get-marked-files))
+           (exts (mapcar #'file-name-extension files))
+           (archive-exts
+            '("zip" "7z" "rar" "tar" "gz" "bz2" "xz" "zst" "tgz" "001")))
+      (if (cl-every (lambda (ext) (member ext archive-exts)) exts)
+          (my-dired-decompress arg)
+        (call-interactively #'dired-do-shell-command))))
+
+  (defun my-dired-decompress (&optional arg)
+    "Decompress files asynchronously."
+    (interactive "p")
+    (let* ((files (dired-get-marked-files))
+           (cmds (mapcar
+                  (lambda (f)
+                    (let* ((name (file-name-nondirectory f))
+                           (qname (shell-quote-argument name))
+                           (ext (file-name-extension name))
+                           (pw (when (and (> arg 1)
+                                          (member ext '("zip" "7z" "001")))
+                                 (password-read "Password: "))))
+                      (pcase ext
+                        ((or "zip" "7z" "rar" "001")
+                         (concat "7z x -y " (concat "-p" pw " ") qname))
+                        (_ (concat "tar xvf " qname)))))
+                  files))
+           (cmd (string-join cmds " && ")))
+      (async-shell-command-callback
+       cmd
+       (lambda ()
+         (revert-buffer)
+         (message "Decompress files done.")))))
 
   (defun my-dired-do-copy (&optional arg)
     "Copy files asynchronously for local, and synchronously for remote.
