@@ -2068,6 +2068,8 @@ process name."
   (setq my-reveal-init-options '((progress . false)
                                  (slideNumber . "c/t")
                                  (transition . "none"))
+        org-reveal-plugins '(highlight markdown zoom notes)
+        org-reveal-reveal-js-version 4
         org-reveal-hlevel 2
         org-reveal-init-options
         (sk-alist-to-js-obj my-reveal-init-options t)
