@@ -1450,7 +1450,6 @@ Defer code execution until the first command after initialization.
               (evil-local-set-key 'insert (kbd "<tab>") 'my-org-tab)
               (evil-local-set-key 'insert (kbd "TAB") 'my-org-tab)))
   (add-hook 'org-babel-after-execute-hook 'my-org-inline-image-hook)
-  (add-hook 'org-export-before-processing-functions 'my-org-before-process-hook)
 
   (evil-declare-motion 'org-up-element)
   (evil-declare-motion 'org-down-element)
@@ -1472,15 +1471,6 @@ Defer code execution until the first command after initialization.
   (defun my-org-inline-image-hook ()
     (when org-inline-image-overlays
       (org-redisplay-inline-images)))
-  (defun my-org-before-process-hook (_exporter)
-    (cl-flet ((hex (c) (apply #'color-rgb-to-hex
-                              (append (color-name-to-rgb c) '(2)))))
-      (setq-local org-html-head
-                  (concat org-html-head
-                          (html-head-css
-                            (format ".src { background-color: %s; color: %s; }\n"
-                                    (hex (face-background 'default))
-                                    (hex (face-foreground 'default))))))))
   (defun sk-org-capture-image ()
     (interactive)
     (let* ((img (file-relative-name
@@ -2164,7 +2154,17 @@ process name."
 
 (use-package htmlize
   :demand t
-  :after org)
+  :after org
+  :config
+  (defun my-org-html-export-with-light-frame (orig-fun &rest args)
+    (let ((frame (make-frame '((visibility . nil)
+                               (background-color . "White")))))
+      (unwind-protect
+          (with-selected-frame frame
+            (apply orig-fun args))
+        (delete-frame frame))))
+  (advice-add 'org-html-export-to-html :around #'my-org-html-export-with-light-frame)
+  (advice-add 'org-html-export-as-html :around #'my-org-html-export-with-light-frame))
 
 (use-package korean-holidays
   :init
