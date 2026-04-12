@@ -2159,15 +2159,15 @@ process name."
   :demand t
   :after org
   :config
-  (defun my-org-html-export-with-light-frame (orig-fun &rest args)
-    (let ((frame (make-frame '((visibility . nil)
-                               (background-color . "White")))))
-      (unwind-protect
-          (with-selected-frame frame
-            (apply orig-fun args))
-        (delete-frame frame))))
-  (advice-add 'org-html-export-to-html :around #'my-org-html-export-with-light-frame)
-  (advice-add 'org-html-export-as-html :around #'my-org-html-export-with-light-frame))
+  (defvar my-org-light-frame nil)
+  (defun my-org-html-export (orig-fun &rest args)
+    (unless (and my-org-light-frame (frame-live-p my-org-light-frame))
+      (setq my-org-light-frame (make-frame '((visibility . nil)
+                                             (background-color . "White")))))
+    (with-selected-frame my-org-light-frame
+      (apply orig-fun args)))
+  (advice-add 'org-html-export-to-html :around #'my-org-html-export)
+  (advice-add 'org-html-export-as-html :around #'my-org-html-export))
 
 (use-package korean-holidays
   :init
