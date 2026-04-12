@@ -1396,18 +1396,7 @@ Defer code execution until the first command after initialization.
     (html-head-css
       (file-to-string (expand-file-name "org.css" emacs-etc-dir)))
     (html-head-js
-      "document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('pre.src').forEach(function(pre) {
-    var btn = document.createElement('button');
-    btn.className = 'copy-btn';
-    btn.textContent = 'Copy';
-    btn.addEventListener('click', function() {
-      navigator.clipboard.writeText(pre.textContent.replace(/^Copy/, ''));
-      btn.textContent = 'Copied!';
-      setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
-    });
-    pre.appendChild(btn);
-  });\n});\n"))
+      (file-to-string (expand-file-name "org.js" emacs-etc-dir))))
    org-html-validation-link ""
    org-imenu-depth 4
    org-latex-engraved-theme "default"
