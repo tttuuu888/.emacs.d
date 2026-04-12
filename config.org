@@ -1472,19 +1472,15 @@ Defer code execution until the first command after initialization.
   (defun my-org-inline-image-hook ()
     (when org-inline-image-overlays
       (org-redisplay-inline-images)))
-  (defun my-org-before-process-hook (exporter)
-    (setq-local org-html-head
-                (concat
-                 org-html-head
-                 (html-head-css
-                   (apply #'format
-                          "\n.src {background-color: %s; color: %s;}\n"
-                          (mapcar
-                           (lambda (x)
-                             (apply #'color-rgb-to-hex
-                                    (append (color-name-to-rgb x) '(2))))
-                           (list (face-background 'default)
-                                 (face-foreground 'default))))))))
+  (defun my-org-before-process-hook (_exporter)
+    (cl-flet ((hex (c) (apply #'color-rgb-to-hex
+                              (append (color-name-to-rgb c) '(2)))))
+      (setq-local org-html-head
+                  (concat org-html-head
+                          (html-head-css
+                            (format ".src { background-color: %s; color: %s; }\n"
+                                    (hex (face-background 'default))
+                                    (hex (face-foreground 'default))))))))
   (defun sk-org-capture-image ()
     (interactive)
     (let* ((img (file-relative-name
