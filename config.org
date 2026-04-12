@@ -1392,8 +1392,22 @@ Defer code execution until the first command after initialization.
      ("https" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\|bmp\\)\\'"))
    org-html-metadata-timestamp-format "%Y-%m-%d"
    org-html-style-default
-   (html-head-css
-     (file-to-string (expand-file-name "org.css" emacs-etc-dir)))
+   (concat
+    (html-head-css
+      (file-to-string (expand-file-name "org.css" emacs-etc-dir)))
+    (html-head-js
+      "document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('pre.src').forEach(function(pre) {
+    var btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copy';
+    btn.addEventListener('click', function() {
+      navigator.clipboard.writeText(pre.textContent.replace(/^Copy/, ''));
+      btn.textContent = 'Copied!';
+      setTimeout(function() { btn.textContent = 'Copy'; }, 1500);
+    });
+    pre.appendChild(btn);
+  });\n});\n"))
    org-html-validation-link ""
    org-imenu-depth 4
    org-latex-engraved-theme "default"
