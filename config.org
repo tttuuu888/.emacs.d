@@ -1935,6 +1935,11 @@ process name."
                 (unless dabbrev--abbrev-char-regexp
                   (setq dabbrev--abbrev-char-regexp
                         (or dabbrev-abbrev-char-regexp "\\sw\\|\\s_"))))))
+
+(use-package minibuffer
+  :ensure nil
+  :custom-face
+  (completions-annotations ((t :underline nil))))
 #+END_SRC
 * General packages - external
 #+BEGIN_SRC emacs-lisp
