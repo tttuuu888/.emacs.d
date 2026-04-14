@@ -2264,6 +2264,7 @@ process name."
       (apply #'call-process "rm" nil nil nil "-rf" to-remove))))
 
 (use-package ivy
+  :disabled
   :bind (:map minibuffer-inactive-mode-map
           ("<escape>" . abort-recursive-edit)
           :map ivy-minibuffer-map
@@ -2292,6 +2293,7 @@ process name."
    '(("d" (lambda (p) (projectile-remove-known-project p)) "delete"))))
 
 (use-package ivy-posframe
+  :disabled
   :if window-system
   :custom-face
   (ivy-posframe
