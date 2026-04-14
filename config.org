@@ -2314,25 +2314,7 @@ process name."
 (use-package counsel
   :init
   (evil-leader/set-key
-    "d"     'counsel-find-file
-    "f"     'counsel-find-file
-    "nx"    'counsel-org-capture)
-  :config
-  (defun my-create-dir-locals (path)
-    (find-file (expand-file-name ".dir-locals.el" path)))
-  (defun my-create-projectile (path)
-    (write-region "" nil (expand-file-name ".projectile" path) t))
-  (ivy-add-actions
-   'counsel-shell-history
-   '(("d" (lambda (x) (ring-remove comint-input-ring
-                                   (ring-member comint-input-ring (car x))))
-      "delete")))
-  (ivy-add-actions
-   'counsel-find-file
-   '(("d" counsel-find-file-delete "delete")
-     ("k" counsel-find-file-mkdir-action "mkdir")
-     ("e" my-create-dir-locals "Create .dir-locals.el")
-     ("p" my-create-projectile "Create .projectile"))))
+    "nx"    'counsel-org-capture))
 
 (use-package which-key
   :custom (which-key-dont-use-unicode t)
@@ -2406,6 +2388,8 @@ process name."
   :defer-init (vertico-mode 1)
   :init
   (evil-leader/set-key
+    "d" 'find-file
+    "f" 'find-file
     "b" 'switch-to-buffer)
   :config
   (setq vertico-count 15
@@ -2744,6 +2728,11 @@ target followed by an ellipsis if there are further targets."
   (advice-add #'embark-completing-read-prompter
               :around #'embark-hide-which-key-indicator)
 
+  (defun my-create-dir-locals (path)
+    (find-file (expand-file-name ".dir-locals.el" path)))
+  (defun my-create-projectile (path)
+    (write-region "" nil (expand-file-name ".projectile" path) t))
+
   (defvar-keymap embark-project-actions
     :doc "Keymap for Embark project actions."
     :parent embark-general-map
@@ -2755,7 +2744,14 @@ target followed by an ellipsis if there are further targets."
     :parent embark-file-map
     "d" #'embark-recentf-remove
     "D" #'delete-file)
-  (add-to-list 'embark-keymap-alist '(recent-file . embark-recent-file-map)))
+  (add-to-list 'embark-keymap-alist '(recent-file . embark-recent-file-map))
+
+  (defvar-keymap embark-my-file-actions
+    :doc "Keymap for Embark file actions."
+    :parent embark-file-map
+    "." #'my-create-dir-locals
+    "p" #'my-create-projectile)
+  (add-to-list 'embark-keymap-alist '(file . embark-my-file-actions)))
 
 (use-package embark-consult)
 
