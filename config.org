@@ -2311,11 +2311,6 @@ process name."
 
 (use-package posframe)
 
-(use-package counsel
-  :init
-  (evil-leader/set-key
-    "nx"    'counsel-org-capture))
-
 (use-package which-key
   :custom (which-key-dont-use-unicode t)
   :defer-init (which-key-mode 1))
@@ -2578,6 +2573,7 @@ that completion tables which supply a meaningful ordering (e.g.
     "jD"    'consult-fd-dir-here
     "jf"    'consult-fd-file
     "jh"    'consult-fd-file-here
+    "nx"    'consult-org-capture
     "xri"   'consult-register-store
     "xrj"   'consult-register-load)
   :defer-init (require 'consult)
@@ -2612,6 +2608,38 @@ that completion tables which supply a meaningful ordering (e.g.
       (setq this-command cmd)
       (setq real-this-command cmd)
       (command-execute cmd 'record)))
+
+  (defun consult-org-capture ()
+    "Capture something with consult completion."
+    (interactive)
+    (require 'org-capture)
+    (let* ((templates
+            (let (prefixes)
+              (cl-mapcan
+               (lambda (x)
+                 (let ((x-keys (car x)))
+                   (while (and prefixes
+                               (let ((p1-keys (caar prefixes)))
+                                 (or
+                                  (<= (length x-keys) (length p1-keys))
+                                  (not (string-prefix-p p1-keys x-keys)))))
+                     (pop prefixes))
+                   (if (> (length x) 2)
+                       (let ((desc (mapconcat
+                                    #'cadr
+                                    (reverse (cons x prefixes)) " | ")))
+                         (list (format "%-5s %s" x-keys desc)))
+                     (push x prefixes)
+                     nil)))
+               (or (org-contextualize-keys
+                    (org-capture-upgrade-templates org-capture-templates)
+                    org-capture-templates-contexts)
+                   '(("t" "Task" entry (file+headline "" "Tasks")
+                      "* TODO %?\n  %u\n  %a"))))))
+           (choice (consult--read templates
+                                  :prompt "Capture template: "
+                                  :require-match t)))
+      (org-capture nil (car (split-string choice)))))
 
   (defun my-consult-fd (&optional args path)
     (pcase-let* ((consult-fd-args (append consult-fd-args args))
