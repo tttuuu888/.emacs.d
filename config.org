@@ -1928,6 +1928,7 @@ process name."
                        face-defface-spec))
 
 (use-package dabbrev
+  :ensure nil
   :config
   (advice-add 'dabbrev-capf :before
               (lambda (&rest _)
