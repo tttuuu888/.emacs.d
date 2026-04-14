@@ -2285,13 +2285,6 @@ process name."
    'projectile-switch-project
    '(("d" (lambda (p) (projectile-remove-known-project p)) "delete"))))
 
-(use-package ivy-yasnippet
-  :init
-  (evil-leader/set-key "/" 'ivy-yasnippet)
-  :config
-  (advice-add 'ivy-yasnippet :before 'yas-minor-mode-on)
-  (advice-add 'ivy-yasnippet :after 'evil-insert-state))
-
 (use-package ivy-posframe
   :if window-system
   :custom-face
@@ -2693,6 +2686,17 @@ that completion tables which supply a meaningful ordering (e.g.
 (use-package consult-ls-git
   :init
   (evil-leader/set-key "o" 'consult-ls-git-ls-files))
+
+(use-package consult-yasnippet
+  :commands sk-consult-yasnippet
+  :init
+  (evil-leader/set-key "/" 'sk-consult-yasnippet)
+  :config
+  (defun sk-consult-yasnippet (arg)
+    (interactive "P")
+    (yas-minor-mode-on)
+    (let ((consult-preview-key 'any))
+      (call-interactively 'consult-yasnippet))))
 
 (use-package embark
   :bind
