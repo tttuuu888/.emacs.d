@@ -2533,16 +2533,24 @@ that completion tables which supply a meaningful ordering (e.g.
       (:around (fn) respect-inhibit)
     (and (not my-vertico-posframe--inhibit) (funcall fn)))
   (setq vertico-posframe-border-width 20)
+  (defun my-vertico-posframe-width ()
+    (min (- (frame-width) 5) 140))
   (advice-add 'vertico-posframe-get-size :around
               (lambda (func &rest args)
                 (plist-put (apply func args)
-                           :width (min (- (frame-width) 5) 140))))
+                           :width (my-vertico-posframe-width))))
   (advice-add 'vertico-posframe--show
               :before
-              (lambda (func &rest args)
-                (setq vertico-posframe-truncate-lines
-                      (< (point)
-                         (* 0.8 (window-width (active-minibuffer-window))))))))
+              (lambda (&rest _)
+                (let* ((input (buffer-substring-no-properties
+                               (minibuffer-prompt-end) (point-max)))
+                       (prompt-width
+                        (string-width
+                         (buffer-substring-no-properties
+                          (point-min) (minibuffer-prompt-end)))))
+                  (setq vertico-posframe-truncate-lines
+                        (< (+ prompt-width (string-width input))
+                           (- (my-vertico-posframe-width) 2)))))))
 
 (use-package orderless
   :defer-init (require 'orderless)
