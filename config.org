@@ -2206,10 +2206,13 @@ process name."
     (unless (and my-org-light-frame (frame-live-p my-org-light-frame))
       (setq my-org-light-frame (make-frame '((visibility . nil)
                                              (background-color . "White")))))
-    (let ((buf (current-buffer)))
-      (with-selected-frame my-org-light-frame
-        (with-current-buffer buf
-          (apply orig-fun args)))))
+    (let ((buf (current-buffer))
+          (orig-hide-fg (face-foreground 'org-hide nil t)))
+      (unwind-protect
+          (with-selected-frame my-org-light-frame
+            (with-current-buffer buf
+              (apply orig-fun args)))
+        (set-face-foreground 'org-hide (or orig-hide-fg 'unspecified)))))
   (advice-add 'org-html-export-to-html :around #'my-org-html-export)
   (advice-add 'org-html-export-as-html :around #'my-org-html-export))
 
