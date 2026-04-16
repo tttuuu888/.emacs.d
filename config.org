@@ -2666,12 +2666,11 @@ that completion tables which supply a meaningful ordering (e.g.
     (my-consult-fd '("-I" "-t f") "."))
 
   (defun sk-compile-scripts ()
-    (if-let ((sbin (file-name-as-directory
-                    (find-file-in-tree default-directory ".sbin"))))
-        (let (files-alist)
-          (dolist (f (directory-files sbin t "\\.sh$"))
-            (push (cons (file-name-nondirectory f) f) files-alist))
-          (cons sbin (nreverse files-alist)))
+    (if-let* ((sbin (find-file-in-tree default-directory ".sbin"))
+              (files (directory-files sbin t "\\.sh$"))
+              (files-alist
+               (mapcar (lambda (f) (cons (file-name-nondirectory f) f)) files)))
+        (cons (file-name-as-directory sbin) files-alist)
       (user-error "Couldn't find .sbin folder")))
 
   (defun sk-compile (&optional dir)
