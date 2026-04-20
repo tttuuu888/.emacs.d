@@ -2414,6 +2414,7 @@ process name."
   :bind (:map vertico-directory-map
           ("RET" . exit-minibuffer)
           ("~"   . my-vertico-directory-tilde)
+          ("/"   . my-vertico-directory-slash)
           ("M-i" . my-vertico-insert-literal))
   :config
   (require 'dired)
@@ -2485,10 +2486,21 @@ that completion tables which supply a meaningful ordering (e.g.
       (nconc (my-vertico-sort input (nreverse dirs))
              (my-vertico-sort input (nreverse files)))))
   (defun my-vertico-directory-tilde ()
+    "Insert ~/ and clean the prompt."
     (interactive)
-    (if (string-suffix-p  "/" (car vertico--input))
-        (insert "~/")
+    (if (eq (char-before) ?/)
+        (progn
+          (delete-minibuffer-contents)
+          (insert "~/"))
       (insert "~")))
+  (defun my-vertico-directory-slash ()
+    "Insert / and clean the prompt."
+    (interactive)
+    (if (eq (char-before) ?/)
+        (progn
+          (delete-minibuffer-contents)
+          (insert "/"))
+      (insert "/")))
   (defun my-vertico-insert-literal ()
     "Insert candidate without trailing slash."
     (interactive)
