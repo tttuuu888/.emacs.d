@@ -139,7 +139,8 @@ Instead of using =custom.el=, insert the contents of the file directly here.
 
 (defvar sk-project-root-files
   '(".projectile" ".git"
-    "CMakeLists.txt" "Makefile" "GTAGS"))
+    "CMakeLists.txt" "Makefile" "makefile.mk" "GTAGS"
+    "Android.bp" "Cargo.toml"))
 
 #+end_src
 
