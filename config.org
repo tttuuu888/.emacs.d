@@ -2221,14 +2221,6 @@ process name."
   :init
   (setq calendar-holidays korean-holidays))
 
-(use-package fzf
-  :bind (("C-c j h" . fzf-here))
-  :config
-  (setq fzf/args (concat fzf/args " --no-separator"))
-  (defun fzf-here ()
-    (interactive)
-    (fzf--start default-directory #'fzf--action-find-file)))
-
 (use-package yasnippet
   :commands yas-expand company-yas-expand
   :config
@@ -2265,53 +2257,6 @@ process name."
          (to-remove (mapcar (lambda (x) (concat path x)) unused)))
     (when to-remove
       (apply #'call-process "rm" nil nil nil "-rf" to-remove))))
-
-(use-package ivy
-  :disabled
-  :bind (:map minibuffer-inactive-mode-map
-          ("<escape>" . abort-recursive-edit)
-          :map ivy-minibuffer-map
-          ("<escape>" . minibuffer-keyboard-quit)
-          ("C-j"      . ivy-partial)
-          ("TAB"      . ivy-alt-done))
-  :config
-  (setq ivy-height 15
-        ivy-height-alist '((t . 15))
-        ivy-wrap t
-        ivy-fixed-height-minibuffer t
-        ;; Don't use ^ as initial input
-        ivy-initial-inputs-alist nil
-        ;; disable magic slash on non-match
-        ivy-magic-slash-non-match-action nil
-        ;; prefix match first
-        ivy-sort-matches-functions-alist
-        '((t . ivy--prefix-sort)))
-  (advice-add 'ivy-thing-at-point :around
-              (lambda (old &rest r)
-                (if (> (- (pos-eol) (pos-bol)) 10000)
-                    ""
-                  (apply old r))))
-  (ivy-add-actions
-   'projectile-switch-project
-   '(("d" (lambda (p) (projectile-remove-known-project p)) "delete"))))
-
-(use-package ivy-posframe
-  :disabled
-  :if window-system
-  :custom-face
-  (ivy-posframe
-   ((((background light)) :background "#e6f2ff" :foreground "black")
-    (((background dark)) :background "#282a36" :foreground "gray80")))
-  (ivy-posframe-border ((t (:inherit ivy-posframe))) face-defface-spec)
-  :defer-init (ivy-posframe-mode 1)
-  :config
-  (setq ivy-truncate-lines nil
-        ivy-posframe-border-width 20
-        ivy-posframe-display-functions-alist
-        '((complete-symbol . ivy-posframe-display-at-point)
-          (ivy-yasnippet   . ivy-display-function-fallback)
-          (swiper          . ivy-display-function-fallback)
-          (t               . ivy-posframe-display-at-frame-center))))
 
 (use-package posframe)
 
@@ -2354,12 +2299,6 @@ process name."
         (advice-add 'read-from-minibuffer :around
                     #'stillness-mode--handle-point '(depth 90))
       (advice-remove 'read-from-minibuffer #'stillness-mode--handle-point))))
-
-(use-package gptel)
-
-(use-package inf-gptel
-  :vc
-  (:url "https://github.com/tttuuu888/inf-gptel" :branch "main" :rev :newest))
 
 (use-package engrave-faces)
 
