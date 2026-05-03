@@ -1446,8 +1446,8 @@ Defer code execution until the first command after initialization.
    org-plantuml-jar-path "/usr/share/java/plantuml/plantuml.jar"
    org-refile-targets '((nil :maxlevel . 5))
    org-refile-use-outline-path t
+   org-src-content-indentation 0
    org-src-lang-modes (cons '("dot" . graphviz-dot) org-src-lang-modes)
-   org-src-preserve-indentation t
    org-src-window-setup 'current-window
    org-startup-folded t
    org-startup-indented t
