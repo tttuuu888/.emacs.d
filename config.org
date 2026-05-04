@@ -2369,7 +2369,8 @@ process name."
      (t (vertico-sort-function . vertico-default-sort)))
    vertico-multiform-commands
    '((consult-line (vertico-posframe-mode . nil) (vertico-mode . t))
-     (sk-consult-yasnippet (vertico-posframe-mode . nil) (vertico-mode . t))))
+     (sk-consult-yasnippet (vertico-posframe-mode . nil) (vertico-mode . t)
+                           (vertico-sort-function . vertico-default-sort))))
   (cl-defmethod vertico--format-candidate :around
     (cand prefix suffix index start
           &context ((not +vertico-transform-functions) null))
