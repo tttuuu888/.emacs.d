@@ -1753,7 +1753,15 @@ process name."
            (upgraded-vc (my-upgrade-vc-packages))
            (upgradeable-std (seq-difference (package--upgradeable-packages)
                                             vc-pkgs))
-           (upgraded-std (cl-remove-if-not #'package-upgrade upgradeable-std))
+           (upgraded-std
+            (seq-keep
+             (lambda (pkg)
+               (when-let* ((desc (cadr (assq pkg package-archive-contents)))
+                           (old (cadr (assq pkg package-alist))))
+                 (package-delete old 'force 'dont-unselect)
+                 (package-install desc 'dont-select)
+                 (and (assq pkg package-alist) pkg)))
+             upgradeable-std))
            (upgraded (append upgraded-std upgraded-vc)))
       (if (not upgraded)
           (message "No packages to upgrade.")
