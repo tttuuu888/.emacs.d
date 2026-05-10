@@ -2480,6 +2480,7 @@ that completion tables which supply a meaningful ordering (e.g.
           ("C-t" . my-vertico-toggle-posframe))
   :defer-init (vertico-posframe-mode 1)
   :config
+  (setq vertico-posframe-border-width 20)
   (defvar-local my-vertico-posframe--inhibit nil)
   (defun my-vertico-toggle-posframe ()
     "Toggle posframe display for the current vertico session only."
@@ -2495,7 +2496,6 @@ that completion tables which supply a meaningful ordering (e.g.
   (define-advice vertico-posframe-mode-workable-p
       (:around (fn) respect-inhibit)
     (and (not my-vertico-posframe--inhibit) (funcall fn)))
-  (setq vertico-posframe-border-width 20)
   (defun my-vertico-posframe-width ()
     (min (- (frame-width) 5) 140))
   (advice-add 'vertico-posframe-get-size :around
