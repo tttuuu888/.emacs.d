@@ -86,6 +86,14 @@ code {
   background-color: #dedede;
 }
 
+pre code {
+  font-size: inherit;
+  color: inherit;
+  background: none;
+  border-radius: 0;
+  padding: 0;
+}
+
 .src {
   overflow: auto;
   padding: 0.5rem;
