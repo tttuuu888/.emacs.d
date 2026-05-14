@@ -744,7 +744,7 @@ Defer code execution until the first command after initialization.
 #+BEGIN_SRC emacs-lisp
 (use-package async
   :init
-  (setq async-bytecomp-not-allowed-packages '(transient))
+  (setq async-bytecomp-not-allowed-packages '(magit-section transient))
   (defun async--package-compile (orig-fun pkg-desc &rest args)
     (let ((cur-package (package-desc-name pkg-desc))
           (pkg-dir (package-desc-dir pkg-desc)))
