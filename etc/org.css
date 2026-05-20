@@ -8,8 +8,8 @@ html {
 
 body {
   font-family: "Noto Sans", "Segoe UI", Roboto, Arial, sans-serif;
-  font-size: 1rem;
-  line-height: 180%;
+  font-size: 16px;
+  line-height: 1.5;
   color: black;
   margin: auto;
   max-width: 50rem;
@@ -27,24 +27,42 @@ body .subtitle {
   color: #999;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+  line-height: 1.1;
+  color: #333333;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
 h1 {
-  padding: 1rem 0 1rem 0;
+  font-size: 36px;
 }
 
 h2 {
-  padding: 0.5rem 0 0.5rem 0;
-  border-bottom: 1px solid #ddd;
+  font-size: 30px;
+}
+
+h3 {
+  font-size: 24px;
 }
 
 a {
   text-decoration: none;
-  font-weight: 400;
-  color: #0366d6;
+  color: #d9230f;
 }
 a:visited {
 }
-a:hover {
+a:hover, a:focus {
+  color: #91170a;
   text-decoration: underline;
+}
+
+blockquote {
+  padding: 10px 20px;
+  margin: 0 0 20px;
+  font-size: 17.5px;
+  border-left: 5px solid #dddddd;
 }
 
 .todo {
@@ -79,17 +97,19 @@ pre, code, .src {
 }
 
 code {
-  font-size: 85%;
-  color: black;
-  border-radius: 0.3rem;
-  padding: 0.1rem 0.2rem;
-  background-color: #dedede;
+  padding: 2px 4px;
+  font-size: 90%;
+  color: #c7254e;
+  background-color: #f9f2f4;
+  border: 1px solid #e1e1e8;
+  border-radius: 4px;
 }
 
 pre code {
   font-size: inherit;
   color: inherit;
   background: none;
+  border: 0;
   border-radius: 0;
   padding: 0;
 }
@@ -121,10 +141,12 @@ img {
 
 pre {
   position: relative;
+  font-size: 13px;
   color: black;
   background-color: #ffffff;
   padding: 1rem;
   border: 2px solid #dddddd;
+  border-radius: 4px;
   overflow: auto;
 }
 
