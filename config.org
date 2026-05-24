@@ -2066,8 +2066,16 @@ process name."
      (sk-project-root)
      (thing-at-point 'symbol)))
   (defun helm-ag-here ()
+    "Run helm-ag in `default-directory', or on marked files when in dired."
     (interactive)
-    (helm-do-ag default-directory)))
+    (let ((files (and (derived-mode-p 'dired-mode)
+                      (save-excursion
+                        (goto-char (point-min))
+                        (re-search-forward (dired-marker-regexp) nil t))
+                      (dired-get-marked-files))))
+      (helm-do-ag default-directory
+                  files
+                  (if files "" (thing-at-point 'symbol))))))
 
 (use-package helm-git-grep
   :vc
