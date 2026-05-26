@@ -2647,9 +2647,8 @@ that completion tables which supply a meaningful ordering (e.g.
     "Search with ripgrep in `default-directory', including VCS-ignored files."
     (interactive "P")
     (let ((consult-ripgrep-args
-           (if (stringp consult-ripgrep-args)
-               (concat consult-ripgrep-args " --no-ignore-vcs")
-             (append consult-ripgrep-args '("--no-ignore-vcs"))))
+           (concat consult-ripgrep-args
+                   " --no-ignore-vcs --glob-case-insensitive"))
           (vertico-count (/ (frame-height) 2))
           (vertico-group-format nil))
       (consult--grep "Ripgrep" #'consult--ripgrep-make-builder
