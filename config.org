@@ -2337,15 +2337,17 @@ process name."
   :defer-init (vertico-mode 1)
   :init
   (evil-leader/set-key
-    "d" 'find-file
-    "f" 'find-file
-    "b" 'switch-to-buffer)
+    "d"  'find-file
+    "f"  'find-file
+    "b"  'switch-to-buffer
+    "hR" 'vertico-repeat)
   :config
   (setq vertico-count 15
         vertico-cycle t
         vertico-resize nil
         vertico-sort-function nil)
   (vertico-multiform-mode 1)
+  (add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
   (defun vertico-next (&optional n)
     "Go forward N candidates, skipping the prompt."
     (interactive "p")
