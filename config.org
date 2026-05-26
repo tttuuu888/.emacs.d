@@ -2646,6 +2646,16 @@ that completion tables which supply a meaningful ordering (e.g.
     (interactive)
     (my-consult-fd '("-I" "-t f") "."))
 
+  (defun consult-rg-here (&optional initial)
+    "Search with ripgrep in `default-directory', including VCS-ignored files."
+    (interactive "P")
+    (let ((consult-ripgrep-args
+           (if (stringp consult-ripgrep-args)
+               (concat consult-ripgrep-args " --no-ignore-vcs")
+             (append consult-ripgrep-args '("--no-ignore-vcs")))))
+      (consult--grep "Ripgrep" #'consult--ripgrep-make-builder
+                     default-directory initial)))
+
   (defun sk-compile-scripts ()
     (if-let* ((sbin (find-file-in-tree default-directory ".sbin"))
               (files (directory-files sbin t "\\.sh$"))
