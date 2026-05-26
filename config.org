@@ -2339,8 +2339,7 @@ process name."
   (evil-leader/set-key
     "d"  'find-file
     "f"  'find-file
-    "b"  'switch-to-buffer
-    "hR" 'vertico-repeat)
+    "b"  'switch-to-buffer)
   :config
   (setq vertico-count 15
         vertico-cycle t
@@ -2471,6 +2470,8 @@ that completion tables which supply a meaningful ordering (e.g.
 (use-package vertico-repeat
   :ensure nil
   :config
+  (evil-leader/set-key
+    "hR" 'vertico-repeat)
   (add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
   (defun consult--repeat-save-dir (session)
     "Save `default-directory' in SESSION for `vertico-repeat'."
