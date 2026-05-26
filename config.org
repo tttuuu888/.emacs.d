@@ -2050,9 +2050,7 @@ process name."
   (:url "https://github.com/emacsattic/helm-ag" :branch "master" :rev :newest)
   :commands (helm-ag-project-or-here helm-ag-here)
   :init
-  (evil-leader/set-key
-    "jp" 'helm-ag-here
-    "jP" 'helm-ag-project-or-here)
+  (evil-leader/set-key "jp" 'helm-ag-here)
   :config
   (require 'wgrep)
   (setq helm-ag-insert-at-point 'symbol
@@ -2060,11 +2058,6 @@ process name."
         helm-ag-use-grep-ignore-list t)
   (advice-add 'helm-ag--persistent-action :after
               (lambda (&rest _) (which-func-update)))
-  (defun helm-ag-project-or-here ()
-    (interactive)
-    (helm-do-ag
-     (sk-project-root)
-     (thing-at-point 'symbol)))
   (defun helm-ag-here ()
     "Run helm-ag in `default-directory', or on marked files when in dired."
     (interactive)
@@ -2556,6 +2549,7 @@ that completion tables which supply a meaningful ordering (e.g.
     "jD"    'consult-fd-dir-here
     "jf"    'consult-fd-file
     "jh"    'consult-fd-file-here
+    "jP"    'consult-rg-here
     "nx"    'consult-org-capture
     "xri"   'consult-register-store
     "xrj"   'consult-register-load)
