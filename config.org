@@ -2347,7 +2347,7 @@ process name."
         vertico-resize nil
         vertico-sort-function nil)
   (vertico-multiform-mode 1)
-  (add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
+  (require 'vertico-repeat)
   (defun vertico-next (&optional n)
     "Go forward N candidates, skipping the prompt."
     (interactive "p")
@@ -2467,6 +2467,24 @@ that completion tables which supply a meaningful ordering (e.g.
                   (file-name-directory content))))
       (delete-minibuffer-contents)
       (insert (concat dir clean-cand)))))
+
+(use-package vertico-repeat
+  :ensure nil
+  :config
+  (add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
+  (defun consult--repeat-save-dir (session)
+    "Save `default-directory' in SESSION for `vertico-repeat'."
+    (when session
+      (append session (list (cons 'default-directory default-directory)))))
+  (defun consult--repeat-restore-dir (orig session)
+    "Restore `default-directory' from SESSION when repeating."
+    (let* ((entry (seq-find (lambda (x) (and (consp x)
+                                             (eq (car x) 'default-directory)))
+                            (cddr session)))
+           (default-directory (if entry (cdr entry) default-directory)))
+      (funcall orig session)))
+  (add-to-list 'vertico-repeat-transformers #'consult--repeat-save-dir t)
+  (advice-add 'vertico-repeat--run :around #'consult--repeat-restore-dir))
 
 (use-package vertico-posframe
   :if window-system
