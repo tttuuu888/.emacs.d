@@ -2473,19 +2473,19 @@ that completion tables which supply a meaningful ordering (e.g.
   (evil-leader/set-key
     "hR" 'vertico-repeat)
   (add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
-  (defun consult--repeat-save-dir (session)
+  (defun my-vertico-repeat-save-dir (session)
     "Save `default-directory' in SESSION for `vertico-repeat'."
     (when session
       (append session (list (cons 'default-directory default-directory)))))
-  (defun consult--repeat-restore-dir (orig session)
+  (defun my-vertico-repeat-restore-dir (orig session)
     "Restore `default-directory' from SESSION when repeating."
     (let* ((entry (seq-find (lambda (x) (and (consp x)
                                              (eq (car x) 'default-directory)))
                             (cddr session)))
            (default-directory (if entry (cdr entry) default-directory)))
       (funcall orig session)))
-  (add-to-list 'vertico-repeat-transformers #'consult--repeat-save-dir t)
-  (advice-add 'vertico-repeat--run :around #'consult--repeat-restore-dir))
+  (add-to-list 'vertico-repeat-transformers #'my-vertico-repeat-save-dir t)
+  (advice-add 'vertico-repeat--run :around #'my-vertico-repeat-restore-dir))
 
 (use-package vertico-posframe
   :if window-system
