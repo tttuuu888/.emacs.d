@@ -2301,7 +2301,6 @@ process name."
   :defer-init (xclip-mode 1))
 
 (use-package stillness-mode
-  :if (not window-system)
   :defer-init (stillness-mode 1)
   :config
   (define-minor-mode stillness-mode "Custom stillness-mode."
