@@ -1555,7 +1555,37 @@ Defer code execution until the first command after initialization.
     (let ((org-agenda-files
            (directory-files-recursively my-org-path "^[^#.].*\.org$"))
           (recentf-exclude (list (concat my-org-path ".*"))))
-      (call-interactively 'org-tags-view))))
+      (call-interactively 'org-tags-view)))
+
+  (defun sk-org-babel-tangle-async (&optional target-file)
+    "Do org-babel-tangle asynchronously."
+    (interactive)
+    (let* ((target (or target-file (buffer-file-name)))
+           (sexp `(progn
+                    (package-initialize)
+                    (require 'org)
+                    (org-babel-tangle-file ,target)))
+           (elisp-cmd (prin1-to-string sexp))
+           (shell-cmd (format "emacs -Q --batch --eval %s"
+                              (shell-quote-argument elisp-cmd))))
+      (if target
+          (progn
+            (start-process-shell-command "async-tangle-proc" nil shell-cmd)
+            (message "Tangle code blocks from %s asynchronously."
+                     (file-name-nondirectory target)))
+        (user-error "No file to tangle."))))
+
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (let* ((config (expand-file-name "config.org" emacs-config-dir))
+                     (target (cond
+                              ((buffer-file-name) (buffer-file-name))
+                              ((org-src-edit-buffer-p)
+                               (buffer-file-name (org-src-source-buffer)))
+                              (t nil))))
+                (when (and target (string-equal target config))
+                  (add-hook 'after-save-hook #'sk-org-babel-tangle-async
+                            nil t))))))
 
 (use-package ibuffer
   :ensure nil
