@@ -2067,6 +2067,7 @@ process name."
   (setq helm-allow-mouse nil
         helm-always-two-windows nil
         helm-grep-file-path-style 'relative
+        helm-grep-input-idle-delay 0.01
         helm-grep-truncate-lines nil
         helm-imenu-execute-action-at-once-if-one nil
         helm-show-action-window-other-window nil
