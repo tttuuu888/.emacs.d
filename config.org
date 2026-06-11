@@ -2613,7 +2613,9 @@ that completion tables which supply a meaningful ordering (e.g.
         consult-async-min-input 2
         consult-async-refresh-delay 0.1
         consult-fd-args '("fd" "--color=never")
-        consult-preview-key "C-j")
+        consult-preview-key "C-j"
+        consult-ripgrep-args (concat consult-ripgrep-args
+                                     " --no-ignore-parent"))
   (advice-add #'register-preview :override #'consult-register-window)
   (defalias 'execute-extended-command 'consult-M-x)
 
@@ -2697,10 +2699,7 @@ that completion tables which supply a meaningful ordering (e.g.
   (defun consult-rg-here (&optional initial)
     "Search with ripgrep in `default-directory', including VCS-ignored files."
     (interactive "P")
-    (let ((consult-ripgrep-args
-           (concat consult-ripgrep-args
-                   " --no-ignore-vcs --glob-case-insensitive"))
-          (vertico-count (/ (frame-height) 2))
+    (let ((vertico-count (/ (frame-height) 2))
           (vertico-group-format nil))
       (consult--grep "Ripgrep" #'consult--ripgrep-make-builder
                      default-directory initial)))
