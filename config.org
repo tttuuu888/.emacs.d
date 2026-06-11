@@ -2052,7 +2052,9 @@ process name."
   :bind (("M-y"     . helm-show-kill-ring)
          ("C-x C-r" . helm-recentf)
          :map helm-map
-         ("<escape>". helm-keyboard-quit))
+         ("<escape>". helm-keyboard-quit)
+         :map helm-grep-map
+         ("DEL"     . helm-delete-char-backward))
   :custom-face
   (helm-grep-finish ((default (:inherit helm-candidate-number)))
                     face-defface-spec)
