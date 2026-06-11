@@ -2356,6 +2356,7 @@ process name."
   :bind (:map vertico-map
           ("DEL"      . vertico-directory-delete-char)
           ("M-DEL"    . vertico-directory-delete-word)
+          ("C-j"      . nil)    ;; consult-preview-key
           ("C-k"      . my-vertico-clear-input)
           ("C-M-j"    . vertico-exit-input)
           ("C-M-n"    . vertico-next-group)
@@ -2617,7 +2618,7 @@ that completion tables which supply a meaningful ordering (e.g.
         consult-async-min-input 2
         consult-async-refresh-delay 0.1
         consult-fd-args '("fd" "--color=never")
-        consult-preview-key "M-.")
+        consult-preview-key "C-j")
   (advice-add #'register-preview :override #'consult-register-window)
   (defalias 'execute-extended-command 'consult-M-x)
 
