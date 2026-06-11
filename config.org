@@ -2420,9 +2420,16 @@ process name."
            (:keymap . vertico-directory-map))
      (t (vertico-sort-function . vertico-default-sort)))
    vertico-multiform-commands
-   '((consult-line (vertico-posframe-mode . nil) (vertico-mode . t))
-     (consult-rg-here (vertico-posframe-mode . nil) (vertico-mode . t))
-     (sk-consult-yasnippet (vertico-posframe-mode . nil) (vertico-mode . t)
+   '((consult-git-grep buffer
+                       (display-buffer-in-side-window)
+                       (vertico-mode . t)
+                       (vertico-posframe-mode . nil))
+     (consult-line (vertico-mode . t) (vertico-posframe-mode . nil))
+     (consult-rg-here buffer
+                      (display-buffer-in-side-window)
+                      (vertico-mode . t)
+                      (vertico-posframe-mode . nil))
+     (sk-consult-yasnippet (vertico-mode . t) (vertico-posframe-mode . nil)
                            (vertico-sort-function . vertico-default-sort))))
   (cl-defmethod vertico--format-candidate :around
     (cand prefix suffix index start
