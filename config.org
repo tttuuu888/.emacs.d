@@ -2040,7 +2040,7 @@ process name."
 
 (use-package wgrep
   :config
-  (dolist (mode '(grep-mode helm-git-grep-mode helm-ag-mode))
+  (dolist (mode '(grep-mode helm-ag-mode helm-git-grep-mode helm-grep-mode))
     (evil-leader/set-key-for-mode mode
       "ce" 'wgrep-finish-edit
       "ee" 'wgrep-change-to-wgrep-mode
