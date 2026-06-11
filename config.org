@@ -2428,7 +2428,9 @@ process name."
      (t (vertico-sort-function . vertico-default-sort)))
    vertico-multiform-commands
    `((consult-git-grep ,@vertico-side-style)
+     (consult-imenu ,@vertico-side-style)
      (consult-line (vertico-mode . t) (vertico-posframe-mode . nil))
+     (consult-occur ,@vertico-side-style)
      (consult-rg-here ,@vertico-side-style)
      (sk-consult-yasnippet (vertico-mode . t) (vertico-posframe-mode . nil)
                            (vertico-sort-function . vertico-default-sort))))
@@ -2622,6 +2624,10 @@ that completion tables which supply a meaningful ordering (e.g.
 
   (consult-customize consult-line :preview-key 'any)
   (consult-customize consult-recent-file :category 'recent-file)
+
+  ;; consult-occur alias is to display the buffer on the side
+  (defalias 'consult-occur 'consult-line)
+  (consult-customize consult-occur :preview-key 'any)
 
   (defun consult-M-x ()
     (interactive)
