@@ -2663,7 +2663,8 @@ Stop trying if the input changes before the candidate appears."
 (use-package consult
   :bind (("<f5>"    . sk-compile)
          :map minibuffer-local-map
-         ("C-r"     . consult-history))
+         ("C-r"     . consult-history)
+         ("M-y"     . consult-yank-from-kill-ring))
   :init
   (evil-leader/set-key
     "i"     'consult-imenu
@@ -2694,7 +2695,9 @@ Stop trying if the input changes before the candidate appears."
         consult-preview-key "C-j"
         consult-fontify-preserve nil
         consult-ripgrep-args (concat consult-ripgrep-args
-                                     " --no-ignore-parent"))
+                                     " --no-ignore-parent")
+        enable-recursive-minibuffers t)
+  (minibuffer-depth-indicate-mode 1)
   (advice-add #'register-preview :override #'consult-register-window)
   (defalias 'execute-extended-command 'consult-M-x)
 
