@@ -2579,6 +2579,7 @@ Stop trying if the input changes before the candidate appears."
         '((file (styles partial-completion orderless+initialism))
           (buffer (styles orderless+initialism))
           (consult-multi (styles orderless+initialism))
+          (consult-location (styles orderless))
           (command (styles orderless+initialism))
           (variable (styles orderless+initialism))
           (symbol (styles orderless+initialism)))
