@@ -2320,6 +2320,7 @@ process name."
           ("M-DEL"    . vertico-directory-delete-word)
           ("C-j"      . nil)    ;; consult-preview-key
           ("C-k"      . my-vertico-clear-input)
+          ("C-t"      . vertico-multiform-vertical)
           ("C-M-j"    . vertico-exit-input)
           ("C-M-n"    . vertico-next-group)
           ("C-M-p"    . vertico-previous-group)
@@ -2571,8 +2572,6 @@ Stop trying if the input changes before the candidate appears."
    ((t (:inherit vertico-posframe))) face-defface-spec)
   (vertico-posframe-border-4
    ((t (:inherit vertico-posframe))) face-defface-spec)
-  :bind (:map vertico-map
-          ("C-t" . vertico-multiform-vertical))
   :defer-init (vertico-posframe-mode 1)
   :config
   (setq vertico-posframe-border-width 20)
