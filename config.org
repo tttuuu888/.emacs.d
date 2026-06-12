@@ -2061,7 +2061,6 @@ process name."
   :init
   (evil-leader/set-key
     "y"  'helm-show-kill-ring
-    "ho" 'helm-occur
     "hr" 'helm-resume)
   :config
   (require 'helm-files)
@@ -2596,6 +2595,7 @@ Stop trying if the input changes before the candidate appears."
     "i"     'consult-imenu
     "p"     'sk-consult-git-grep
     "r"     'consult-recent-file
+    "ho"    'consult-occur
     "jd"    'consult-fd-dir
     "jD"    'consult-fd-dir-here
     "jf"    'consult-fd-file
