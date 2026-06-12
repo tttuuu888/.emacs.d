@@ -2439,6 +2439,52 @@ Otherwise truncate via ORIG with MAX."
           formatted
         (concat formatted (propertize (concat (make-string 40 ?―) "\n")
                                       'face '+vertico-kill-ring-separator)))))
+
+  (defun +vertico-kill-ring--height (cand)
+    "Calculate height of kill-ring candidate CAND."
+    (let ((n (1+ (cl-count ?\n (string-trim-right cand)))))
+      (+ (min +vertico-kill-ring-max-lines n)
+         (if (> n +vertico-kill-ring-max-lines) 1 0)  ; "[...]" line
+         1)))                                         ; separator line
+  (defun +vertico-kill-ring--fit (scroll avail)
+    "Number of candidates from SCROLL that fit AVAIL lines."
+    (let ((used 0) (n 0))
+      (cl-loop for c in (nthcdr scroll vertico--candidates)
+               for h = (+vertico-kill-ring--height c)
+               while (or (zerop n) (<= (+ used h) avail))
+               do (setq used (+ used h)
+                        n (1+ n)))
+      (max 1 n)))
+  (defun +vertico-kill-ring--center (index avail)
+    "Scroll offset placing candidate INDEX about half a page down."
+    (let ((budget (/ avail 2)) (used 0) (s index))
+      (cl-loop for j from (1- index) downto 0
+               for h = (+vertico-kill-ring--height (nth j vertico--candidates))
+               while (<= (+ used h) budget)
+               do (setq used (+ used h)
+                        s j))
+      s))
+  (defun +vertico-kill-ring-page-scroll (orig)
+    "Page-jump scrolling for multiline kill-ring candidates for side window."
+    (if (and (eq (vertico--metadata-get 'category) 'kill-ring)
+             (overlayp vertico--candidates-ov)
+             (window-live-p (overlay-get vertico--candidates-ov 'window)))
+        (let* ((win (overlay-get vertico--candidates-ov 'window))
+               (avail
+                (max 1 (- (/ (window-pixel-height win) (default-line-height))
+                          (if mode-line-format 2 1))))
+               (i (max 0 vertico--index))
+               (s (or vertico--scroll 0))
+               (page (+vertico-kill-ring--fit s avail)))
+          (when (or (< i s) (>= i (+ s page)))   ; left page -> recenter
+            (setq s (+vertico-kill-ring--center i avail)
+                  page (+vertico-kill-ring--fit s avail)))
+          ;; +1 renders the next candidate to fill the bottom gap.
+          (setq-local vertico-count (min (max 1 (- vertico--total s))
+                                         (1+ page)))
+          (setq vertico--scroll s))
+      (funcall orig)))
+  (advice-add 'vertico--compute-scroll :around #'+vertico-kill-ring-page-scroll)
   (defun my-vertico-sort (input candidates)
     "Sort CANDIDATES with exact match first, then prefix matches of
 INPUT's first word, then the rest.  Within each bucket, sort
