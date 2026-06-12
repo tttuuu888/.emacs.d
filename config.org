@@ -2486,6 +2486,8 @@ that completion tables which supply a meaningful ordering (e.g.
   :config
   (evil-leader/set-key
     "hR" 'vertico-repeat)
+  (setq vertico-repeat-transformers
+        (delq #'vertico-repeat--filter-empty vertico-repeat-transformers))
   (add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
   (defun my-vertico-repeat-save-dir (session)
     "Save `default-directory' in SESSION for `vertico-repeat'."
