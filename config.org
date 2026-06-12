@@ -2078,31 +2078,6 @@ process name."
   (advice-add 'helm-occur-goto-line :after
               (lambda (&rest _) (which-func-update))))
 
-(use-package helm-ag
-  :vc
-  (:url "https://github.com/emacsattic/helm-ag" :branch "master" :rev :newest)
-  :commands (helm-ag-project-or-here helm-ag-here)
-  :init
-  (evil-leader/set-key "jp" 'helm-ag-here)
-  :config
-  (require 'wgrep)
-  (setq helm-ag-insert-at-point 'symbol
-        helm-ag-base-command "ag --nocolor --nogroup --follow"
-        helm-ag-use-grep-ignore-list t)
-  (advice-add 'helm-ag--persistent-action :after
-              (lambda (&rest _) (which-func-update)))
-  (defun helm-ag-here ()
-    "Run helm-ag in `default-directory', or on marked files when in dired."
-    (interactive)
-    (let ((files (and (derived-mode-p 'dired-mode)
-                      (save-excursion
-                        (goto-char (point-min))
-                        (re-search-forward (dired-marker-regexp) nil t))
-                      (dired-get-marked-files))))
-      (helm-do-ag default-directory
-                  files
-                  (if files "" (thing-at-point 'symbol))))))
-
 (use-package helm-git-grep
   :vc
   (:url "https://github.com/yasuyk/helm-git-grep" :branch "master" :rev :newest)
@@ -2606,7 +2581,7 @@ that completion tables which supply a meaningful ordering (e.g.
     "jD"    'consult-fd-dir-here
     "jf"    'consult-fd-file
     "jh"    'consult-fd-file-here
-    "jP"    'consult-rg-here
+    "jp"    'consult-rg-here
     "nx"    'consult-org-capture
     "xri"   'consult-register-store
     "xrj"   'consult-register-load)
