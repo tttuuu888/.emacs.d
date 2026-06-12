@@ -2490,11 +2490,11 @@ that completion tables which supply a meaningful ordering (e.g.
         (seq-difference vertico-repeat-transformers
                         (list #'vertico-repeat--filter-empty
                               #'vertico-repeat--remove-long)))
-  (add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
   (defun my-vertico-repeat-save-dir (session)
     "Save `default-directory' in SESSION for `vertico-repeat'."
     (when session
       (append session (list (cons 'default-directory default-directory)))))
+
   (defun my-vertico-repeat-restore-dir (orig session)
     "Restore `default-directory' from SESSION when repeating."
     (let* ((entry (seq-find (lambda (x) (and (consp x)
@@ -2502,8 +2502,35 @@ that completion tables which supply a meaningful ordering (e.g.
                             (cddr session)))
            (default-directory (if entry (cdr entry) default-directory)))
       (funcall orig session)))
+
+  (defun my-vertico-repeat-reselect (session)
+    "Re-select the saved candidate once async candidates stream in.
+Stop trying if the input changes before the candidate appears."
+    (when-let* ((cand (seq-find #'stringp (cddr session)))
+                (input (cadr session))
+                ((not (and (>= vertico--index 0)
+                           (equal cand
+                                  (nth vertico--index vertico--candidates))))))
+      (letrec
+          ((reselect
+            (lambda ()
+              (if (equal (minibuffer-contents-no-properties) input)
+                  (when-let* ((idx (seq-position vertico--candidates cand)))
+                    (setq vertico--index idx vertico--lock-candidate t)
+                    (remove-hook 'consult--completion-refresh-hook reselect t)
+                    (vertico--exhibit))
+                ;; input edited -> give up
+                (remove-hook 'consult--completion-refresh-hook reselect t)))))
+        (add-hook 'consult--completion-refresh-hook reselect t t)
+        (add-hook 'minibuffer-exit-hook
+                  (lambda ()
+                    (remove-hook 'consult--completion-refresh-hook reselect t))
+                  nil t))))
+
+  (add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
   (add-to-list 'vertico-repeat-transformers #'my-vertico-repeat-save-dir t)
-  (advice-add 'vertico-repeat--run :around #'my-vertico-repeat-restore-dir))
+  (advice-add 'vertico-repeat--run :around #'my-vertico-repeat-restore-dir)
+  (advice-add 'vertico-repeat--restore :after #'my-vertico-repeat-reselect))
 
 (use-package vertico-posframe
   :if window-system
