@@ -2934,7 +2934,12 @@ target followed by an ellipsis if there are further targets."
     :parent embark-file-map
     "." #'my-create-dir-locals
     "p" #'my-create-projectile)
-  (add-to-list 'embark-keymap-alist '(file . embark-my-file-actions)))
+  (add-to-list 'embark-keymap-alist '(file . embark-my-file-actions))
+  (advice-add 'embark-kill-ring-remove :before
+              (lambda (text)
+                (when (equal text (car kill-ring-yank-pointer))
+                  (setq kill-ring-yank-pointer
+                        (cdr kill-ring-yank-pointer))))))
 
 (use-package embark-consult)
 
