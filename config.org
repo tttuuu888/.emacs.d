@@ -2617,6 +2617,7 @@ Stop trying if the input changes before the candidate appears."
         consult-async-refresh-delay 0.1
         consult-fd-args '("fd" "--color=never")
         consult-preview-key "C-j"
+        consult-fontify-preserve nil
         consult-ripgrep-args (concat consult-ripgrep-args
                                      " --no-ignore-parent"))
   (advice-add #'register-preview :override #'consult-register-window)
