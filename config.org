@@ -2060,8 +2060,7 @@ process name."
                     face-defface-spec)
   :init
   (evil-leader/set-key
-    "y"  'helm-show-kill-ring
-    "hr" 'helm-resume)
+    "y"  'helm-show-kill-ring)
   :config
   (require 'helm-files)
   (setq helm-allow-mouse nil
@@ -2483,7 +2482,7 @@ that completion tables which supply a meaningful ordering (e.g.
   :ensure nil
   :config
   (evil-leader/set-key
-    "hR" 'vertico-repeat)
+    "hr" 'vertico-repeat)
   (setq vertico-repeat-transformers
         (seq-difference vertico-repeat-transformers
                         (list #'vertico-repeat--filter-empty
