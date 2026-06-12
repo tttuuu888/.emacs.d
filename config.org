@@ -2701,13 +2701,6 @@ Stop trying if the input changes before the candidate appears."
   (advice-add #'register-preview :override #'consult-register-window)
   (defalias 'execute-extended-command 'consult-M-x)
 
-  (consult-customize consult-line :preview-key 'any)
-  (consult-customize consult-recent-file :category 'recent-file)
-
-  ;; consult-occur alias is to display the buffer on the side
-  (defalias 'consult-occur 'consult-line)
-  (consult-customize consult-occur :preview-key 'any)
-
   (defun consult-M-x ()
     (interactive)
     ;; Initialize Smex
@@ -2821,7 +2814,15 @@ Stop trying if the input changes before the candidate appears."
            (cmd (alist-get script scripts nil nil #'string-equal))
            (dir (file-name-directory cmd)))
       (setf (alist-get dir sk-compile-history nil 'remove #'equal) cmd)
-      (compile cmd))))
+      (compile cmd)))
+
+  (defun consult-occur (&optional initial start)
+    (interactive (list nil (not (not current-prefix-arg))))
+    (consult-line (or initial (thing-at-point 'symbol)) start))
+
+  (consult-customize consult-line :preview-key 'any)
+  (consult-customize consult-occur :preview-key 'any)
+  (consult-customize consult-recent-file :category 'recent-file))
 
 (use-package consult-ls-git
   :init
