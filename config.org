@@ -2367,6 +2367,8 @@ process name."
           ("~"   . my-vertico-directory-tilde)
           ("/"   . my-vertico-directory-slash)
           ("M-i" . my-vertico-insert-literal))
+  :custom-face
+  (+vertico-kill-ring-separator ((t :foreground "red")))
   :config
   (require 'dired)
   (require 'vertico-directory)
@@ -2379,6 +2381,7 @@ process name."
                         (vertico-posframe-mode . nil)
                         (lambda (_)
                           (setq-local vertico-count (/ (frame-height) 2))))
+   +vertico-kill-ring-max-lines 6
    +vertico-transform-functions nil
    vertico-multiform-categories
    '((file (vertico-sort-function . vertico-sort-dirs-and-files)
@@ -2392,6 +2395,7 @@ process name."
      (consult-occur ,@vertico-side-style)
      (consult-rg-here ,@vertico-side-style)
      (sk-consult-git-grep ,@vertico-side-style)
+     (consult-yank-from-kill-ring ,@vertico-side-style)
      (sk-consult-yasnippet (vertico-mode . t) (vertico-posframe-mode . nil)
                            (vertico-sort-function . vertico-default-sort))))
   (cl-defmethod vertico--format-candidate :around
@@ -2409,6 +2413,31 @@ properties so completion match highlighting remains visible."
           (add-face-text-property 0 (length copy) 'dired-directory 'append copy)
           copy)
       file))
+  (defun +vertico-kill-ring-no-truncate (orig str max)
+    "Show `kill-ring' candidate STR multiline, capped to
+`+vertico-kill-ring-max-lines' lines with a '[...]' marker.
+Otherwise truncate via ORIG with MAX."
+    (if (eq (vertico--metadata-get 'category) 'kill-ring)
+        (let ((lines (split-string (string-trim-right str) "\n")))
+          (if (> (length lines) +vertico-kill-ring-max-lines)
+              (concat
+               (string-join (seq-take lines +vertico-kill-ring-max-lines)
+                            "\n")
+               "\n[...]")
+            (string-trim-right str)))
+      (funcall orig str max)))
+  (advice-add 'vertico--truncate-multiline :around
+              #'+vertico-kill-ring-no-truncate)
+  (cl-defmethod vertico--format-candidate :around
+    (cand prefix suffix index start
+          &context ((vertico--metadata-get 'category) (eql kill-ring)))
+    "Draw a separator line after the candidate has been formatted."
+    (let ((formatted (cl-call-next-method cand prefix suffix index start)))
+      ;; No separator under the last candidate.
+      (if (>= index (1- vertico--total))
+          formatted
+        (concat formatted (propertize (concat (make-string 40 ?―) "\n")
+                                      'face '+vertico-kill-ring-separator)))))
   (defun my-vertico-sort (input candidates)
     "Sort CANDIDATES with exact match first, then prefix matches of
 INPUT's first word, then the rest.  Within each bucket, sort
