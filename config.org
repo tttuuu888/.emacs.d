@@ -2432,6 +2432,7 @@ process name."
      (consult-line (vertico-mode . t) (vertico-posframe-mode . nil))
      (consult-occur ,@vertico-side-style)
      (consult-rg-here ,@vertico-side-style)
+     (sk-consult-git-grep ,@vertico-side-style)
      (sk-consult-yasnippet (vertico-mode . t) (vertico-posframe-mode . nil)
                            (vertico-sort-function . vertico-default-sort))))
   (cl-defmethod vertico--format-candidate :around
@@ -2706,6 +2707,17 @@ that completion tables which supply a meaningful ordering (e.g.
   (defun consult-rg-here (&optional initial)
     (interactive "P")
     (consult-ripgrep default-directory initial))
+
+  (defun sk-consult-git-grep ()
+    (interactive)
+    (let ((initial
+           (cond
+            ((use-region-p)
+             (buffer-substring-no-properties (region-beginning) (region-end)))
+            ((thing-at-point 'symbol)
+             (thing-at-point 'symbol))
+            (t nil))))
+      (consult-git-grep nil initial)))
 
   (defun sk-compile-scripts ()
     (if-let* ((sbin (find-file-in-tree default-directory ".sbin"))
