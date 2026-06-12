@@ -2049,6 +2049,7 @@ process name."
   (advice-add 'wgrep-change-to-wgrep-mode :after 'evil-normal-state))
 
 (use-package helm
+  :disabled
   :bind (("M-y"     . helm-show-kill-ring)
          :map helm-map
          ("<escape>". helm-keyboard-quit)
@@ -2668,6 +2669,7 @@ Stop trying if the input changes before the candidate appears."
     "i"     'consult-imenu
     "p"     'sk-consult-git-grep
     "r"     'consult-recent-file
+    "y"     'consult-yank-from-kill-ring
     "ho"    'consult-occur
     "jd"    'consult-fd-dir
     "jD"    'consult-fd-dir-here
