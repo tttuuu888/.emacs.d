@@ -2662,9 +2662,9 @@ Stop trying if the input changes before the candidate appears."
 
 (use-package consult
   :bind (("<f5>"    . sk-compile)
+         ("M-y"     . consult-yank-from-kill-ring)
          :map minibuffer-local-map
-         ("C-r"     . consult-history)
-         ("M-y"     . consult-yank-from-kill-ring))
+         ("C-r"     . consult-history))
   :init
   (evil-leader/set-key
     "i"     'consult-imenu
