@@ -2060,7 +2060,6 @@ process name."
                     face-defface-spec)
   :init
   (evil-leader/set-key
-    "i"  'helm-semantic-or-imenu
     "y"  'helm-show-kill-ring
     "ho" 'helm-occur
     "hr" 'helm-resume)
@@ -2594,7 +2593,7 @@ Stop trying if the input changes before the candidate appears."
          ("C-r"     . consult-history))
   :init
   (evil-leader/set-key
-    "I"     'consult-imenu
+    "i"     'consult-imenu
     "p"     'sk-consult-git-grep
     "r"     'consult-recent-file
     "jd"    'consult-fd-dir
