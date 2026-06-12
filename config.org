@@ -2611,6 +2611,10 @@ that completion tables which supply a meaningful ordering (e.g.
     "xri"   'consult-register-store
     "xrj"   'consult-register-load)
   :defer-init (require 'consult)
+  :custom-face
+  (consult-highlight-match
+   ((((background light)) :foreground "#b00000" :extend t :inherit nil)
+    (((background dark)) :foreground "gold1" :extend t :inherit nil)))
   :config
   (require 'smex)
   (setq sk-compile-history nil
