@@ -2078,18 +2078,6 @@ process name."
   (advice-add 'helm-occur-goto-line :after
               (lambda (&rest _) (which-func-update))))
 
-(use-package helm-git-grep
-  :vc
-  (:url "https://github.com/yasuyk/helm-git-grep" :branch "master" :rev :newest)
-  :init
-  (evil-leader/set-key
-    "p" 'helm-git-grep-at-point)
-  :config
-  (require 'wgrep)
-  (setq helm-git-grep-candidate-number-limit 1000)
-  (advice-add 'helm-git-grep-persistent-action :after
-              (lambda (&rest _) (which-func-update))))
-
 (use-package projectile
   :commands (sk-add-known-project
              sk-remove-known-project)
@@ -2576,6 +2564,7 @@ that completion tables which supply a meaningful ordering (e.g.
   :init
   (evil-leader/set-key
     "I"     'consult-imenu
+    "p"     'sk-consult-git-grep
     "r"     'consult-recent-file
     "jd"    'consult-fd-dir
     "jD"    'consult-fd-dir-here
@@ -2592,6 +2581,7 @@ that completion tables which supply a meaningful ordering (e.g.
     (((background dark)) :foreground "gold1" :extend t :inherit nil)))
   :config
   (require 'smex)
+  (require 'wgrep)
   (setq sk-compile-history nil
         consult-async-min-input 2
         consult-async-refresh-delay 0.1
