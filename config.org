@@ -2398,7 +2398,7 @@ process name."
      (consult-rg-here ,@vertico-side-style)
      (consult-yank-from-kill-ring ,@vertico-side-style)
      (sk-consult-git-grep ,@vertico-side-style)
-     (sk-consult-line ,@vertico-side-style)
+     (sk-consult-line (vertico-mode . t) (vertico-posframe-mode . nil))
      (sk-consult-yasnippet (vertico-mode . t) (vertico-posframe-mode . nil)
                            (vertico-sort-function . vertico-default-sort))))
   (cl-defmethod vertico--format-candidate :around
