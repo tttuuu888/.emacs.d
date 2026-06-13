@@ -1054,7 +1054,7 @@ Defer code execution until the first command after initialization.
           ("r"     . my-dired-rsync)
           ("x"     . my-dired-do-flagged-delete)
           ("X"     . my-dired-do-shell-command)
-          ("/"     . consult-line)
+          ("/"     . sk-consult-line)
           ("^"     . dired-up-and-close-dir)
           ("bp"    . my-dired-pdf-size-down)
           ("<DEL>" . dired-up-and-close-dir)
@@ -1946,7 +1946,7 @@ process name."
 (use-package epa
   :ensure nil
   :bind (:map epa-key-list-mode-map
-          ("/" . consult-line)))
+          ("/" . sk-consult-line)))
 
 (use-package comp
   :ensure nil
@@ -2396,8 +2396,9 @@ process name."
      (consult-line (vertico-mode . t) (vertico-posframe-mode . nil))
      (consult-occur ,@vertico-side-style)
      (consult-rg-here ,@vertico-side-style)
-     (sk-consult-git-grep ,@vertico-side-style)
      (consult-yank-from-kill-ring ,@vertico-side-style)
+     (sk-consult-git-grep ,@vertico-side-style)
+     (sk-consult-line ,@vertico-side-style)
      (sk-consult-yasnippet (vertico-mode . t) (vertico-posframe-mode . nil)
                            (vertico-sort-function . vertico-default-sort))))
   (cl-defmethod vertico--format-candidate :around
@@ -2665,6 +2666,7 @@ Stop trying if the input changes before the candidate appears."
          ("M-y"     . consult-yank-from-kill-ring)
          :map minibuffer-local-map
          ("C-r"     . consult-history))
+  :commands sk-consult-line
   :init
   (evil-leader/set-key
     "i"     'consult-imenu
@@ -2816,13 +2818,42 @@ Stop trying if the input changes before the candidate appears."
       (setf (alist-get dir sk-compile-history nil 'remove #'equal) cmd)
       (compile cmd)))
 
-  (defun consult-occur (&optional initial start)
-    (interactive (list nil (not (not current-prefix-arg))))
-    (consult-line (or initial (thing-at-point 'symbol)) start))
+  (defun sk-consult-line (&optional initial)
+    (interactive)
+    (let ((curr-line (line-number-at-pos (point) consult-line-numbers-widen)))
+      (minibuffer-with-setup-hook
+          (lambda ()
+            (let ((done nil))
+              (add-hook
+               'post-command-hook
+               (lambda ()
+                 ;; Run only once
+                 (when (and (not done) (consp vertico--candidates))
+                   (setq done t)
+                   ;; Select the candidate on the current line if present,
+                   ;; otherwise keep vertico's default (first match)
+                   (when-let* ((idx (seq-position
+                                     vertico--candidates curr-line
+                                     (lambda (cand target)
+                                       (= (cdr (get-text-property
+                                                0 'consult-location cand))
+                                          target)))))
+                     (vertico--goto idx)
+                     (vertico--exhibit)
+                     ;; Refresh consult's preview for the new selection
+                     (when consult--preview-function
+                       (funcall consult--preview-function)))))
+               90 t)))    ;; buffer-local, reset on each minibuffer entry
+        (consult-line initial t))))
+
+  (defun consult-occur ()
+    (interactive)
+    (sk-consult-line (+consult-search-initial)))
 
   (consult-customize consult-line :preview-key 'any)
   (consult-customize consult-occur :preview-key 'any)
-  (consult-customize consult-recent-file :category 'recent-file))
+  (consult-customize consult-recent-file :category 'recent-file)
+  (consult-customize sk-consult-line :preview-key 'any))
 
 (use-package consult-ls-git
   :init
