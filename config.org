@@ -2319,7 +2319,7 @@ process name."
   :bind (:map vertico-map
           ("DEL"      . vertico-directory-delete-char)
           ("M-DEL"    . vertico-directory-delete-word)
-          ("C-j"      . nil)    ;; consult-preview-key
+          ("C-j"      . ignore)    ;; consult-preview-key
           ("C-k"      . my-vertico-clear-input)
           ("C-t"      . vertico-multiform-vertical)
           ("C-M-j"    . vertico-exit-input)
