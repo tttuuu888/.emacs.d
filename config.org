@@ -2592,14 +2592,14 @@ Stop trying if the input changes before the candidate appears."
                   (when-let* ((idx (seq-position vertico--candidates cand)))
                     (setq vertico--index idx vertico--lock-candidate t)
                     (remove-hook 'consult--completion-refresh-hook reselect t)
-                    (vertico--exhibit))
+                    (vertico--exhibit)
+                    ;; Keep consult's buffer preview in sync
+                    (when consult--preview-function
+                      (funcall consult--preview-function)))
                 ;; input edited -> give up
                 (remove-hook 'consult--completion-refresh-hook reselect t)))))
-        (add-hook 'consult--completion-refresh-hook reselect t t)
-        (add-hook 'minibuffer-exit-hook
-                  (lambda ()
-                    (remove-hook 'consult--completion-refresh-hook reselect t))
-                  nil t))))
+        ;; buffer-local, reset on each minibuffer entry
+        (add-hook 'consult--completion-refresh-hook reselect t t))))
 
   (add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
   (add-to-list 'vertico-repeat-transformers #'my-vertico-repeat-save-dir t)
