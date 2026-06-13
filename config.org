@@ -2775,20 +2775,20 @@ Stop trying if the input changes before the candidate appears."
     (interactive)
     (my-consult-fd '("-I" "-t f") "."))
 
-  (defun consult-rg-here (&optional initial)
-    (interactive "P")
-    (consult-ripgrep default-directory initial))
+  (defun +consult-search-initial ()
+    (cond ((use-region-p)
+           (buffer-substring-no-properties (region-beginning) (region-end)))
+          ((thing-at-point 'symbol)
+           (thing-at-point 'symbol t))
+          (t nil)))
+
+  (defun consult-rg-here ()
+    (interactive)
+    (consult-ripgrep default-directory (+consult-search-initial)))
 
   (defun sk-consult-git-grep ()
     (interactive)
-    (let ((initial
-           (cond
-            ((use-region-p)
-             (buffer-substring-no-properties (region-beginning) (region-end)))
-            ((thing-at-point 'symbol)
-             (thing-at-point 'symbol))
-            (t nil))))
-      (consult-git-grep nil initial)))
+    (consult-git-grep nil (+consult-search-initial)))
 
   (defun sk-compile-scripts ()
     (if-let* ((sbin (find-file-in-tree default-directory ".sbin"))
