@@ -103,6 +103,7 @@ Instead of using =custom.el=, insert the contents of the file directly here.
  '(css-indent-offset 2)
  '(fill-column 80)
  '(font-use-system-font t)
+ '(gc-cons-threshold (* 1024 1024 16))
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
  '(line-number-display-limit-width 1000)
