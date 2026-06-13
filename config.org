@@ -2869,18 +2869,7 @@ Stop trying if the input changes before the candidate appears."
     (interactive "P")
     (yas-minor-mode-on)
     (let ((consult-preview-key 'any))
-      (call-interactively 'consult-yasnippet)))
-  (defun my-consult-yasnippet--preview (orig-fn &rest args)
-    "Preserve `buffer-modified-p' during snippet preview.
-consult-yasnippet previews by expanding snippets into the buffer,
-which marks it as modified even on cancel."
-    (let ((state-fn (apply orig-fn args))
-          (modified-flag (buffer-modified-p)))
-      (lambda (action template)
-        (funcall state-fn action template)
-        (set-buffer-modified-p modified-flag))))
-  (advice-add 'consult-yasnippet--preview :around
-              #'my-consult-yasnippet--preview))
+      (call-interactively 'consult-yasnippet))))
 
 (use-package embark
   :bind
