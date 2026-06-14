@@ -2468,23 +2468,29 @@ Otherwise truncate via ORIG with MAX."
                         s j))
       s))
   (defun +vertico-kill-ring-page-scroll (orig)
-    "Page-jump scrolling for multiline kill-ring candidates for side window."
-    (if (and (eq (vertico--metadata-get 'category) 'kill-ring)
-             (overlayp vertico--candidates-ov)
-             (window-live-p (overlay-get vertico--candidates-ov 'window)))
-        (let* ((win (overlay-get vertico--candidates-ov 'window))
+    "Page-jump scrolling for multiline kill-ring candidates."
+    (if (eq (vertico--metadata-get 'category) 'kill-ring)
+        (let* ((win (and (overlayp vertico--candidates-ov)
+                         (overlay-get vertico--candidates-ov 'window)))
+               (side (window-live-p win))
                (avail
-                (max 1 (- (/ (window-pixel-height win) (default-line-height))
-                          (if mode-line-format 2 1))))
+                (if side
+                    (max 1 (- (/ (window-pixel-height win)
+                                 (default-line-height))
+                              (if mode-line-format 2 1)))
+                  ;; Bottom minibuffer: cap to half the frame height, matching
+                  ;; the `vertico-count' the side-style setup uses elsewhere.
+                  (max 1 (/ (frame-height) 2))))
                (i (max 0 vertico--index))
                (s (or vertico--scroll 0))
                (page (+vertico-kill-ring--fit s avail)))
           (when (or (< i s) (>= i (+ s page)))   ; left page -> recenter
             (setq s (+vertico-kill-ring--center i avail)
                   page (+vertico-kill-ring--fit s avail)))
-          ;; +1 renders the next candidate to fill the bottom gap.
+          ;; In the fixed-size side window the extra candidate fills the bottom
+          ;; gap; the auto-growing minibuffer must stay within AVAIL, so no +1.
           (setq-local vertico-count (min (max 1 (- vertico--total s))
-                                         (1+ page)))
+                                         (if side (1+ page) page)))
           (setq vertico--scroll s))
       (funcall orig)))
   (advice-add 'vertico--compute-scroll :around #'+vertico-kill-ring-page-scroll)
