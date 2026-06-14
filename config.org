@@ -2378,7 +2378,6 @@ process name."
   (require 'vertico-sort)
   (setq
    vertico-side-style `(buffer
-                        (display-buffer-in-side-window)
                         (vertico-group-format . nil)
                         (vertico-mode . t)
                         (vertico-posframe-mode . nil)
