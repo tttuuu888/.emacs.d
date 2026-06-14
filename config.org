@@ -2701,10 +2701,11 @@ Stop trying if the input changes before the candidate appears."
         consult-async-min-input 2
         consult-async-refresh-delay 0.1
         consult-fd-args '("fd" "--color=never")
-        consult-preview-key "C-j"
         consult-fontify-preserve nil
-        consult-ripgrep-args (concat consult-ripgrep-args
-                                     " --no-ignore-parent")
+        consult-preview-key "C-j"
+        consult-ripgrep-args
+        (concat consult-ripgrep-args
+                " --no-ignore-parent --max-columns-preview")
         enable-recursive-minibuffers t)
   (minibuffer-depth-indicate-mode 1)
   (advice-add #'register-preview :override #'consult-register-window)
