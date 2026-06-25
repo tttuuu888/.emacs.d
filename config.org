@@ -2816,9 +2816,11 @@ Stop trying if the input changes before the candidate appears."
 
   (defun sk-consult-line (&optional initial)
     (interactive)
-    (let ((curr-line (line-number-at-pos (point) consult-line-numbers-widen)))
+    (let ((curr-line (line-number-at-pos (point) consult-line-numbers-widen))
+          (symbol (thing-at-point 'symbol)))
       (minibuffer-with-setup-hook
           (lambda ()
+            (when symbol (setq minibuffer-default symbol))
             (let ((done nil))
               (add-hook
                'post-command-hook
