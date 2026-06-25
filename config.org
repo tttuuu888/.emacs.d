@@ -2676,7 +2676,7 @@ Stop trying if the input changes before the candidate appears."
   :init
   (evil-leader/set-key
     "i"     'consult-imenu
-    "p"     'sk-consult-git-grep
+    "p"     'consult-git-grep
     "r"     'consult-recent-file
     "y"     'consult-yank-from-kill-ring
     "ho"    'consult-occur
@@ -2784,20 +2784,9 @@ Stop trying if the input changes before the candidate appears."
     (interactive)
     (my-consult-fd '("-I" "-t f") "."))
 
-  (defun +consult-search-initial ()
-    (cond ((use-region-p)
-           (buffer-substring-no-properties (region-beginning) (region-end)))
-          ((thing-at-point 'symbol)
-           (thing-at-point 'symbol t))
-          (t nil)))
-
   (defun consult-rg-here ()
     (interactive)
-    (consult-ripgrep default-directory (+consult-search-initial)))
-
-  (defun sk-consult-git-grep ()
-    (interactive)
-    (consult-git-grep nil (+consult-search-initial)))
+    (consult-ripgrep default-directory nil))
 
   (defun sk-compile-scripts ()
     (if-let* ((sbin (find-file-in-tree default-directory ".sbin"))
@@ -2855,7 +2844,7 @@ Stop trying if the input changes before the candidate appears."
 
   (defun consult-occur ()
     (interactive)
-    (sk-consult-line (+consult-search-initial)))
+    (sk-consult-line))
 
   (consult-customize consult-line :preview-key 'any)
   (consult-customize consult-occur :preview-key 'any)
