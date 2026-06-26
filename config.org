@@ -2838,19 +2838,22 @@ Stop trying if the input changes before the candidate appears."
                  ;; Run only once
                  (when (and (not done) (consp vertico--candidates))
                    (setq done t)
-                   ;; Select the candidate on the current line if present,
-                   ;; otherwise keep vertico's default (first match)
-                   (when-let* ((idx (seq-position
-                                     vertico--candidates curr-line
-                                     (lambda (cand target)
-                                       (= (cdr (get-text-property
-                                                0 'consult-location cand))
-                                          target)))))
-                     (vertico--goto idx)
-                     (vertico--exhibit)
-                     ;; Refresh consult's preview for the new selection
-                     (when consult--preview-function
-                       (funcall consult--preview-function)))))
+                   ;; Don't override a candidate restored by `vertico-repeat',
+                   ;; which locks the previously selected candidate.
+                   (unless vertico--lock-candidate
+                     ;; Select the candidate on the current line if present,
+                     ;; otherwise keep vertico's default (first match)
+                     (when-let* ((idx (seq-position
+                                       vertico--candidates curr-line
+                                       (lambda (cand target)
+                                         (= (cdr (get-text-property
+                                                  0 'consult-location cand))
+                                            target)))))
+                       (vertico--goto idx)
+                       (vertico--exhibit)
+                       ;; Refresh consult's preview for the new selection
+                       (when consult--preview-function
+                         (funcall consult--preview-function))))))
                90 t)))    ;; buffer-local, reset on each minibuffer entry
         (consult-line initial t))))
 
