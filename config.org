@@ -2322,7 +2322,7 @@ process name."
           ("M-DEL"    . vertico-directory-delete-word)
           ("C-a"      . my-vertico-beginning-of-line)
           ("C-j"      . ignore)    ;; consult-preview-key
-          ("C-k"      . my-vertico-clear-input)
+          ("C-k"      . my-vertico-kill-line)
           ("C-t"      . vertico-multiform-vertical)
           ("C-M-j"    . vertico-exit-input)
           ("C-M-n"    . vertico-next-group)
@@ -2357,8 +2357,9 @@ process name."
         ((= vertico--total 0) -1)
         (vertico-cycle (mod index vertico--total))
         (t (max 0 (min index (1- vertico--total))))))))
-  (defun my-vertico-clear-input ()
-    "Clear minibuffer and insert '#' if the input started with it."
+  (defun my-vertico-kill-line ()
+    "Kill to the end of line, or clear the minibuffer if already at EOL.
+Preserve the leading '#' if the input started with it."
     (interactive)
     (let ((has-hash (string-prefix-p "#" (minibuffer-contents))))
       (if (not (eolp))
