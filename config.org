@@ -2361,8 +2361,10 @@ process name."
     "Clear minibuffer and insert '#' if the input started with it."
     (interactive)
     (let ((has-hash (string-prefix-p "#" (minibuffer-contents))))
-      (delete-minibuffer-contents)
-      (when has-hash (insert "#")))))
+      (if (not (eolp))
+          (kill-line)
+        (delete-minibuffer-contents)
+        (when has-hash (insert "#")))))
   (defun my-vertico-beginning-of-line ()
     "Move to the beginning of the line, or after '#' if present."
     (interactive)
