@@ -2320,6 +2320,7 @@ process name."
   :bind (:map vertico-map
           ("DEL"      . vertico-directory-delete-char)
           ("M-DEL"    . vertico-directory-delete-word)
+          ("C-a"      . my-vertico-beginning-of-line)
           ("C-j"      . ignore)    ;; consult-preview-key
           ("C-k"      . my-vertico-clear-input)
           ("C-t"      . vertico-multiform-vertical)
@@ -2362,6 +2363,12 @@ process name."
     (let ((has-hash (string-prefix-p "#" (minibuffer-contents))))
       (delete-minibuffer-contents)
       (when has-hash (insert "#")))))
+  (defun my-vertico-beginning-of-line ()
+    "Move to the beginning of the line, or after '#' if present."
+    (interactive)
+    (let ((has-hash (string-prefix-p "#" (minibuffer-contents))))
+      (move-beginning-of-line 1)
+      (when has-hash (forward-char)))))
 
 (use-package vertico-multiform
   :ensure nil
