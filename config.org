@@ -983,7 +983,9 @@ Defer code execution until the first command after initialization.
   :config
   (setq-default bidi-paragraph-direction 'left-to-right)
   (setq bidi-inhibit-bpa t
+        completion-ignore-case t
         kill-do-not-save-duplicates t
+        read-buffer-completion-ignore-case t
         save-interprogram-paste-before-kill t))
 
 (use-package bind-key
@@ -1979,7 +1981,9 @@ process name."
 (use-package minibuffer
   :ensure nil
   :custom-face
-  (completions-annotations ((t :underline nil))))
+  (completions-annotations ((t :underline nil)))
+  :config
+  (setq read-file-name-completion-ignore-case t))
 #+END_SRC
 * General packages - external
 #+BEGIN_SRC emacs-lisp
