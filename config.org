@@ -2101,7 +2101,17 @@ process name."
       (unless (file-exists-p pfile)
         (write-region "" nil pfile)))
     (projectile-add-known-project project-root))
-  (defalias 'sk-remove-known-project 'projectile-remove-known-project)
+  (defun sk-remove-known-project (project)
+    "Show the current project at the top of the candidate list."
+    (interactive
+     (let* ((root (sk-project-root))
+            (root (and root (abbreviate-file-name root)))
+            (cands (if (and root (member root projectile-known-projects))
+                       (cons root (remove root projectile-known-projects))
+                     projectile-known-projects)))
+       (list (projectile-completing-read
+              "Remove from known projects: " cands))))
+    (projectile-remove-known-project project))
   (defalias 'projectile-project-root 'sk-project-root))
 
 (use-package markdown-mode
