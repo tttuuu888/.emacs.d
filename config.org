@@ -2003,7 +2003,11 @@ process name."
   (define-key company-active-map (kbd "M-p") 'company-select-previous)
   (evil-define-key 'insert company-mode-map
     (kbd "M-/") 'company-yas-expand
-    (kbd "TAB") 'company-indent-or-complete-common))
+    (kbd "TAB") 'company-indent-or-complete-common)
+  (advice-add 'company-capf :around
+              (lambda (orig &rest args)
+                (let ((completion-styles '(basic partial-completion)))
+                  (apply orig args)))))
 
 (use-package company-irony
   :demand t
@@ -2674,21 +2678,10 @@ Stop trying if the input changes before the candidate appears."
 (use-package orderless
   :defer-init (require 'orderless)
   :config
-  (orderless-define-completion-style orderless+initialism
-    (orderless-matching-styles
-     '(orderless-initialism orderless-literal orderless-regexp)))
-
-  (setq completion-category-defaults nil
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
         completion-category-overrides
-        '((file (styles partial-completion orderless+initialism))
-          (buffer (styles orderless+initialism))
-          (consult-multi (styles orderless+initialism))
-          (consult-location (styles orderless))
-          (command (styles orderless+initialism))
-          (variable (styles orderless+initialism))
-          (symbol (styles orderless+initialism)))
-        completion-styles '(basic partial-completion orderless)
-        orderless-matching-styles '(orderless-literal orderless-regexp)))
+        '((file (styles partial-completion orderless)))))
 
 (use-package consult
   :bind (("<f5>"    . sk-compile)
