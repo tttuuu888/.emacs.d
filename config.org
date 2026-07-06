@@ -3697,6 +3697,7 @@ in case of ((|))."
 (use-package dumb-jump
   :defer-init (require 'dumb-jump)
   :config
+  (setq dumb-jump-project-denoters sk-project-root-files)
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 #+END_SRC
 * End
