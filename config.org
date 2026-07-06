@@ -622,7 +622,7 @@ Simple color setting function which has 'dark' and 'light' theme.
     (set-face-attribute 'fringe nil
                         :background base-bg-color)
     (set-face-attribute 'vertical-border nil
-                        :background base-bg-color)
+                        :foreground base-fg-color :background base-bg-color)
     (set-face-attribute 'region nil
                         :background region-bg-color)))
 (defun sk-light-theme () (interactive) (my-theme-setting t))
