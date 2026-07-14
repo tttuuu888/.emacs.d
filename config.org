@@ -1998,7 +1998,23 @@ process name."
   :defer-init
   (package-loading-notifier-mode 1))
 
+(use-package corfu
+  :defer-init (global-corfu-mode 1)
+  :config
+  (require 'savehist)
+  (setq corfu-cycle t
+        corfu-min-width 20
+        corfu-on-exact-match 'insert
+        corfu-popupinfo-delay '(1.25 . 0.5)
+        corfu-preview-current nil
+        corfu-quit-at-boundary t
+        corfu-quit-no-match t)
+  (corfu-popupinfo-mode 1)
+  (corfu-history-mode 1)
+  (add-to-list 'savehist-additional-variables 'corfu-history))
+
 (use-package company
+  :disabled
   :defer-init (global-company-mode 1)
   :config
   (setq company-format-margin-function nil
@@ -2018,28 +2034,33 @@ process name."
                   (apply orig args)))))
 
 (use-package company-irony
+  :disabled
   :demand t
   :after irony
   :config
   (add-to-list 'company-backends 'company-irony))
 
 (use-package company-irony-c-headers
+  :disabled
   :demand t
   :after irony
   :config
   (add-to-list 'company-backends 'company-irony-c-headers))
 
 (use-package company-web
+  :disabled
   :demand t
   :after web-mode)
 
 (use-package company-go
+  :disabled
   :demand t
   :after go-mode
   :config
   (add-to-list 'company-backends 'company-go))
 
 (use-package company-ghci
+  :disabled
   :demand t
   :after haskell-mode
   :config
