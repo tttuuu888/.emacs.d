@@ -42,22 +42,18 @@ start up to use of updated =package-archives=.
 #+END_SRC
 
 ** User-emacs-directory setting
-From this point, =user-emacs-directory= is set to =~/.emacs.d/.local/= so that
-all package local files would be hidden under the path.
+From this point, =user-emacs-directory= is set to =~/.emacs.d/.local/= to
+isolate all package-generated local files.
 
-=emacs-config-dir= would be used instead of =user-emacs-directory=.
+=emacs-config-dir= is used instead of =user-emacs-directory= to refer to the
+configuration root.
+
+=emacs-etc-dir= indicates the folder containing extra configurations.
 
 #+BEGIN_SRC emacs-lisp
 (defvar emacs-config-dir user-emacs-directory)
-(setq user-emacs-directory (expand-file-name ".local/" emacs-config-dir))
-#+END_SRC
-
-Set =emacs-etc-dir= to indicate a folder containing extra files.
-
-#+BEGIN_SRC emacs-lisp
 (defvar emacs-etc-dir (expand-file-name "etc/" emacs-config-dir))
-(unless (file-exists-p emacs-etc-dir)
-  (make-directory-internal emacs-etc-dir))
+(setq user-emacs-directory (expand-file-name ".local/" emacs-config-dir))
 #+END_SRC
 
 ** User information
