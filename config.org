@@ -3134,16 +3134,16 @@ in case of ((|))."
 
 (use-package which-func
   :ensure nil
-  :hook (prog-mode . my-which-function-setup)
   :custom-face (which-func ((t :inherit font-lock-function-name-face))
                            face-defface-spec)
+  :init
+  (add-hook 'lisp-interaction-mode-hook
+            (lambda () (setq-local which-func-mode nil)))
+  :defer-init (which-function-mode 1)
   :config
-  (setq which-func-unknown "N/A"
-        which-func-update-timer nil)
-  (defun my-which-function-setup ()
-    (unless (equal major-mode 'lisp-interaction-mode)
-      (which-function-mode)
-      (setq-local header-line-format 'which-func-format))))
+  (setq which-func-display 'header
+        which-func-modes '(prog-mode)
+        which-func-unknown "N/A"))
 
 (use-package sh-script
   :ensure nil
