@@ -57,8 +57,8 @@ configuration root.
 #+END_SRC
 
 ** User information
-If =USER_FULL_NAME= and =USER_MAIL_ADDRESS= environment variables exist, update
-=user_full_name= and =user_mail_address= variables.
+If =USER_FULL_NAME= and =USER_MAIL_ADDRESS= environment variables are set,
+update =user-full-name= and =user-mail-address= variables.
 
 #+BEGIN_SRC emacs-lisp
 (let ((name (getenv "USER_FULL_NAME"))
