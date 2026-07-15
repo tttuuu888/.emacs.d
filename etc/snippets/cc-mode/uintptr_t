@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: uptr
+# key: uptr
+# --
+uintptr_t$0
