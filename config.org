@@ -941,7 +941,17 @@ Defer code execution until the first command after initialization.
   (evil-global-set-key 'normal "Y" (kbd "y$"))
   (evil-global-set-key 'motion "Y" (kbd "y$"))
   (dolist (m '(image-mode special-mode))
-    (evil-set-initial-state m 'emacs)))
+    (evil-set-initial-state m 'emacs))
+
+  (unless (display-graphic-p)
+    (defun my-evil-term-set-cursor (&rest _args)
+      "Sync terminal cursor shape with the `cursor-type' updated by Evil."
+      (let ((type (car (ensure-list cursor-type))))
+        (cond
+         ((eq type 'bar)  (send-string-to-terminal "\e[6 q"))
+         ((eq type 'hbar) (send-string-to-terminal "\e[4 q"))
+         (t               (send-string-to-terminal "\e[2 q")))))
+    (advice-add 'evil-set-cursor :after #'my-evil-term-set-cursor)))
 
 (use-package evil-anzu
   :vc (:url "https://github.com/tttuuu888/evil-anzu"
