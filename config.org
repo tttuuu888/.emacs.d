@@ -542,7 +542,7 @@ Treat quoted strings and balanced parentheses, brackets, and braces as
 single units."
   (interactive "r")
   (align-regexp beg end
-                (rx (group (* space))
+                (rx (group (+ blank))
                     (+ (or (not (any space ?\" ?\( ?\[ ?\{))
                            (seq ?\"
                                 (* (not (any ?\")))
