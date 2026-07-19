@@ -2013,6 +2013,16 @@ process name."
   (corfu-history-mode 1)
   (add-to-list 'savehist-additional-variables 'corfu-history))
 
+(use-package corfu-terminal
+  :vc (:url "https://codeberg.org/akib/emacs-corfu-terminal.git"
+            :rev :newest)
+  :if (not (display-graphic-p))
+  :defer-init (corfu-terminal-mode 1))
+
+(use-package popon
+  :vc (:url "https://codeberg.org/akib/emacs-popon.git"
+            :rev :newest))
+
 (use-package company
   :disabled
   :defer-init (global-company-mode 1)
