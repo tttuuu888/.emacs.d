@@ -1736,6 +1736,7 @@ process name."
   (setq remote-file-name-inhibit-cache nil
         tramp-auto-save-directory "/tmp/tramp/"
         tramp-chunksize 2000
+        tramp-histfile-override t
         tramp-verbose 1)
   ;; TRAMP respect PATH variable on remote machine.
   (add-to-list 'tramp-remote-path 'tramp-own-remote-path)
