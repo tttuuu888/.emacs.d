@@ -2397,10 +2397,15 @@ process name."
   (defun sk-yasnippet-capf ()
     (when (thing-at-point-looking-at (rx (+ (or word punct)))
                                      yasnippet-capf-max-search-distance)
-      `(,(match-beginning 0) ,(match-end 0)
-        ,(completion-table-with-cache
-          (lambda (input) (yasnippet-capf-candidates input)))
-        ,@yasnippet-capf--properties))))
+      (let ((table (completion-table-with-cache
+                    (lambda (input) (yasnippet-capf-candidates input)))))
+        `(,(match-beginning 0) ,(match-end 0)
+          ,(lambda (str pred action)
+             ;; Reports the `yasnippet-key' completion category
+             (if (eq action 'metadata)
+                 '(metadata (category . yasnippet-key))
+               (funcall table str pred action)))
+          ,@yasnippet-capf--properties)))))
 
 (use-package posframe)
 
@@ -2803,7 +2808,8 @@ Stop trying if the input changes before the candidate appears."
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
         completion-category-overrides
-        '((file (styles partial-completion orderless)))))
+        '((file (styles partial-completion orderless))
+          (yasnippet-key (styles basic)))))
 
 (use-package consult
   :bind (("<f5>"    . sk-compile)
