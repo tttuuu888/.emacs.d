@@ -1513,7 +1513,7 @@ Defer code execution until the first command after initialization.
     (interactive "P")
     (if (org-at-table-p)
         (org-cycle arg)
-      (company-indent-or-complete-common arg)))
+      (indent-for-tab-command arg)))
   (defun my-org-inline-image-hook ()
     (when org-inline-image-overlays
       (org-redisplay-inline-images)))
