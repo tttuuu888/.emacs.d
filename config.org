@@ -2011,6 +2011,7 @@ process name."
         corfu-quit-no-match t)
   (corfu-popupinfo-mode 1)
   (corfu-history-mode 1)
+  (add-hook 'evil-insert-state-exit-hook #'corfu-quit)
   (add-to-list 'savehist-additional-variables 'corfu-history)
   (evil-define-key 'insert corfu-mode-map
     (kbd "M-/") 'corfu-yas-expand))
