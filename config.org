@@ -2396,9 +2396,7 @@ process name."
       (apply #'call-process "rm" nil nil nil "-rf" to-remove))))
 
 (use-package yasnippet-capf
-  :after cape
-  :config
-  (add-to-list 'completion-at-point-functions #'yasnippet-capf))
+  :after yasnippet)
 
 (use-package posframe)
 
