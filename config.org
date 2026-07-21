@@ -2023,6 +2023,13 @@ process name."
   :vc (:url "https://codeberg.org/akib/emacs-popon.git"
             :rev :newest))
 
+(use-package cape
+  :bind ("C-c p" . cape-prefix-map)
+  :init
+  (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-file)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block))
+
 (use-package company
   :disabled
   :defer-init (global-company-mode 1)
