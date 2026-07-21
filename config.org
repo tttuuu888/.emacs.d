@@ -1772,12 +1772,14 @@ process name."
     "gk" 'comint-previous-prompt
     (kbd "RET") 'my-comint-return)
   (evil-define-key 'insert comint-mode-map
-    (kbd "RET") 'comint-send-input)
-
+    (kbd "RET") 'my-comint-insert-ret)
   (defun my-comint-return ()
     (interactive)
     (evil-goto-line)
-    (evil-append-line 1)))
+    (evil-append-line 1))
+  (defun my-comint-insert-ret ()
+    (interactive)
+    (if completion-in-region-mode (corfu-insert) (comint-send-input))))
 
 (use-package package
   :ensure nil
