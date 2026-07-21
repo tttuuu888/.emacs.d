@@ -1493,7 +1493,6 @@ Defer code execution until the first command after initialization.
     "gp" 'org-mark-ring-goto)
   (add-hook 'org-mode-hook
             (lambda ()
-              (evil-local-set-key 'insert (kbd "<tab>") 'my-org-tab)
               (evil-local-set-key 'insert (kbd "TAB") 'my-org-tab)))
   (add-hook 'org-babel-after-execute-hook 'my-org-inline-image-hook)
 
