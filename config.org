@@ -2012,7 +2012,9 @@ process name."
         corfu-quit-no-match t)
   (corfu-popupinfo-mode 1)
   (corfu-history-mode 1)
-  (add-to-list 'savehist-additional-variables 'corfu-history))
+  (add-to-list 'savehist-additional-variables 'corfu-history)
+  (evil-define-key 'insert corfu-mode-map
+    (kbd "M-/") 'corfu-yas-expand))
 
 (use-package corfu-terminal
   :vc (:url "https://codeberg.org/akib/emacs-corfu-terminal.git"
@@ -2354,17 +2356,16 @@ process name."
   (setq calendar-holidays korean-holidays))
 
 (use-package yasnippet
-  :commands yas-expand company-yas-expand
+  :commands yas-expand corfu-yas-expand
   :config
   (let ((my-yasnippet-dir (expand-file-name "snippets/" emacs-etc-dir)))
     (add-to-list 'yas-snippet-dirs my-yasnippet-dir)
     (yas-load-directory my-yasnippet-dir t))
-  (defun company-yas-expand ()
+  (defun corfu-yas-expand ()
     (interactive)
-    (when (company--active-p) (company-cancel))
     (yas-minor-mode-on)
-    (let ((company-backends '(company-yasnippet)))
-      (company-complete-common))))
+    (let ((completion-at-point-functions (list #'sk-yasnippet-capf)))
+      (completion-at-point))))
 
 (use-package yasnippet-snippets
   :demand t
@@ -2391,7 +2392,16 @@ process name."
       (apply #'call-process "rm" nil nil nil "-rf" to-remove))))
 
 (use-package yasnippet-capf
-  :after yasnippet)
+  :demand t
+  :after yasnippet
+  :config
+  (defun sk-yasnippet-capf ()
+    (when (thing-at-point-looking-at (rx (+ (or word punct)))
+                                     yasnippet-capf-max-search-distance)
+      `(,(match-beginning 0) ,(match-end 0)
+        ,(completion-table-with-cache
+          (lambda (input) (yasnippet-capf-candidates input)))
+        ,@yasnippet-capf--properties))))
 
 (use-package posframe)
 
