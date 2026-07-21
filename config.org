@@ -3320,8 +3320,7 @@ in case of ((|))."
         c-default-style "my-bsd")
   (defvaralias 'c-basic-offset 'tab-width)
   (evil-define-key 'insert c-mode-base-map
-    (kbd "TAB")   'indent-for-tab-command
-    (kbd "<tab>") 'indent-for-tab-command)
+    (kbd "TAB") 'indent-for-tab-command)
   (evil-leader/set-key-for-map c-mode-base-map
     "co" 'sk-find-other-file))
 
