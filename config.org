@@ -3412,11 +3412,10 @@ in case of ((|))."
                (looking-back "\\(?:->\\|::\\|\\.\\)" (- (point) 2)))
       (ignore-errors (completion-at-point))))
   (defun my-irony-corfu-setup ()
-    "Expose irony's company backends to corfu/capf via cape."
-    (add-hook 'completion-at-point-functions
-              (cape-company-to-capf #'company-irony-c-headers) nil t)
     (add-hook 'completion-at-point-functions
               (cape-company-to-capf #'company-irony) nil t)
+    (add-hook 'completion-at-point-functions
+              (cape-company-to-capf #'company-irony-c-headers) nil t)
     (add-hook 'post-self-insert-hook 'my-c-corfu-trigger nil t))
   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
   (add-hook 'irony-mode-hook 'my-irony-corfu-setup)
