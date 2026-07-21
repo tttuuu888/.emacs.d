@@ -2002,7 +2002,8 @@ process name."
   :defer-init (global-corfu-mode 1)
   :config
   (require 'savehist)
-  (setq corfu-cycle t
+  (setq corfu-auto t
+        corfu-cycle t
         corfu-min-width 20
         corfu-on-exact-match 'insert
         corfu-popupinfo-delay '(1.25 . 0.5)
