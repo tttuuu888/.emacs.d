@@ -3394,7 +3394,22 @@ in case of ((|))."
 (use-package irony
   :hook ((c++-mode c-mode objc-mode) . irony-mode)
   :config
+  (defun my-c-corfu-trigger ()
+    "Auto-start completion after C/C++ member-access operators."
+    (when (and (bound-and-true-p corfu-mode)
+               (memq last-command-event '(?> ?: ?.))
+               (not (nth 8 (syntax-ppss))) ; not in string/comment
+               (looking-back "\\(?:->\\|::\\|\\.\\)" (- (point) 2)))
+      (ignore-errors (completion-at-point))))
+  (defun my-irony-corfu-setup ()
+    "Expose irony's company backends to corfu/capf via cape."
+    (add-hook 'completion-at-point-functions
+              (cape-company-to-capf #'company-irony-c-headers) nil t)
+    (add-hook 'completion-at-point-functions
+              (cape-company-to-capf #'company-irony) nil t)
+    (add-hook 'post-self-insert-hook 'my-c-corfu-trigger nil t))
   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+  (add-hook 'irony-mode-hook 'my-irony-corfu-setup)
   (setq irony-cdb-compilation-databases
         '(irony-cdb-clang-complete irony-cdb-libclang)))
 
