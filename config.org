@@ -2001,7 +2001,8 @@ process name."
 (use-package company
   :defer-init (global-company-mode 1)
   :config
-  (setq company-format-margin-function nil)
+  (setq company-format-margin-function nil
+        company-require-match nil)
   (defun my-company-abort ()
     (when (company--active-p)
       (company-cancel 'abort)))
