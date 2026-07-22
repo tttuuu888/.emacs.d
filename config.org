@@ -3416,6 +3416,16 @@ in case of ((|))."
                (not (nth 8 (syntax-ppss))) ; not in string/comment
                (looking-back "\\(?:->\\|::\\|\\.\\)" (- (point) 2)))
       (ignore-errors (completion-at-point))))
+  (advice-add 'company-irony-c-headers--candidates :filter-args
+              (lambda (args)
+                (let (p)
+                  (if (and (stringp (car args))
+                           (not (get-text-property 0 'quote (car args)))
+                           (setq p (company-irony-c-headers--prefix)))
+                      (list (propertize (car args) 'quote
+                                        (get-text-property
+                                         0 'quote (if (consp p) (car p) p))))
+                    args))))
   (defun my-irony-corfu-setup ()
     (add-hook 'completion-at-point-functions
               (cape-company-to-capf #'company-irony) nil t)
