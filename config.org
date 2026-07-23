@@ -2003,9 +2003,7 @@ process name."
         corfu-min-width 20
         corfu-on-exact-match 'insert
         corfu-popupinfo-delay '(1.25 . 0.5)
-        corfu-preview-current nil
-        corfu-quit-at-boundary t
-        corfu-quit-no-match t)
+        corfu-preview-current nil)
   (corfu-popupinfo-mode 1)
   (corfu-history-mode 1)
   (add-hook 'evil-insert-state-exit-hook #'corfu-quit)
