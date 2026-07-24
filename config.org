@@ -2535,7 +2535,7 @@ alphabetically via `vertico-sort-alpha'."
     (if (or (string-empty-p input)
             (eq (aref input 0) ?^))
         (vertico-sort-alpha candidates)
-      (let ((first-word (car (split-string input)))
+      (let ((first-word (or (car (split-string input)) ""))
             res-exact res-prefix res-others)
         (dolist (cand candidates)
           (cond
