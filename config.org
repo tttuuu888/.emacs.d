@@ -1964,7 +1964,8 @@ process name."
 
 (use-package text
   :ensure nil
-  :mode ("\\.lst\\'" . text-mode))
+  :mode ("\\.lst\\'" . text-mode)
+  :custom (text-mode-ispell-word-completion nil))
 
 (use-package hexl
   :ensure nil
