@@ -2200,7 +2200,85 @@ process name."
   (if (transient--locate-child 'magit-diff "V")
       (error "Layout conflict occured!")
     (transient-append-suffix 'magit-diff "w"
-      '("V" "Save vc-diff" sk-git-diff))))
+      '("V" "Save vc-diff" sk-git-diff)))
+
+  (defun my-magit-insert-tags-fast ()
+    "Insert remote tags as plain text without section objects."
+    (when-let ((tags (magit-git-lines "tag" "--list" "-n" magit-buffer-refs-args)))
+      (insert (propertize "Tags" 'font-lock-face 'magit-section-heading)
+              (format " (%d)\n" (length tags)))
+      (dolist (tag tags)
+        (string-match "^\\([^ \t]+\\)[ \t]+\\([^ \t\n].*\\)?" tag)
+        (let ((name (match-string 1 tag))
+              (msg (match-string 2 tag)))
+          (insert "  ")
+          (insert (propertize name 'font-lock-face 'magit-tag))
+          (when msg
+            (insert
+             (make-string
+              (max 1 (- (if (consp magit-refs-primary-column-width)
+                            (car magit-refs-primary-column-width)
+                          magit-refs-primary-column-width)
+                        (length name)))
+              ?\s))
+            (insert (magit-log--wash-summary msg)))
+          (insert "\n")))
+      (insert "\n")))
+
+  (defun my-magit-insert-remote-branches-fast ()
+    "Insert remote branches as plain text without section objects."
+    (dolist (remote (magit-list-remotes))
+      (let ((lines (seq-remove
+                    (lambda (line)
+                      (string-equal (car (split-string line "\0")) remote))
+                    (magit-git-lines "for-each-ref"
+                                     "--format=%(refname:short)%00%(subject)"
+                                     (concat "refs/remotes/" remote))))
+            (pull (magit-get "remote" remote "url"))
+            (push (magit-get "remote" remote "pushurl")))
+        (insert
+         (format (propertize "Remote %s (%s)"
+                             'font-lock-face 'magit-section-heading)
+                 (propertize remote 'font-lock-face 'magit-branch-remote)
+                 (concat pull (and pull push ", ") push))
+         (format " (%d)\n" (length lines)))
+        (dolist (line lines)
+          (pcase-let ((`(,branch ,msg) (split-string line "\0")))
+            (let ((name (string-remove-prefix (concat remote "/") branch)))
+              (insert "  ")
+              (insert (propertize name 'font-lock-face 'magit-branch-remote))
+              (when msg
+                (insert
+                 (make-string
+                  (max 1 (- (if (consp magit-refs-primary-column-width)
+                                (car magit-refs-primary-column-width)
+                              magit-refs-primary-column-width)
+                            (length name)))
+                  ?\s))
+                (insert (magit-log--wash-summary msg)))
+              (insert "\n")))))
+      (insert "\n")))
+
+  (defun magit-light-mode ()
+    "Speed up Magit by disabling heavy features."
+    (setq-local
+     magit-diff-highlight-hunk-body nil
+     magit-diff-paint-whitespace nil
+     magit-refresh-status-buffer nil
+     magit-refs-sections-hook '(magit-insert-error-header
+                                magit-insert-branch-description
+                                magit-insert-local-branches
+                                my-magit-insert-remote-branches-fast
+                                my-magit-insert-tags-fast)
+     magit-revision-insert-related-refs nil
+     magit-status-sections-hook
+     (cl-remove-if
+      (lambda (x)
+        (memq x '(magit-insert-unpushed-to-pushremote
+                  magit-insert-unpulled-from-pushremote
+                  magit-insert-unpulled-from-upstream
+                  magit-insert-unpushed-to-upstream-or-recent)))
+      magit-status-sections-hook))))
 
 (use-package git-modes)
 
