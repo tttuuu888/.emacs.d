@@ -1493,7 +1493,6 @@ Defer code execution until the first command after initialization.
     "gp" 'org-mark-ring-goto)
   (add-hook 'org-mode-hook
             (lambda ()
-              (evil-local-set-key 'insert (kbd "<tab>") 'my-org-tab)
               (evil-local-set-key 'insert (kbd "TAB") 'my-org-tab)))
   (add-hook 'org-babel-after-execute-hook 'my-org-inline-image-hook)
 
@@ -1513,7 +1512,7 @@ Defer code execution until the first command after initialization.
     (interactive "P")
     (if (org-at-table-p)
         (org-cycle arg)
-      (company-indent-or-complete-common arg)))
+      (indent-for-tab-command arg)))
   (defun my-org-inline-image-hook ()
     (when org-inline-image-overlays
       (org-redisplay-inline-images)))
@@ -1772,8 +1771,6 @@ process name."
     "gj" 'comint-next-prompt
     "gk" 'comint-previous-prompt
     (kbd "RET") 'my-comint-return)
-  (evil-define-key 'insert comint-mode-map
-    (kbd "RET") 'comint-send-input)
 
   (defun my-comint-return ()
     (interactive)
@@ -1967,7 +1964,8 @@ process name."
 
 (use-package text
   :ensure nil
-  :mode ("\\.lst\\'" . text-mode))
+  :mode ("\\.lst\\'" . text-mode)
+  :custom (text-mode-ispell-word-completion nil))
 
 (use-package hexl
   :ensure nil
@@ -1998,7 +1996,44 @@ process name."
   :defer-init
   (package-loading-notifier-mode 1))
 
+(use-package corfu
+  :defer-init (global-corfu-mode 1)
+  :config
+  (require 'savehist)
+  (setq corfu-auto t
+        corfu-min-width 20
+        corfu-on-exact-match 'insert
+        corfu-popupinfo-delay '(1.25 . 0.5)
+        corfu-preview-current nil)
+  (corfu-popupinfo-mode 1)
+  (corfu-history-mode 1)
+  (add-hook 'evil-insert-state-exit-hook #'corfu-quit)
+  (add-to-list 'savehist-additional-variables 'corfu-history)
+  (add-to-list 'emulation-mode-map-alists
+               `((completion-in-region-mode . ,corfu-map)))
+  (define-key corfu-map [return] #'corfu-insert)
+  (evil-define-key 'insert corfu-mode-map
+    (kbd "M-/") 'corfu-yas-expand))
+
+(use-package corfu-terminal
+  :vc (:url "https://codeberg.org/akib/emacs-corfu-terminal.git"
+            :rev :newest)
+  :if (not (display-graphic-p))
+  :defer-init (corfu-terminal-mode 1))
+
+(use-package popon
+  :vc (:url "https://codeberg.org/akib/emacs-popon.git"
+            :rev :newest))
+
+(use-package cape
+  :bind ("C-c p" . cape-prefix-map)
+  :init
+  (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-file)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block))
+
 (use-package company
+  :disabled
   :defer-init (global-company-mode 1)
   :config
   (setq company-format-margin-function nil
@@ -2019,27 +2054,25 @@ process name."
 
 (use-package company-irony
   :demand t
-  :after irony
-  :config
-  (add-to-list 'company-backends 'company-irony))
+  :after irony)
 
 (use-package company-irony-c-headers
   :demand t
-  :after irony
-  :config
-  (add-to-list 'company-backends 'company-irony-c-headers))
+  :after irony)
 
 (use-package company-web
   :demand t
   :after web-mode)
 
 (use-package company-go
+  :disabled
   :demand t
   :after go-mode
   :config
   (add-to-list 'company-backends 'company-go))
 
 (use-package company-ghci
+  :disabled
   :demand t
   :after haskell-mode
   :config
@@ -2321,17 +2354,16 @@ process name."
   (setq calendar-holidays korean-holidays))
 
 (use-package yasnippet
-  :commands yas-expand company-yas-expand
+  :commands yas-expand corfu-yas-expand
   :config
   (let ((my-yasnippet-dir (expand-file-name "snippets/" emacs-etc-dir)))
     (add-to-list 'yas-snippet-dirs my-yasnippet-dir)
     (yas-load-directory my-yasnippet-dir t))
-  (defun company-yas-expand ()
+  (defun corfu-yas-expand ()
     (interactive)
-    (when (company--active-p) (company-cancel))
     (yas-minor-mode-on)
-    (let ((company-backends '(company-yasnippet)))
-      (company-complete-common))))
+    (let ((completion-at-point-functions (list #'sk-yasnippet-capf)))
+      (completion-at-point))))
 
 (use-package yasnippet-snippets
   :demand t
@@ -2356,6 +2388,23 @@ process name."
          (to-remove (mapcar (lambda (x) (concat path x)) unused)))
     (when to-remove
       (apply #'call-process "rm" nil nil nil "-rf" to-remove))))
+
+(use-package yasnippet-capf
+  :demand t
+  :after yasnippet
+  :config
+  (defun sk-yasnippet-capf ()
+    (when (thing-at-point-looking-at (rx (+ (or word punct)))
+                                     yasnippet-capf-max-search-distance)
+      (let ((table (completion-table-with-cache
+                    (lambda (input) (yasnippet-capf-candidates input)))))
+        `(,(match-beginning 0) ,(match-end 0)
+          ,(lambda (str pred action)
+             ;; Reports the `yasnippet-key' completion category
+             (if (eq action 'metadata)
+                 '(metadata (category . yasnippet-key))
+               (funcall table str pred action)))
+          ,@yasnippet-capf--properties)))))
 
 (use-package posframe)
 
@@ -2755,10 +2804,11 @@ Stop trying if the input changes before the candidate appears."
 (use-package orderless
   :defer-init (require 'orderless)
   :config
-  (setq completion-styles '(orderless basic)
+  (setq completion-styles '(orderless partial-completion basic)
         completion-category-defaults nil
         completion-category-overrides
-        '((file (styles partial-completion orderless)))))
+        '((file (styles partial-completion orderless))
+          (yasnippet-key (styles basic)))))
 
 (use-package consult
   :bind (("<f5>"    . sk-compile)
@@ -3267,6 +3317,8 @@ in case of ((|))."
   (setq c-basic-offset tab-width
         c-default-style "my-bsd")
   (defvaralias 'c-basic-offset 'tab-width)
+  (evil-define-key 'insert c-mode-base-map
+    (kbd "TAB") 'indent-for-tab-command)
   (evil-leader/set-key-for-map c-mode-base-map
     "co" 'sk-find-other-file))
 
@@ -3355,7 +3407,31 @@ in case of ((|))."
 (use-package irony
   :hook ((c++-mode c-mode objc-mode) . irony-mode)
   :config
+  (defun my-c-corfu-trigger ()
+    "Auto-start completion after C/C++ member-access operators."
+    (when (and (bound-and-true-p corfu-mode)
+               (memq last-command-event '(?> ?: ?.))
+               (not (nth 8 (syntax-ppss))) ; not in string/comment
+               (looking-back "\\(?:->\\|::\\|\\.\\)" (- (point) 2)))
+      (ignore-errors (completion-at-point))))
+  (advice-add 'company-irony-c-headers--candidates :filter-args
+              (lambda (args)
+                (let (p)
+                  (if (and (stringp (car args))
+                           (not (get-text-property 0 'quote (car args)))
+                           (setq p (company-irony-c-headers--prefix)))
+                      (list (propertize (car args) 'quote
+                                        (get-text-property
+                                         0 'quote (if (consp p) (car p) p))))
+                    args))))
+  (defun my-irony-corfu-setup ()
+    (add-hook 'completion-at-point-functions
+              (cape-company-to-capf #'company-irony) nil t)
+    (add-hook 'completion-at-point-functions
+              (cape-company-to-capf #'company-irony-c-headers) nil t)
+    (add-hook 'post-self-insert-hook 'my-c-corfu-trigger nil t))
   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+  (add-hook 'irony-mode-hook 'my-irony-corfu-setup)
   (setq irony-cdb-compilation-databases
         '(irony-cdb-clang-complete irony-cdb-libclang)))
 
@@ -3504,7 +3580,11 @@ in case of ((|))."
         web-mode-code-indent-offset 2
         web-mode-markup-indent-offset 2
         web-mode-enable-current-element-highlight t)
-  (sk-C-c-map-to-leader-c-map 'web-mode web-mode-map))
+  (sk-C-c-map-to-leader-c-map 'web-mode web-mode-map)
+  (defun my-web-corfu-setup ()
+    (add-hook 'completion-at-point-functions
+              (cape-company-to-capf #'company-web-html) nil t))
+  (add-hook 'web-mode-hook 'my-web-corfu-setup))
 
 (use-package js2-mode
   :mode (("\\.js\\'" . js2-mode)
@@ -3651,7 +3731,11 @@ in case of ((|))."
 
 (use-package cmake-mode
   :config
-  (setq cmake-tab-width 4))
+  (setq cmake-tab-width 4)
+  (defun my-cmake-corfu-setup ()
+    (add-hook 'completion-at-point-functions
+              (cape-company-to-capf #'company-cmake) nil t))
+  (add-hook 'cmake-mode-hook 'my-cmake-corfu-setup))
 
 (use-package gnuplot)
 
