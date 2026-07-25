@@ -2202,6 +2202,19 @@ process name."
     (transient-append-suffix 'magit-diff "w"
       '("V" "Save vc-diff" sk-git-diff)))
 
+  (defun my-magit-insert-ref-line (name face msg)
+    "Insert a \"  NAME  MSG\" line padded to the primary column."
+    (insert "  " (propertize name 'font-lock-face face))
+    (when msg
+      (insert (make-string
+               (max 1 (- (if (consp magit-refs-primary-column-width)
+                             (car magit-refs-primary-column-width)
+                           magit-refs-primary-column-width)
+                         (length name)))
+               ?\s)
+              (magit-log--wash-summary msg)))
+    (insert "\n"))
+
   (defun my-magit-insert-tags-fast ()
     "Insert remote tags as plain text without section objects."
     (when-let ((tags (magit-git-lines "tag" "--list" "-n" magit-buffer-refs-args)))
@@ -2211,18 +2224,7 @@ process name."
         (string-match "^\\([^ \t]+\\)[ \t]+\\([^ \t\n].*\\)?" tag)
         (let ((name (match-string 1 tag))
               (msg (match-string 2 tag)))
-          (insert "  ")
-          (insert (propertize name 'font-lock-face 'magit-tag))
-          (when msg
-            (insert
-             (make-string
-              (max 1 (- (if (consp magit-refs-primary-column-width)
-                            (car magit-refs-primary-column-width)
-                          magit-refs-primary-column-width)
-                        (length name)))
-              ?\s))
-            (insert (magit-log--wash-summary msg)))
-          (insert "\n")))
+          (my-magit-insert-ref-line name 'magit-tag msg)))
       (insert "\n")))
 
   (defun my-magit-insert-remote-branches-fast ()
@@ -2245,18 +2247,7 @@ process name."
         (dolist (line lines)
           (pcase-let ((`(,branch ,msg) (split-string line "\0")))
             (let ((name (string-remove-prefix (concat remote "/") branch)))
-              (insert "  ")
-              (insert (propertize name 'font-lock-face 'magit-branch-remote))
-              (when msg
-                (insert
-                 (make-string
-                  (max 1 (- (if (consp magit-refs-primary-column-width)
-                                (car magit-refs-primary-column-width)
-                              magit-refs-primary-column-width)
-                            (length name)))
-                  ?\s))
-                (insert (magit-log--wash-summary msg)))
-              (insert "\n")))))
+              (my-magit-insert-ref-line name 'magit-branch-remote msg)))))
       (insert "\n")))
 
   (defun magit-light-mode ()
