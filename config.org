@@ -1998,6 +1998,10 @@ process name."
 
 (use-package corfu
   :defer-init (global-corfu-mode 1)
+  :bind (:map corfu-map
+          ("C-n"      . corfu-next)
+          ("C-p"      . corfu-previous)
+          ("<return>" . corfu-insert))
   :config
   (require 'savehist)
   (setq corfu-auto t
@@ -2011,9 +2015,6 @@ process name."
   (add-to-list 'savehist-additional-variables 'corfu-history)
   (add-to-list 'emulation-mode-map-alists
                `((completion-in-region-mode . ,corfu-map)))
-  (define-key corfu-map (kbd "C-n") 'corfu-next)
-  (define-key corfu-map (kbd "C-p") 'corfu-previous)
-  (define-key corfu-map [return] #'corfu-insert)
   (evil-define-key 'insert corfu-mode-map
     (kbd "M-/") 'corfu-yas-expand))
 
