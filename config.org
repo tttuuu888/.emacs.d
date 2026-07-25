@@ -2221,7 +2221,8 @@ process name."
 
   (defun my-magit-insert-tags-fast ()
     "Insert remote tags as plain text without section objects."
-    (when-let ((tags (magit-git-lines "tag" "--list" "-n" magit-buffer-refs-args)))
+    (when-let ((tags (magit-git-lines "tag" "--list" "-n"
+                                      magit-buffer-refs-args)))
       (insert (propertize "Tags" 'font-lock-face 'magit-section-heading)
               (format " (%d)\n" (length tags)))
       (dolist (tag tags)
