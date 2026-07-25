@@ -2034,25 +2034,7 @@ process name."
   (add-hook 'completion-at-point-functions #'cape-file)
   (add-hook 'completion-at-point-functions #'cape-elisp-block))
 
-(use-package company
-  :disabled
-  :defer-init (global-company-mode 1)
-  :config
-  (setq company-format-margin-function nil
-        company-require-match nil)
-  (defun my-company-abort ()
-    (when (company--active-p)
-      (company-cancel 'abort)))
-  (add-hook 'evil-insert-state-exit-hook #'my-company-abort)
-  (define-key company-active-map (kbd "M-n") 'company-select-next)
-  (define-key company-active-map (kbd "M-p") 'company-select-previous)
-  (evil-define-key 'insert company-mode-map
-    (kbd "M-/") 'company-yas-expand
-    (kbd "TAB") 'company-indent-or-complete-common)
-  (advice-add 'company-capf :around
-              (lambda (orig &rest args)
-                (let ((completion-styles '(basic partial-completion)))
-                  (apply orig args)))))
+(use-package company)
 
 (use-package company-irony
   :demand t
@@ -2065,20 +2047,6 @@ process name."
 (use-package company-web
   :demand t
   :after web-mode)
-
-(use-package company-go
-  :disabled
-  :demand t
-  :after go-mode
-  :config
-  (add-to-list 'company-backends 'company-go))
-
-(use-package company-ghci
-  :disabled
-  :demand t
-  :after haskell-mode
-  :config
-  (add-to-list 'company-backends 'company-ghci))
 
 (use-package undo-tree
   :defer-init (global-undo-tree-mode 1)
