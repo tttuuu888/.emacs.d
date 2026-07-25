@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: magit-light
+# key: ,ml
+# --
+((magit-mode (eval . (magit-light-mode))))
