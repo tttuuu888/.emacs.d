@@ -1137,7 +1137,7 @@ Defer code execution until the first command after initialization.
     (interactive)
     (let* ((files (dired-get-marked-files nil current-prefix-arg))
            (source (mapcar #'shell-quote-remote-file files))
-           (regex (rx bol "/" (or "ssh" "scp") (? any) ":"))
+           (regex (rx bol "/" (or "ssh" "scp") (? nonl) ":"))
            (target (my-dired-get-target "Rsync to: " files))
            (src-remote-p (file-remote-p default-directory))
            (dst-remote-p (file-remote-p target))
