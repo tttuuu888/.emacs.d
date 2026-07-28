@@ -1855,7 +1855,7 @@ process name."
     "Attempt to upgrade VC packages and return the list of upgraded ones."
     (let ((vc-pkgs (my-upgradable-vc-packages)))
       (dolist (pkg vc-pkgs)
-        (when-let ((desc (package-get-descriptor pkg)))
+        (when-let* ((desc (package-get-descriptor pkg)))
           (package-vc--unpack-1 desc (package-desc-dir desc))))
       vc-pkgs)))
 
@@ -2221,8 +2221,8 @@ process name."
 
   (defun my-magit-insert-tags-fast ()
     "Insert remote tags as plain text without section objects."
-    (when-let ((tags (magit-git-lines "tag" "--list" "-n"
-                                      magit-buffer-refs-args)))
+    (when-let* ((tags (magit-git-lines "tag" "--list" "-n"
+                                       magit-buffer-refs-args)))
       (insert (propertize "Tags" 'font-lock-face 'magit-section-heading)
               (format " (%d)\n" (length tags)))
       (dolist (tag tags)
@@ -3731,7 +3731,7 @@ in case of ((|))."
       (call-interactively 'inf-elixir)))
   (defun inf-elixir--send (cmd)
     "Re-write function not to pop iex buffer."
-    (when-let ((buf (inf-elixir--determine-repl-buf)))
+    (when-let* ((buf (inf-elixir--determine-repl-buf)))
       (with-current-buffer buf
         (comint-send-string buf (concat cmd "\n")))))
   (defun inf-elixir-send-line-or-region (n)
@@ -3803,7 +3803,7 @@ in case of ((|))."
   (add-hook 'inf-janet-mode-hook #'sk-janet-mode-hook)
   (defun sk-janet-describe-symbol ()
     (interactive)
-    (when-let ((sym (symbol-at-point)))
+    (when-let* ((sym (symbol-at-point)))
       (inf-janet-eval-string (format "(doc %s)" sym))
       (display-buffer inf-janet-buffer)))
   (evil-define-key 'normal inf-janet-mode-map
