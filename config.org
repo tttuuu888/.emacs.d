@@ -3091,6 +3091,7 @@ target followed by an ellipsis if there are further targets."
         popper-reference-buffers
         '("Output\\*$"
           "\\*Async Shell Command\\*"
+          "\\*eldoc\\*"
           help-mode
           compilation-mode)
         popper-window-height #'my-popper-window-height)
