@@ -3087,7 +3087,8 @@ target followed by an ellipsis if there are further targets."
          ("M-~"   . popper-toggle-type))
   :defer-init (require 'popper)
   :config
-  (setq popper-reference-buffers
+  (setq popper-display-function #'popper-display-popup-at-bottom
+        popper-reference-buffers
         '("Output\\*$"
           "\\*Async Shell Command\\*"
           help-mode
