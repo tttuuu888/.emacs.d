@@ -360,6 +360,10 @@ If NOTICE is non-nil and Tmux is not running, print the message:
 (defun sk-project-root (&optional dir)
   (find-file-in-tree (or dir default-directory) sk-project-root-files t))
 
+(defun sk-create-project (dir)
+  "Create a .project file in DIR, if not exists."
+  (write-region "" nil (expand-file-name ".project" dir) t))
+
 (defun git-project-p ()
   (zerop (call-process "git" nil nil nil "rev-parse" "--is-inside-work-tree")))
 
@@ -3050,8 +3054,6 @@ target followed by an ellipsis if there are further targets."
 
   (defun my-create-dir-locals (path)
     (find-file (expand-file-name ".dir-locals.el" path)))
-  (defun my-create-project (path)
-    (write-region "" nil (expand-file-name ".project" path) t))
 
   (defvar-keymap embark-project-actions
     :doc "Keymap for Embark project actions."
@@ -3070,7 +3072,7 @@ target followed by an ellipsis if there are further targets."
     :doc "Keymap for Embark file actions."
     :parent embark-file-map
     "." #'my-create-dir-locals
-    "p" #'my-create-project)
+    "p" #'sk-create-project)
   (add-to-list 'embark-keymap-alist '(file . embark-my-file-actions))
   (advice-add 'embark-kill-ring-remove :before
               (lambda (text)
@@ -3366,9 +3368,7 @@ in case of ((|))."
   (defun sk-add-known-project (project-root)
     "Make .project file and add the project to known projects list."
     (interactive (list (read-directory-name "Add to known projects: ")))
-    (let ((pfile (expand-file-name ".project" project-root)))
-      (unless (file-exists-p pfile)
-        (write-region "" nil pfile)))
+    (sk-create-project project-root)
     (let ((sk-project-remember t))
       (project-remember-project (sk-project-try project-root))))
   (defun sk-remove-known-project (project)
@@ -3414,7 +3414,7 @@ in case of ((|))."
   (defun sk-set-c-project (root)
     (interactive "DRoot directory: ")
     (let ((default-directory root))
-      (write-region "" nil ".project")
+      (sk-create-project root)
       (sk-create-ggtags root)
       (sk-clang-complete-make)))
   (advice-add 'move-to-column :around
