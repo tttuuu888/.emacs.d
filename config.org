@@ -3716,7 +3716,6 @@ in case of ((|))."
 
 (use-package eglot
   :config
-  (require 'project)
   (setq eglot-autoshutdown t
         eglot-events-buffer-size 0
         eglot-ignored-server-capabilities
