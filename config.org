@@ -134,7 +134,7 @@ Instead of using =custom.el=, insert the contents of the file directly here.
 (defvar sk-vc-mode nil)
 
 (defvar sk-project-root-files
-  '(".projectile" ".git"
+  '(".project" ".git"
     "CMakeLists.txt" "Makefile" "makefile.mk" "GTAGS"
     "Android.bp" "Cargo.toml"))
 
@@ -2095,6 +2095,7 @@ process name."
               (lambda (&rest _) (which-func-update))))
 
 (use-package projectile
+  :disabled
   :commands (sk-add-known-project
              sk-remove-known-project)
   :init
@@ -3049,13 +3050,13 @@ target followed by an ellipsis if there are further targets."
 
   (defun my-create-dir-locals (path)
     (find-file (expand-file-name ".dir-locals.el" path)))
-  (defun my-create-projectile (path)
-    (write-region "" nil (expand-file-name ".projectile" path) t))
+  (defun my-create-project (path)
+    (write-region "" nil (expand-file-name ".project" path) t))
 
   (defvar-keymap embark-project-actions
     :doc "Keymap for Embark project actions."
     :parent embark-general-map
-    "d" #'projectile-remove-known-project)
+    "d" #'sk-remove-known-project)
   (add-to-list 'embark-keymap-alist '(project-file . embark-project-actions))
 
   (defvar-keymap embark-recent-file-map
@@ -3069,7 +3070,7 @@ target followed by an ellipsis if there are further targets."
     :doc "Keymap for Embark file actions."
     :parent embark-file-map
     "." #'my-create-dir-locals
-    "p" #'my-create-projectile)
+    "p" #'my-create-project)
   (add-to-list 'embark-keymap-alist '(file . embark-my-file-actions))
   (advice-add 'embark-kill-ring-remove :before
               (lambda (text)
@@ -3333,10 +3334,54 @@ in case of ((|))."
 
 (use-package project
   :ensure nil
+  :commands (sk-add-known-project
+             sk-remove-known-project
+             sk-project-save-buffers)
+  :init
+  (evil-leader/set-key
+    "jk" 'project-kill-buffers
+    "jb" 'project-switch-to-buffer
+    "js" 'project-switch-project
+    "jS" 'sk-project-save-buffers)
   :config
-  (setq project-find-functions '(sk-project-root))
-  (cl-defmethod project-root (&rest r)
-    (sk-project-root)))
+  (defvar sk-project-remember nil
+    "Non-nil only while adding a project.")
+  (setq project-find-functions '(sk-project-try)
+        project-switch-commands 'project-dired)
+  (defun sk-project-try (dir)
+    "Return the project of DIR, rooted at a `sk-project-root-files' marker."
+    (when-let* ((root (sk-project-root dir)))
+      (cons 'sk root)))
+  (cl-defmethod project-root ((project (head sk)))
+    (cdr project))
+  ;; Only remember projects added by `sk-add-known-project'. This blocks both
+  ;; `project-current' and `project-switch-project', which remember silently.
+  (advice-add 'project--remember-dir :before-while
+              (lambda (&rest _) sk-project-remember))
+  (defun sk-project-save-buffers ()
+    "Save all modified buffers of the current project."
+    (interactive)
+    (let ((bufs (project-buffers (project-current t))))
+      (save-some-buffers t (lambda () (memq (current-buffer) bufs)))))
+  (defun sk-add-known-project (project-root)
+    "Make .project file and add the project to known projects list."
+    (interactive (list (read-directory-name "Add to known projects: ")))
+    (let ((pfile (expand-file-name ".project" project-root)))
+      (unless (file-exists-p pfile)
+        (write-region "" nil pfile)))
+    (let ((sk-project-remember t))
+      (project-remember-project (sk-project-try project-root))))
+  (defun sk-remove-known-project (project)
+    "Show the current project at the top of the candidate list."
+    (interactive
+     (let* ((root (sk-project-root))
+            (root (and root (abbreviate-file-name root)))
+            (cands (project-known-project-roots))
+            (cands (if (and root (member root cands))
+                       (cons root (remove root cands))
+                     cands)))
+       (list (completing-read "Remove from known projects: " cands nil t))))
+    (project-forget-project project)))
 
 (use-package ielm
   :ensure nil
@@ -3369,7 +3414,7 @@ in case of ((|))."
   (defun sk-set-c-project (root)
     (interactive "DRoot directory: ")
     (let ((default-directory root))
-      (write-region "" nil ".projectile")
+      (write-region "" nil ".project")
       (sk-create-ggtags root)
       (sk-clang-complete-make)))
   (advice-add 'move-to-column :around
@@ -3671,7 +3716,7 @@ in case of ((|))."
 
 (use-package eglot
   :config
-  (require 'projectile)
+  (require 'project)
   (setq eglot-autoshutdown t
         eglot-events-buffer-size 0
         eglot-ignored-server-capabilities
