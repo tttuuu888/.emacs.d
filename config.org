@@ -6,6 +6,19 @@
 * About
 This is my personal Emacs setting.
 
+* Directory layout
+A default derived from =user-emacs-directory= is frozen when its defining file
+loads, and many of those files load before =config.el= is loaded. So the
+directory layout is established in =early-init.el= as follows:
+
+- =user-emacs-directory= is set to =~/.emacs.d/.local/= to isolate all
+  package-generated local files.
+- =emacs-config-dir= is used instead of =user-emacs-directory= to refer to the
+  configuration root.
+- =emacs-etc-dir= indicates the folder containing extra configurations.
+- =package-user-dir= is pinned to =~/.emacs.d/elpa=, outside =.local/=.
+
+* Initial settings
 =init.el= will generate =config.el= from =config.org= and then will load
 =config.el=.
 
@@ -14,7 +27,6 @@ set to =most-positive-fixnum= in order to boost up the speed during the boot
 time.
 
 All the other settings will be located in =config.org=.
-* Initial settings
 ** Commentary
 This comment will be added on the top of =config.el=.
 
@@ -39,21 +51,6 @@ start up to use of updated =package-archives=.
       package-archive-priorities
       '(("gnu"   . 5)
         ("melpa" . 10)))
-#+END_SRC
-
-** User-emacs-directory setting
-From this point, =user-emacs-directory= is set to =~/.emacs.d/.local/= to
-isolate all package-generated local files.
-
-=emacs-config-dir= is used instead of =user-emacs-directory= to refer to the
-configuration root.
-
-=emacs-etc-dir= indicates the folder containing extra configurations.
-
-#+BEGIN_SRC emacs-lisp
-(defvar emacs-config-dir user-emacs-directory)
-(defvar emacs-etc-dir (expand-file-name "etc/" emacs-config-dir))
-(setq user-emacs-directory (expand-file-name ".local/" emacs-config-dir))
 #+END_SRC
 
 ** User information
