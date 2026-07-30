@@ -3346,11 +3346,21 @@ in case of ((|))."
   (defvar sk-project-remember nil
     "Non-nil only while adding a project.")
   (setq project-find-functions '(sk-project-try)
+        project-prompter #'sk-project-prompt-project-dir
         project-switch-commands 'project-dired)
   (defun sk-project-try (dir)
     "Return the project of DIR, rooted at a `sk-project-root-files' marker."
     (when-let* ((root (sk-project-root dir)))
       (cons 'sk root)))
+  (defun sk-project-prompt-project-dir ()
+    "Prompt for one of the known project roots."
+    (project--ensure-read-project-list)
+    (let* ((dirs (project-known-project-roots))
+           (table (project--file-completion-table dirs)))
+      (unless dirs
+        (user-error "There are no known projects"))
+      (let (history-add-new-input)
+        (completing-read "Select project: " table nil t nil nil (car dirs)))))
   (cl-defmethod project-root ((project (head sk)))
     (cdr project))
   ;; Only remember projects added by `sk-add-known-project'. This blocks both
