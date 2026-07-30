@@ -55,8 +55,12 @@
   (cl-letf (((symbol-function 'package-install)
              (lambda (&rest _) nil))
             ((symbol-function 'package-refresh-contents)
-             (lambda (&rest _)) nil))
-    (load (expand-file-name "init.el" user-emacs-directory)))
+             (lambda (&rest _) nil)))
+    (condition-case err
+        (load (expand-file-name "init.el" user-emacs-directory))
+      (error
+       (message "\nFailed to load init.el: %s" (error-message-string err))
+       (message "The package list may be incomplete.\n"))))
   (package-archives-init)
   pinstall-package-list)
 
