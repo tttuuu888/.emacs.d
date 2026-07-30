@@ -2068,69 +2068,6 @@ process name."
       "ck" 'wgrep-abort-changes))
   (advice-add 'wgrep-change-to-wgrep-mode :after 'evil-normal-state))
 
-(use-package helm
-  :disabled
-  :bind (("M-y"     . helm-show-kill-ring)
-         :map helm-map
-         ("<escape>". helm-keyboard-quit)
-         :map helm-grep-map
-         ("DEL"     . helm-delete-char-backward))
-  :custom-face
-  (helm-grep-finish ((default (:inherit helm-candidate-number)))
-                    face-defface-spec)
-  :init
-  (evil-leader/set-key
-    "y"  'helm-show-kill-ring)
-  :config
-  (require 'helm-files)
-  (setq helm-allow-mouse nil
-        helm-always-two-windows nil
-        helm-grep-file-path-style 'relative
-        helm-grep-input-idle-delay 0.01
-        helm-grep-truncate-lines nil
-        helm-imenu-execute-action-at-once-if-one nil
-        helm-show-action-window-other-window nil
-        helm-show-completion-display-function nil
-        helm-split-window-default-side 'right)
-  (advice-add 'helm-occur-goto-line :after
-              (lambda (&rest _) (which-func-update))))
-
-(use-package projectile
-  :disabled
-  :commands (sk-add-known-project
-             sk-remove-known-project)
-  :init
-  (evil-leader/set-key
-    "jk" 'projectile-kill-buffers
-    "jb" 'projectile-switch-to-buffer
-    "js" 'projectile-switch-project
-    "jS" 'projectile-save-project-buffers)
-  :config
-  (setq projectile-completion-system 'default
-        projectile-require-project-root nil
-        projectile-switch-project-action 'projectile-dired
-        projectile-track-known-projects-automatically nil)
-  (projectile-load-known-projects)
-  (defun sk-add-known-project (project-root)
-    "Make .projectile file and add the project to known projects list."
-    (interactive (list (read-directory-name "Add to known projects: ")))
-    (let ((pfile (concat project-root ".projectile")))
-      (unless (file-exists-p pfile)
-        (write-region "" nil pfile)))
-    (projectile-add-known-project project-root))
-  (defun sk-remove-known-project (project)
-    "Show the current project at the top of the candidate list."
-    (interactive
-     (let* ((root (sk-project-root))
-            (root (and root (abbreviate-file-name root)))
-            (cands (if (and root (member root projectile-known-projects))
-                       (cons root (remove root projectile-known-projects))
-                     projectile-known-projects)))
-       (list (projectile-completing-read
-              "Remove from known projects: " cands))))
-    (projectile-remove-known-project project))
-  (defalias 'projectile-project-root 'sk-project-root))
-
 (use-package markdown-mode
   :config
   (set-face-background 'markdown-line-break-face (face-background 'default))
