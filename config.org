@@ -2061,6 +2061,7 @@ process name."
     (kbd "M-/") 'corfu-yas-expand))
 
 (use-package corfu-terminal
+  :disabled
   :vc (:url "https://codeberg.org/akib/emacs-corfu-terminal.git"
             :rev :newest)
   :if (not (display-graphic-p))
@@ -2678,7 +2679,6 @@ Stop trying if the input changes before the candidate appears."
   (advice-add 'vertico-repeat--restore :after #'my-vertico-repeat-reselect))
 
 (use-package vertico-posframe
-  :if window-system
   :custom-face
   (vertico-posframe
    ((((background light)) :background "#e6f2ff" :foreground "black")
