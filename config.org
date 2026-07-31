@@ -2679,10 +2679,13 @@ Stop trying if the input changes before the candidate appears."
   (advice-add 'vertico-repeat--restore :after #'my-vertico-repeat-reselect))
 
 (use-package vertico-posframe
+  :preface
+  (defconst vertico-bg-light "#e6f2ff")
+  (defconst vertico-bg-dark "#282a36")
   :custom-face
   (vertico-posframe
-   ((((background light)) :background "#e6f2ff" :foreground "black")
-    (((background dark)) :background "#282a36" :foreground "gray80")))
+   ((((background light)) :background ,vertico-bg-light :foreground "black")
+    (((background dark)) :background ,vertico-bg-dark :foreground "gray80")))
   (vertico-posframe-border
    ((t (:inherit vertico-posframe))))
   (vertico-posframe-border-2
@@ -2691,6 +2694,9 @@ Stop trying if the input changes before the candidate appears."
    ((t (:inherit vertico-posframe))))
   (vertico-posframe-border-4
    ((t (:inherit vertico-posframe))))
+  (border
+   ((((background light)) :foreground ,vertico-bg-light)
+    (((background dark)) :foreground ,vertico-bg-dark)))
   :defer-init (vertico-posframe-mode 1)
   :config
   (setq vertico-posframe-border-width 20
