@@ -1957,7 +1957,10 @@ process name."
   (unless (equal 3 (length
                     (directory-files
                      (expand-file-name "eln-cache" user-emacs-directory))))
-    (native-compile-prune-cache)))
+    (native-compile-prune-cache))
+  (let ((unused-eln-cache (expand-file-name "eln-cache" emacs-config-dir)))
+    (when (file-directory-p unused-eln-cache)
+      (delete-directory unused-eln-cache t))))
 
 (use-package text
   :ensure nil
