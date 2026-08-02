@@ -1567,20 +1567,17 @@ Defer code execution until the first command after initialization.
   (defun sk-org-babel-tangle-async (&optional target-file)
     "Do org-babel-tangle asynchronously."
     (interactive)
-    (let* ((target (or target-file (buffer-file-name)))
-           (sexp `(progn
-                    (package-initialize)
-                    (require 'org)
-                    (org-babel-tangle-file ,target)))
-           (elisp-cmd (prin1-to-string sexp))
-           (shell-cmd (format "emacs -Q --batch --eval %s"
-                              (shell-quote-argument elisp-cmd))))
-      (if target
-          (progn
-            (start-process-shell-command "async-tangle-proc" nil shell-cmd)
-            (message "Tangle code blocks from %s asynchronously."
-                     (file-name-nondirectory target)))
-        (user-error "No file to tangle."))))
+    (if-let* ((target (or target-file (buffer-file-name))))
+        (progn
+          (async-start
+           `(lambda ()
+              (package-initialize)
+              (require 'org)
+              (org-babel-tangle-file ,target))
+           #'ignore)
+          (message "Tangle code blocks from %s asynchronously."
+                   (file-name-nondirectory target)))
+      (user-error "No file to tangle.")))
 
   (add-hook 'org-mode-hook
             (lambda ()
