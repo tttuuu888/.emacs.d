@@ -988,6 +988,14 @@ Defer code execution until the first command after initialization.
         read-buffer-completion-ignore-case t
         save-interprogram-paste-before-kill t))
 
+(use-package files
+  :ensure nil
+  :defer-init
+  (dolist (dir '("eln-cache" "auto-save-list"))
+    (let ((path (expand-file-name dir emacs-config-dir)))
+      (when (file-directory-p path)
+        (delete-directory path t)))))
+
 (use-package bind-key
   :ensure nil
   :init
@@ -1951,10 +1959,7 @@ process name."
   (unless (equal 3 (length
                     (directory-files
                      (expand-file-name "eln-cache" user-emacs-directory))))
-    (native-compile-prune-cache))
-  (let ((unused-eln-cache (expand-file-name "eln-cache" emacs-config-dir)))
-    (when (file-directory-p unused-eln-cache)
-      (delete-directory unused-eln-cache t))))
+    (native-compile-prune-cache)))
 
 (use-package text
   :ensure nil
