@@ -2319,7 +2319,17 @@ process name."
 
 (use-package which-key
   :custom (which-key-dont-use-unicode t)
-  :defer-init (which-key-mode 1))
+  :defer-init (which-key-mode 1)
+  :config
+  (defun my-which-key-force-fit-window (&rest _)
+    "Fit the which-key window to its buffer."
+    (when-let* ((win (get-buffer-window which-key--buffer)))
+      (dolist (w (window-list (window-frame win)))
+        (when (window-preserved-size w)
+          (window-preserve-size w nil nil)))
+      (fit-window-to-buffer win nil 1)))
+  (advice-add 'which-key--show-buffer-side-window
+              :after #'my-which-key-force-fit-window))
 
 (use-package auctex)
 
