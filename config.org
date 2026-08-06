@@ -15,7 +15,7 @@ layout is established in =early-init.el= as follows:
 - =emacs-config-dir= is used instead of =user-emacs-directory= to refer to the
   configuration root.
 - =emacs-etc-dir= indicates the folder containing extra configurations.
-- =package-user-dir= is pinned to =~/.emacs.d/elpa=, outside =.local/=.
+- =package-user-dir= is pinned to =~/.emacs.d/elpa/=, outside =.local/=.
 
 =init.el= will generate =config.el= from =config.org= and then will load
 =config.el=.
