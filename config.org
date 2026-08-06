@@ -3291,10 +3291,11 @@ in case of ((|))."
   :ensure nil
   :commands (sk-add-known-project
              sk-remove-known-project
+             sk-project-kill-buffers
              sk-project-save-buffers)
   :init
   (evil-leader/set-key
-    "jk" 'project-kill-buffers
+    "jk" 'sk-project-kill-buffers
     "jb" 'project-switch-to-buffer
     "js" 'project-switch-project
     "jS" 'sk-project-save-buffers)
@@ -3344,7 +3345,17 @@ in case of ((|))."
                        (cons root (remove root cands))
                      cands)))
        (list (completing-read "Remove from known projects: " cands nil t))))
-    (project-forget-project project)))
+    (project-forget-project project))
+  (defun sk-project-kill-buffers (&optional no-confirm)
+    "Kill the buffers belonging to the current project.
+Outside a project, kill the buffers under `default-directory'."
+    (interactive)
+    (let ((project-current-directory-override
+           (unless (project-current)
+             (expand-file-name default-directory))))
+      (project-kill-buffers no-confirm)))
+  (add-to-list 'project-kill-buffer-conditions
+               '(and (major-mode . text-mode) "\\`[^ ]")))
 
 (use-package ielm
   :ensure nil
