@@ -758,10 +758,10 @@ Defer code execution until the first command after initialization.
   (async-bytecomp-package-mode 1)
   :config
   (defun my-async--emacs-program-args-advice (orig-fun &rest args)
-    "Prevent creation of default eln-cache folder."
-    (let* ((orig-result (apply orig-fun args))
-           (eval-arg "(startup-redirect-eln-cache \".local/eln-cache\")"))
-      (append (list "--eval" eval-arg) orig-result)))
+    "Let the child Emacs share the parent's eln-cache."
+    (append (list "--eval" (format "(startup-redirect-eln-cache %S)"
+                                   (car native-comp-eln-load-path)))
+            (apply orig-fun args)))
   (advice-add 'async--emacs-program-args :around
               #'my-async--emacs-program-args-advice))
 
