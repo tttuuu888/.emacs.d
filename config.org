@@ -360,10 +360,9 @@ If NOTICE is non-nil and Tmux is not running, print the message:
 
 (defun my-find-file-in-git-project (regex root)
   (when (file-exists-p (expand-file-name ".git" root))
-    (let* ((default-directory (file-truename root))
-           (ret (shell-command-to-string
-                 (concat "git ls-files|grep -E '" regex "'"))))
-      (split-string ret))))
+    (let ((default-directory (file-truename root)))
+      (seq-filter (lambda (f) (string-match-p regex f))
+                  (process-lines-ignore-status "git" "ls-files")))))
 
 (defun sk-git-diff-relative ()
   "Run git diff with --relative option."
