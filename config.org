@@ -356,10 +356,7 @@ If NOTICE is non-nil and Tmux is not running, print the message:
         (string-trim-right branch)))))
 
 (defun my-get-git-root-dir ()
-  (let ((root (string-trim-right
-               (shell-command-to-string "git rev-parse --show-toplevel"))))
-    (when (file-exists-p root)
-      root)))
+  (locate-dominating-file default-directory ".git"))
 
 (defun my-find-file-in-git-project (regex root)
   (when (file-exists-p (expand-file-name ".git" root))
