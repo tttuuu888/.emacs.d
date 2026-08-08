@@ -171,20 +171,6 @@ binding will be added to toggle MODE and REPL buffer unless NOBIND is not nil."
          (setq this-command ',eval-region)
          (,eval-region back curr)))
      (setq deactivate-mark t)))
-
-(defmacro html-head-css (&rest body)
-  (declare (indent defun))
-  `(concat
-    "<style type=\"text/css\">\n"
-    ,@body
-    "</style>\n"))
-
-(defmacro html-head-js (&rest body)
-  (declare (indent defun))
-  `(concat
-    "<script type=\"text/javascript\">\n"
-    ,@body
-    "</script>\n"))
 #+end_src
 
 ** Custom functions
@@ -600,6 +586,16 @@ single units."
           (end-of-line)
           (insert comment-format))
         (message "Added comment-start: %s" cs)))))
+
+(defun html-head-css (&rest body)
+  (concat "<style type=\"text/css\">\n"
+          (string-join body)
+          "</style>\n"))
+
+(defun html-head-js (&rest body)
+  (concat "<script type=\"text/javascript\">\n"
+          (string-join body)
+          "</script>\n"))
 #+END_SRC
 
 ** Color setting
@@ -1440,10 +1436,8 @@ Defer code execution until the first command after initialization.
    org-html-metadata-timestamp-format "%Y-%m-%d"
    org-html-style-default
    (concat
-    (html-head-css
-      (file-to-string (expand-file-name "org.css" emacs-etc-dir)))
-    (html-head-js
-      (file-to-string (expand-file-name "org.js" emacs-etc-dir))))
+    (html-head-css (file-to-string (expand-file-name "org.css" emacs-etc-dir)))
+    (html-head-js (file-to-string (expand-file-name "org.js" emacs-etc-dir))))
    org-html-validation-link ""
    org-imenu-depth 4
    org-latex-engraved-theme "default"
