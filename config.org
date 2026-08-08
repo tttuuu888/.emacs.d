@@ -327,15 +327,6 @@ If NOTICE is non-nil and Tmux is not running, print the message:
     (call-process "tmux" nil nil nil "new-window")
     (message "New tmux window is opened.")))
 
-(defun tmux-vim-current-file ()
-  "Open a new tmux window and edit the current file with vim."
-  (interactive)
-  (when (tmux-running-p t)
-    (if (not (buffer-file-name))
-        (user-error "Buffer %s does not visit a file" (current-buffer))
-      (call-process "tmux" nil nil nil "new-window" "vim" (buffer-file-name))
-      (message "New tmux window with vim is opened."))))
-
 (defun sk-project-root (&optional dir)
   (find-file-in-tree (or dir default-directory) sk-project-root-files t))
 
@@ -789,7 +780,6 @@ Defer code execution until the first command after initialization.
     "cY" 'sk-yank-file-whole-path
     "eg" 'sk-google-search
     "st" 'tmux-new-window-here
-    "sv" 'tmux-vim-current-file
     "ha" 'describe-face
     "hf" 'describe-function
     "hk" 'describe-key
