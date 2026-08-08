@@ -1827,9 +1827,11 @@ process name."
             (lambda ()
               (let* ((default-directory
                       (expand-file-name (symbol-name pkg) package-user-dir))
-                     (pre (shell-command-to-string "git rev-parse HEAD"))
+                     (pre (car (process-lines-ignore-status
+                                "git" "rev-parse" "HEAD")))
                      (_ (call-process "git" nil nil nil "pull" "-q"))
-                     (post (shell-command-to-string "git rev-parse HEAD")))
+                     (post (car (process-lines-ignore-status
+                                 "git" "rev-parse" "HEAD"))))
                 (unless (string= pre post) pkg))))))
       (let ((futures (mapcar #'pull-vc-pkg (my-vc-packages))))
         (delq nil (mapcar #'async-get futures)))))
