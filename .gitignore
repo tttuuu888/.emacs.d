@@ -1,6 +1,7 @@
-.local/*
-auto-save-list/*
-elpa/*
+/.local/
+/auto-save-list/
+/eln-cache/
+/elpa/
 
 config.el
 config-local.el
