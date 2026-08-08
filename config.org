@@ -1803,9 +1803,9 @@ process name."
     (let* ((vc-handled-backends '(Git))
            (pkg-dir (package-desc-dir pkg-desc))
            (default-directory pkg-dir)
-           (pre-hash (shell-command-to-string "git rev-parse HEAD"))
+           (pre-hash (my-git-output "rev-parse" "HEAD"))
            (_ (call-process "git" nil nil nil "pull"))
-           (post-hash (shell-command-to-string "git rev-parse HEAD")))
+           (post-hash (my-git-output "rev-parse" "HEAD")))
       (when (not (equal pre-hash post-hash))
         (with-demoted-errors "Failed to activate: %S"
           (package-vc--unpack-1 pkg-desc pkg-dir)))))
