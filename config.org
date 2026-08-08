@@ -380,10 +380,7 @@ If NOTICE is non-nil and Tmux is not running, print the message:
     (message "Running git diff failed.")))
 
 (defun my-find-file-in-dir (regex &optional dir)
-  (let* ((default-directory (or (and dir (file-truename dir))
-                                default-directory))
-         (ret (shell-command-to-string (concat "ls|grep -E '" regex "'"))))
-    (split-string ret)))
+  (directory-files (or dir default-directory) nil regex))
 
 (defun my-find-other-file ()
   "Switch betwen .c|.cpp and .h|.hpp files in project."
