@@ -338,12 +338,12 @@ If NOTICE is non-nil and Tmux is not running, print the message:
   (zerop (call-process "git" nil nil nil "rev-parse" "--is-inside-work-tree")))
 
 (defun git-tracked-file-p (&optional file-name)
-  (let ((file (or file-name buffer-file-name)))
-    (and file
-         (file-exists-p file)
-         (zerop (process-file "git" nil nil nil
-                              "ls-files" "--error-unmatch"
-                              (file-name-nondirectory file))))))
+  (when-let* ((file (or file-name buffer-file-name))
+              ((file-exists-p file))
+              (default-directory (file-name-directory (expand-file-name file))))
+    (zerop (process-file "git" nil nil nil
+                         "ls-files" "--error-unmatch"
+                         (file-name-nondirectory file)))))
 
 (defun git-branch-of-file (file)
   (when (git-tracked-file-p file)
