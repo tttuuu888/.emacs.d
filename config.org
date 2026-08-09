@@ -1888,6 +1888,13 @@ process name."
   (defun sk-vc-refresh-state ()
     (setq sk-vc-mode (git-branch-of-file (buffer-file-name))))
   (defalias 'vc-refresh-state 'sk-vc-refresh-state)
+  (defun sk-vc-refresh-visible (&optional frame)
+    "Update `sk-vc-mode' in every file buffer visible on FRAME."
+    (dolist (window (window-list frame 'no-minibuffer))
+      (with-current-buffer (window-buffer window)
+        (when buffer-file-name
+          (sk-vc-refresh-state)))))
+  (add-hook 'after-set-visited-file-name-hook #'sk-vc-refresh-state)
   :config
   (advice-add 'vc-region-history :around
               (lambda (func &rest r)
@@ -2092,6 +2099,7 @@ process name."
   (add-hook 'magit-blame-mode-hook 'evil-normalize-keymaps)
   (add-hook 'with-editor-mode-hook 'flyspell-mode)
   (add-hook 'git-commit-setup-hook (lambda () (setq-local fill-column 72)))
+  (add-hook 'magit-post-refresh-hook #'sk-vc-refresh-visible)
   (remove-hook 'git-commit-setup-hook 'git-commit-setup-capf)
   (remove-hook 'git-commit-setup-hook 'git-commit-setup-changelog-support)
 
