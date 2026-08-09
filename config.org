@@ -1764,10 +1764,25 @@ process name."
   :defer-init (package-read-all-archive-contents)
   :config
   (require 'package-vc)
+  (defun sk-package-resync ()
+    "Rebuild `package-alist' from the contents of `package-user-dir'."
+    (setq package-alist nil)
+    (package-load-all-descriptors))
+
+  (defun sk-package-delete-obsolete ()
+    "Delete every installed package version that is not the newest one."
+    (interactive)
+    (sk-package-resync)
+    (dolist (entry (copy-sequence package-alist))
+      (dolist (old (cddr entry))
+        (package-delete old 'force 'dont-unselect)))
+    (sk-package-resync))
+
   (defun sk-package-upgrade-all ()
     "Upgrade all packages without asking the user."
     (interactive)
     (package-refresh-contents)
+    (sk-package-delete-obsolete)
     (let* ((vc-pkgs (my-vc-packages))
            (upgraded-vc (my-upgrade-vc-packages))
            (upgradeable-std (seq-difference (package--upgradeable-packages)
@@ -1775,13 +1790,12 @@ process name."
            (upgraded-std
             (seq-keep
              (lambda (pkg)
-               (when-let* ((desc (cadr (assq pkg package-archive-contents)))
-                           (old (cadr (assq pkg package-alist))))
-                 (package-delete old 'force 'dont-unselect)
+               (when-let* ((desc (cadr (assq pkg package-archive-contents))))
                  (package-install desc 'dont-select)
                  (and (assq pkg package-alist) pkg)))
              upgradeable-std))
            (upgraded (append upgraded-std upgraded-vc)))
+      (sk-package-delete-obsolete)
       (if (not upgraded)
           (message "No packages to upgrade.")
         (message "%s packages upgraded. %s" (length upgraded) upgraded)))))
