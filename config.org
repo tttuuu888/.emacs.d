@@ -335,9 +335,6 @@ If NOTICE is non-nil and Tmux is not running, print the message:
   "Create a .project file in DIR, if not exists."
   (write-region "" nil (expand-file-name ".project" dir) t))
 
-(defun git-project-p ()
-  (zerop (call-process "git" nil nil nil "rev-parse" "--is-inside-work-tree")))
-
 (defun my-git-output (&rest args)
   "Run git with ARGS and return the output, or nil on failure."
   (with-temp-buffer
