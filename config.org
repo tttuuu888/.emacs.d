@@ -227,12 +227,13 @@ path to the file itself."
 (defun sk-clang-complete-make ()
   "Generate .clang_complete file."
   (interactive)
-  (let ((file "./.clang_complete")
-        (includes
-         (shell-command-to-string
-          (concat
-           "find -L -type f -name '*.h' -not -path '*/.*' -printf '-I%h\\n'"
-           "| sort -u"))))
+  (let* ((file "./.clang_complete")
+         (dirs (delete-dups
+                (process-lines-ignore-status
+                 "find" "-L" "." "-type" "f" "-name" "*.h"
+                 "-not" "-path" "*/.*" "-printf" "-I%h\\n")))
+         (includes (mapconcat (lambda (d) (concat d "\n"))
+                              (sort dirs #'string<) "")))
     (write-region includes nil file)))
 
 (defun insert-date ()
