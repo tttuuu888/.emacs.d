@@ -655,9 +655,11 @@ Simple mode line setting function.
              (line-and-pos-info (format-mode-line " %l,%3c  %p%% "))
              (right-info (concat input-name line-and-pos-info))
              (right-len (string-width right-info))
-             (left-info (truncate-string-to-width
-                         (concat evil-info buffer-info buffer-name mode-and-vc)
-                         (- width right-len)))
+             (left-str (concat evil-info buffer-info buffer-name mode-and-vc))
+             (left-width (- width right-len))
+             (left-info (if (<= (string-width left-str) left-width)
+                            left-str
+                          (truncate-string-to-width left-str left-width)))
              (center-fill (propertize
                            " "
                            'face 'mode-line-inactive
