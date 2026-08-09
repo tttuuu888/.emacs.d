@@ -218,12 +218,18 @@ path to the file itself."
      else do (setq cur-dir
                    (file-name-directory (directory-file-name cur-dir))))))
 
+(defun sk-process-lines (program &rest args)
+  "Like `process-lines-ignore-status', but honor remote `default-directory'."
+  (with-temp-buffer
+    (apply #'process-file program nil t nil args)
+    (split-string (buffer-string) "\n" t)))
+
 (defun sk-clang-complete-make ()
   "Generate .clang_complete file."
   (interactive)
   (let* ((file "./.clang_complete")
          (dirs (delete-dups
-                (process-lines-ignore-status
+                (sk-process-lines
                  "find" "-L" "." "-type" "f" "-name" "*.h"
                  "-not" "-path" "*/.*" "-printf" "-I%h\\n")))
          (includes (mapconcat (lambda (d) (concat d "\n"))
@@ -364,13 +370,13 @@ If NOTICE is non-nil and Tmux is not running, print the message:
   (when (file-exists-p (expand-file-name ".git" root))
     (let ((default-directory (file-truename root)))
       (seq-filter (lambda (f) (string-match-p regex f))
-                  (process-lines-ignore-status "git" "ls-files")))))
+                  (sk-process-lines "git" "ls-files")))))
 
 (defun sk-git-diff-relative ()
   "Run git diff with --relative option."
   (interactive)
   (if (zerop
-       (call-process "git" nil (get-clear-buffer "*git-diff*") nil
+       (process-file "git" nil (get-clear-buffer "*git-diff*") nil
                      "--no-pager" "diff" "--relative"
                      "--cached"))
       (progn
