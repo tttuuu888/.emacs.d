@@ -218,13 +218,6 @@ path to the file itself."
      else do (setq cur-dir
                    (file-name-directory (directory-file-name cur-dir))))))
 
-(defun sk-sbin-dired ()
-  (interactive)
-  (let ((sbin (find-file-in-tree default-directory ".sbin")))
-    (if sbin
-        (dired sbin)
-      (message "Folder .sbin not found."))))
-
 (defun sk-clang-complete-make ()
   "Generate .clang_complete file."
   (interactive)
@@ -990,7 +983,6 @@ Defer code execution until the first command after initialization.
    ("C-c <escape>" . keyboard-quit)
    ("C-x <escape>" . keyboard-quit)
    ("M-,"          . my-other-window)
-   ("M-<f5>"       . sk-sbin-dired)
    ("C-M-,"        . transpose-windows)
    ("M-S-<up>"     . (lambda (&optional arg)
                        (interactive "p")
@@ -1056,7 +1048,8 @@ Defer code execution until the first command after initialization.
           ("^"     . dired-up-and-close-dir)
           ("bp"    . my-dired-pdf-size-down)
           ("<DEL>" . dired-up-and-close-dir)
-          ("M-l"   . dired-omit-mode))
+          ("M-l"   . dired-omit-mode)
+          ("M-<f5>". sk-sbin-dired))
   :init
   (add-to-list 'magic-mode-alist
                '((lambda () (< large-file-warning-threshold (buffer-size)))
@@ -1332,7 +1325,14 @@ Defer code execution until the first command after initialization.
     (interactive)
     (let ((dir1 (my-dired-get-target "Dir1 : "))
           (dir2 (my-dired-get-target "Dir2 : ")))
-      (start-process "meld" nil "meld" dir1 dir2))))
+      (start-process "meld" nil "meld" dir1 dir2)))
+
+  (defun sk-sbin-dired ()
+    (interactive)
+    (let ((sbin (find-file-in-tree default-directory ".sbin")))
+      (if sbin
+          (dired sbin)
+        (message "Folder .sbin not found.")))))
 
 (use-package org
   :ensure nil
