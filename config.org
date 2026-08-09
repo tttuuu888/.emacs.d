@@ -336,6 +336,12 @@ If NOTICE is non-nil and Tmux is not running, print the message:
   "Create a .project file in DIR, if not exists."
   (write-region "" nil (expand-file-name ".project" dir) t))
 
+(defun get-clear-buffer (buffer)
+  "Return the buffer specified by BUFFER. BUFFER is always returned empty."
+  (with-current-buffer (get-buffer-create buffer)
+    (erase-buffer)
+    (current-buffer)))
+
 (defun my-git-output (&rest args)
   "Run git with ARGS and return the output, or nil on failure."
   (with-temp-buffer
@@ -456,12 +462,6 @@ If NOTICE is non-nil and Tmux is not running, print the message:
              (shell-quote-argument (read-passwd "Password? "))
              "| sudo -S "))
    cmd))
-
-(defun get-clear-buffer (buffer)
-  "Return the buffer specified by BUFFER. BUFFER is always returned empty."
-  (with-current-buffer (get-buffer-create buffer)
-    (erase-buffer)
-    (current-buffer)))
 
 (defun sk-alist-to-js-obj (alist &optional omit-curly-braces)
   "Convert ALIST to javascript object string.
