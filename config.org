@@ -124,13 +124,14 @@ Instead of using =custom.el=, insert the contents of the file directly here.
 #+begin_src emacs-lisp
 (defvar sk-font "D2Coding")
 
-(defvar sk-vc-mode nil)
-
 (defvar sk-project-root-files
   '(".project" ".git"
     "CMakeLists.txt" "Makefile" "makefile.mk" "GTAGS"
     "Android.bp" "Cargo.toml"))
 
+(defvar-local sk-vc-mode nil)
+(put 'sk-vc-mode 'risky-local-variable t)
+(put 'sk-vc-mode 'permanent-local t)
 #+end_src
 
 ** Custom macros
@@ -1879,9 +1880,6 @@ process name."
   (vc-follow-symlinks nil)
   (vc-handled-backends nil)
   :init
-  (make-variable-buffer-local 'sk-vc-mode)
-  (put 'sk-vc-mode 'risky-local-variable t)
-  (put 'sk-vc-mode 'permanent-local t)
   (defvar sk-vc--tick 0
     "Bump whenever the branch of some repository may have changed.")
   (defvar-local sk-vc--buffer-tick -1
