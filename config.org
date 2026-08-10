@@ -447,10 +447,9 @@ If NOTICE is non-nil and Tmux is not running, print the message:
        (big-font nil))
   (defun sk-toggle-big-font ()
     (interactive)
-    (if big-font
-        (set-face-attribute 'default nil :height origin-height)
-      (set-face-attribute 'default nil :height big-height))
-    (setq big-font (not big-font))))
+    (if (setq big-font (not big-font))
+        (set-face-attribute 'default nil :height big-height)
+      (set-face-attribute 'default nil :height origin-height))))
 
 (defun add-sudo-to-command (sudo cmd)
   "Get password and add sudo to CMD if SUDO is non-nil, otherwise return CMD."
