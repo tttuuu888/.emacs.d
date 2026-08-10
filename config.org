@@ -612,9 +612,9 @@ Enable dark theme.
 #+BEGIN_SRC emacs-lisp
 (setq default-input-method "korean-hangul3")
 (when (display-graphic-p)
-  (set-fontset-font t 'unicode "Unifont" nil t)
-  (set-fontset-font t 'unicode "Unifont Upper" nil t)
-  (set-fontset-font t 'unicode "Noto Color Emoji" nil t)
+  (set-fontset-font t 'unicode "Unifont" nil 'prepend)
+  (set-fontset-font t 'unicode "Unifont Upper" nil 'prepend)
+  (set-fontset-font t 'unicode "Noto Color Emoji" nil 'prepend)
   (set-fontset-font t 'hangul sk-font)
   (set-face-attribute 'fixed-pitch nil :family sk-font))
 #+END_SRC
