@@ -2143,8 +2143,9 @@ process name."
     (interactive "F")
     (if (not (magit-staged-files))
         (message "No staged files")
-      (process-file "git" nil `(:file ,diff-file) nil
-                    "--no-pager" "diff" "--cached")))
+      (with-temp-buffer
+        (process-file "git" nil t nil "--no-pager" "diff" "--cached")
+        (write-region nil nil diff-file))))
 
   (if (transient--locate-child 'magit-diff "v")
       (error "Layout conflict occured!")
