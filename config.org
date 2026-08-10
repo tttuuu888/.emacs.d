@@ -3395,7 +3395,7 @@ Outside a project, kill the buffers under `default-directory'."
        "gtags"
        (lambda ()
          (clrhash ggtags-projects)
-         (message (concat "GTAGS generated in " default-directory))))))
+         (message "GTAGS generated in %s" root)))))
   (defun sk-set-c-project (root)
     (interactive "DRoot directory: ")
     (let ((default-directory root))
