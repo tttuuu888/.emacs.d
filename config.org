@@ -419,14 +419,13 @@ If NOTICE is non-nil and Tmux is not running, print the message:
         (user-error "No other file found"))))
 
 (defun async-shell-command-callback (cmd callback &rest args)
-  (let ((callback callback)
-        (args args))
-    (set-process-sentinel
-     (start-file-process "Async" nil shell-file-name shell-command-switch cmd)
-     (lambda (process signal)
-       (when (memq (process-status process) '(exit signal))
-         (apply callback args))))
-    nil))
+  "Run CMD asynchronously, then call CALLBACK with ARGS."
+  (set-process-sentinel
+   (start-file-process "Async" nil shell-file-name shell-command-switch cmd)
+   (lambda (process _signal)
+     (when (memq (process-status process) '(exit signal))
+       (apply callback args))))
+  nil)
 
 (defun shell-quote-remote-file (file)
   (let* ((local-name (file-local-name file))
