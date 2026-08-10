@@ -611,7 +611,7 @@ Enable dark theme.
 ** Korean and Font setting
 #+BEGIN_SRC emacs-lisp
 (setq default-input-method "korean-hangul3")
-(when window-system
+(when (display-graphic-p)
   (set-fontset-font t 'unicode "Unifont" nil t)
   (set-fontset-font t 'unicode "Unifont Upper" nil t)
   (set-fontset-font t 'unicode "Noto Color Emoji" nil t)
@@ -633,7 +633,7 @@ Simple mode line setting function.
    '("%e"
      (:eval
       (let* ((width (- (window-width)
-                       (if window-system 5 6)))
+                       (if (display-graphic-p) 5 6)))
              (evil-info (and (featurep 'evil) evil-mode
                              (concat " " (upcase (symbol-name evil-state)))))
              (buffer-info (format-mode-line " %* "))
