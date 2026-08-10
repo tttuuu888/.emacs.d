@@ -2133,7 +2133,7 @@ process name."
     (interactive)
     (if (not (magit-staged-files))
         (message "No staged files")
-      (call-process "git" nil (get-clear-buffer "*git-diff*") nil
+      (process-file "git" nil (get-clear-buffer "*git-diff*") nil
                     "--no-pager" "diff" "--cached")
       (pop-to-buffer "*git-diff*")
       (goto-char (point-min))
@@ -2143,7 +2143,7 @@ process name."
     (interactive "F")
     (if (not (magit-staged-files))
         (message "No staged files")
-      (call-process "git" nil `(:file ,diff-file) nil
+      (process-file "git" nil `(:file ,diff-file) nil
                     "--no-pager" "diff" "--cached")))
 
   (if (transient--locate-child 'magit-diff "v")
