@@ -3702,7 +3702,7 @@ Outside a project, kill the buffers under `default-directory'."
 (use-package eglot
   :config
   (setq eglot-autoshutdown t
-        eglot-events-buffer-size 0
+        eglot-events-buffer-config '(:size 0 :format full)
         eglot-ignored-server-capabilities
         '(:documentHighlightProvider
           :documentSymbolProvider
