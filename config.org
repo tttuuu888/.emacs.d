@@ -2371,7 +2371,19 @@ process name."
   :vc (:url "https://github.com/tttuuu888/stillness-mode.el"
             :rev :newest)
   :if (not (display-graphic-p))
-  :init (sk-defer-init (stillness-mode 1)))
+  :init (sk-defer-init (stillness-mode 1))
+  :config
+  (defvar sk-stillness-exclude-commands
+    '(consult-git-grep
+      consult-imenu consult-line consult-occur consult-rg-here
+      consult-yank-from-kill-ring sk-consult-git-grep sk-consult-line
+      sk-consult-yasnippet)
+    "Commands `stillness-mode' should keep out of.")
+  (define-advice stillness-mode--handle-point
+      (:around (fn read-fn &rest args) sk-skip)
+    (if (memq this-command sk-stillness-exclude-commands)
+        (apply read-fn args)
+      (apply fn read-fn args))))
 
 (use-package engrave-faces)
 
