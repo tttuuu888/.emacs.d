@@ -2368,14 +2368,10 @@ process name."
   :defer-init (xclip-mode 1))
 
 (use-package stillness-mode
-  :defer-init (stillness-mode 1)
-  :config
-  (define-minor-mode stillness-mode "Custom stillness-mode."
-    :global t
-    (if stillness-mode
-        (advice-add 'read-from-minibuffer :around
-                    #'stillness-mode--handle-point '(depth 90))
-      (advice-remove 'read-from-minibuffer #'stillness-mode--handle-point))))
+  :vc (:url "https://github.com/tttuuu888/stillness-mode.el"
+            :rev :newest)
+  :if (not (display-graphic-p))
+  :init (sk-defer-init (stillness-mode 1)))
 
 (use-package engrave-faces)
 
