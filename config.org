@@ -99,6 +99,7 @@ Instead of using =custom.el=, insert the contents of the file directly here.
  '(make-backup-files nil)
  '(mouse-wheel-progressive-speed nil)
  '(native-comp-async-report-warnings-errors 'silent)
+ '(package-vc-register-as-project nil)
  '(paragraph-start
    (rx (or "\f"
            (and (* space) eol)
