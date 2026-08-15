@@ -975,7 +975,7 @@ Defer code execution until the first command after initialization.
 (use-package files
   :ensure nil
   :defer-init
-  (dolist (dir '("eln-cache" "auto-save-list"))
+  (dolist (dir '("auto-save-list" "eln-cache" "transient"))
     (let ((path (expand-file-name dir emacs-config-dir)))
       (when (file-directory-p path)
         (delete-directory path t)))))
