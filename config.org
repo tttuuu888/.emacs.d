@@ -3320,8 +3320,12 @@ in case of ((|))."
     "js" 'project-switch-project
     "jS" 'sk-project-save-buffers)
   :config
+  ;; Only remember projects added by `sk-add-known-project'. This blocks both
+  ;; `project-current' and `project-switch-project', which remember silently.
   (defvar sk-project-remember nil
     "Non-nil only while adding a project.")
+  (advice-add 'project--remember-dir :before-while
+              (lambda (&rest _) sk-project-remember))
   (setq project-find-functions '(sk-project-try)
         project-prompter #'sk-project-prompt-project-dir
         project-switch-commands 'project-dired)
@@ -3340,10 +3344,6 @@ in case of ((|))."
         (completing-read "Select project: " table nil t nil nil (car dirs)))))
   (cl-defmethod project-root ((project (head sk)))
     (cdr project))
-  ;; Only remember projects added by `sk-add-known-project'. This blocks both
-  ;; `project-current' and `project-switch-project', which remember silently.
-  (advice-add 'project--remember-dir :before-while
-              (lambda (&rest _) sk-project-remember))
   (defun sk-project-save-buffers ()
     "Save all modified buffers of the current project."
     (interactive)
