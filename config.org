@@ -3423,7 +3423,7 @@ Outside a project, kill the buffers under `default-directory'."
                   (apply func col r)))))
 
 (use-package irony
-  :hook ((c++-mode c-mode objc-mode) . irony-mode)
+  :hook ((c++-mode c-mode objc-mode) . sk-irony-mode)
   :config
   (defun my-c-corfu-trigger ()
     "Auto-start completion after C/C++ member-access operators."
@@ -3448,6 +3448,9 @@ Outside a project, kill the buffers under `default-directory'."
     (add-hook 'completion-at-point-functions
               (cape-company-to-capf #'company-irony-c-headers) nil t)
     (add-hook 'post-self-insert-hook 'my-c-corfu-trigger nil t))
+  (defun sk-irony-mode ()
+    (unless (file-remote-p default-directory)
+      (irony-mode)))
   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
   (add-hook 'irony-mode-hook 'my-irony-corfu-setup)
   (setq irony-cdb-compilation-databases
