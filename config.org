@@ -1732,8 +1732,12 @@ process name."
 
 (use-package autorevert
   :ensure nil
+  :defer-init (global-auto-revert-mode 1)
   :config
-  (setq auto-revert-verbose nil))
+  (setq auto-revert-verbose nil)
+  (defun my-remote-buffer-p (buffer)
+    (file-remote-p (buffer-local-value 'default-directory buffer)))
+  (setq-default global-auto-revert-ignore-buffer #'my-remote-buffer-p))
 
 (use-package view
   :ensure nil
