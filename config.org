@@ -1912,7 +1912,6 @@ process name."
   (defun sk-vc-refresh-state ()
     (setq sk-vc-mode (git-branch-of-file (buffer-file-name))
           sk-vc-buffer-tick sk-vc-tick))
-  (defalias 'vc-refresh-state 'sk-vc-refresh-state)
   (defun sk-vc-refresh-stale (&optional frame)
     "Update `sk-vc-mode' in the file buffers of FRAME that are out of date."
     (dolist (window (window-list frame 'no-minibuffer))
@@ -1925,6 +1924,7 @@ process name."
     (sk-vc-refresh-stale))
   (add-hook 'window-buffer-change-functions #'sk-vc-refresh-stale)
   (add-hook 'after-set-visited-file-name-hook #'sk-vc-refresh-state)
+  (add-hook 'find-file-hook #'sk-vc-refresh-state)
   :config
   (advice-add 'vc-region-history :around
               (lambda (func &rest r)
