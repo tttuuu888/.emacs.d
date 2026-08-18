@@ -199,7 +199,7 @@ binding will be added to toggle MODE and REPL buffer unless NOBIND is not nil."
   (sharp-ifdef-insert start end (concat "#ifdef " in)))
 
 (defun find-file-in-tree (dir files &optional return-only-dir)
-  "Find first matching file of FILES up to HOME or ROOT folder.
+  "Find first matching file of FILES up to home or a root folder.
 FILES can be a file name string or list of files. If RETURN-ONLY-DIR is
 non-nil, return the directory containing the file instead of the full
 path to the file itself."
@@ -210,14 +210,14 @@ path to the file itself."
      for all-files = (and (file-readable-p cur-dir)
                           (directory-files cur-dir))
      for found = (cl-intersection files all-files :test #'string=)
+     for parent = (file-name-directory (directory-file-name cur-dir))
      if found return (if return-only-dir
                          cur-dir
                        (expand-file-name (car found) cur-dir))
      else if (or (equal cur-dir home)
-                 (equal cur-dir "/"))
+                 (equal cur-dir parent))
      return nil
-     else do (setq cur-dir
-                   (file-name-directory (directory-file-name cur-dir))))))
+     else do (setq cur-dir parent))))
 
 (defun sk-process-lines (program &rest args)
   "Like `process-lines-ignore-status', but honor remote `default-directory'."
