@@ -1905,23 +1905,23 @@ process name."
   (vc-follow-symlinks nil)
   (vc-handled-backends nil)
   :init
-  (defvar sk-vc--tick 0
+  (defvar sk-vc-tick 0
     "Bump whenever the branch of some repository may have changed.")
-  (defvar-local sk-vc--buffer-tick -1
-    "Value of `sk-vc--tick' when this buffer last read its branch.")
+  (defvar-local sk-vc-buffer-tick -1
+    "Value of `sk-vc-tick' when this buffer last read its branch.")
   (defun sk-vc-refresh-state ()
     (setq sk-vc-mode (git-branch-of-file (buffer-file-name))
-          sk-vc--buffer-tick sk-vc--tick))
+          sk-vc-buffer-tick sk-vc-tick))
   (defalias 'vc-refresh-state 'sk-vc-refresh-state)
   (defun sk-vc-refresh-stale (&optional frame)
     "Update `sk-vc-mode' in the file buffers of FRAME that are out of date."
     (dolist (window (window-list frame 'no-minibuffer))
       (with-current-buffer (window-buffer window)
-        (when (and buffer-file-name (/= sk-vc--tick sk-vc--buffer-tick))
+        (when (and buffer-file-name (/= sk-vc-tick sk-vc-buffer-tick))
           (sk-vc-refresh-state)))))
-  (defun sk-vc-invalidate (&optional _)
+  (defun sk-vc-invalidate ()
     "Mark every buffer as out of date, and update the visible ones."
-    (setq sk-vc--tick (1+ sk-vc--tick))
+    (setq sk-vc-tick (1+ sk-vc-tick))
     (sk-vc-refresh-stale))
   (add-hook 'window-buffer-change-functions #'sk-vc-refresh-stale)
   (add-hook 'after-set-visited-file-name-hook #'sk-vc-refresh-state)
