@@ -977,7 +977,9 @@ Defer code execution until the first command after initialization.
   (dolist (dir '("auto-save-list" "eln-cache" "transient"))
     (let ((path (expand-file-name dir emacs-config-dir)))
       (when (file-directory-p path)
-        (delete-directory path t)))))
+        (delete-directory path t))))
+  :config
+  (setq remote-file-name-inhibit-locks t))
 
 (use-package bind-key
   :ensure nil
@@ -1014,7 +1016,8 @@ Defer code execution until the first command after initialization.
   :defer-init (recentf-mode 1)
   :config
   (add-to-list 'recentf-exclude
-               (expand-file-name "elpa/.*" emacs-config-dir)))
+               (expand-file-name "elpa/.*" emacs-config-dir))
+  (add-to-list 'recentf-keep #'file-remote-p))
 
 (use-package calendar
   :ensure nil
