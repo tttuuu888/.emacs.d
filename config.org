@@ -2513,18 +2513,15 @@ Preserve the leading '#' if the input started with it."
       (setq cand (funcall fun cand)))
     (cl-call-next-method cand prefix suffix index start))
   (defun +vertico-highlight-directory (file)
-    "If FILE ends with a slash, highlight it as a directory.
-Layer the `dired-directory' face underneath any existing face
-properties so completion match highlighting remains visible."
+    "If FILE ends with a slash, highlight it as a directory."
     (if (string-suffix-p "/" file)
         (let ((copy (copy-sequence file)))
           (add-face-text-property 0 (length copy) 'dired-directory 'append copy)
           copy)
       file))
   (defun +vertico-kill-ring-no-truncate (orig str max)
-    "Show `kill-ring' candidate STR multiline, capped to
-`+vertico-kill-ring-max-lines' lines with a '[...]' marker.
-Otherwise truncate via ORIG with MAX."
+    "Return `kill-ring' candidate STR unfolded, ignoring MAX.
+Call ORIG for other categories."
     (if (eq (vertico--metadata-get 'category) 'kill-ring)
         (let ((lines (split-string (string-trim-right str) "\n")))
           (if (> (length lines) +vertico-kill-ring-max-lines)
@@ -2572,7 +2569,7 @@ Otherwise truncate via ORIG with MAX."
                         s j))
       s))
   (defun +vertico-kill-ring-page-scroll (orig)
-    "Page-jump scrolling for multiline kill-ring candidates."
+    "Page-jump scrolling for multiline `kill-ring' candidates."
     (if (eq (vertico--metadata-get 'category) 'kill-ring)
         (let* ((win (and (overlayp vertico--candidates-ov)
                          (overlay-get vertico--candidates-ov 'window)))
@@ -2599,9 +2596,8 @@ Otherwise truncate via ORIG with MAX."
       (funcall orig)))
   (advice-add 'vertico--compute-scroll :around #'+vertico-kill-ring-page-scroll)
   (defun my-vertico-sort (input candidates)
-    "Sort CANDIDATES with exact match first, then prefix matches of
-INPUT's first word, then the rest.  Within each bucket, sort
-alphabetically via `vertico-sort-alpha'."
+    "Sort CANDIDATES into exact, prefix, and rest groups based on INPUT.
+Candidates within each group are sorted alphabetically."
     (if (or (string-empty-p input)
             (eq (aref input 0) ?^))
         (vertico-sort-alpha candidates)
@@ -2620,19 +2616,16 @@ alphabetically via `vertico-sort-alpha'."
          (vertico-sort-alpha res-prefix)
          (vertico-sort-alpha res-others)))))
   (defun vertico-default-sort (candidates)
-    "Sort candidates with `my-vertico-sort'.
-When the input is empty, return CANDIDATES in their original order so
-that completion tables which supply a meaningful ordering (e.g.
-`describe-face') are preserved."
+    "Sort candidates with `my-vertico-sort' unless INPUT is empty."
     (let ((input (minibuffer-contents-no-properties)))
       (if (string-empty-p input)
           candidates
         (my-vertico-sort input candidates))))
-  (defun vertico-sort-dirs-and-files (lst)
-    "Sort dirs first and files, prioritizing prefix matches."
+  (defun vertico-sort-dirs-and-files (candidates)
+    "Partition CANDIDATES into directories and files, then sort each group."
     (let ((input (file-name-nondirectory (minibuffer-contents-no-properties)))
           dirs files)
-      (dolist (x lst)
+      (dolist (x candidates)
         (if (string-suffix-p "/" x)
             (push x dirs)
           (push x files)))
