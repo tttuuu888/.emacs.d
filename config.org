@@ -1920,9 +1920,15 @@ process name."
     "Mark every buffer as out of date, and update the visible ones."
     (setq sk-vc-tick (1+ sk-vc-tick))
     (sk-vc-refresh-stale))
-  (add-hook 'window-buffer-change-functions #'sk-vc-refresh-stale)
+  (defun sk-vc-mark-stale ()
+    "Mark the branch info of this buffer as out of date."
+    (setq sk-vc-buffer-tick (1- sk-vc-tick))
+    (when (get-buffer-window nil 'visible)  ; Update immediately if visible
+      (sk-vc-refresh-state)))
   (add-hook 'after-set-visited-file-name-hook #'sk-vc-refresh-state)
+  (add-hook 'after-revert-hook #'sk-vc-mark-stale)
   (add-hook 'find-file-hook #'sk-vc-refresh-state)
+  (add-hook 'window-buffer-change-functions #'sk-vc-refresh-stale)
   :config
   (advice-add 'vc-region-history :around
               (lambda (func &rest r)
