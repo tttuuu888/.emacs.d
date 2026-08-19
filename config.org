@@ -2875,13 +2875,14 @@ Stop trying if the input changes before the candidate appears."
     (consult-ripgrep default-directory nil))
 
   (defun sk-compile-scripts ()
-    (if-let* ((target (locate-dominating-file default-directory ".sbin"))
-              (sbin (expand-file-name ".sbin" target))
-              (files (directory-files sbin t "\\.sh$"))
-              (files-alist
-               (mapcar (lambda (f) (cons (file-name-nondirectory f) f)) files)))
-        (cons (file-name-as-directory sbin) files-alist)
-      (user-error "Couldn't find .sbin folder")))
+    (let* ((target (or (locate-dominating-file default-directory ".sbin")
+                       (user-error "Couldn't find .sbin folder")))
+           (sbin (expand-file-name ".sbin" target))
+           (files (or (directory-files sbin t "\\.sh$")
+                      (user-error "No compile scripts in .sbin folder")))
+           (files-alist
+            (mapcar (lambda (f) (cons (file-name-nondirectory f) f)) files)))
+      (cons (file-name-as-directory sbin) files-alist)))
 
   (defun sk-compile (&optional dir)
     (interactive)
