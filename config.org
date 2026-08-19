@@ -1334,10 +1334,10 @@ Defer code execution until the first command after initialization.
 
   (defun sk-sbin-dired ()
     (interactive)
-    (let ((sbin (find-file-in-tree default-directory ".sbin")))
-      (if sbin
-          (dired sbin)
-        (message "Folder .sbin not found.")))))
+    (if-let* ((target (locate-dominating-file default-directory ".sbin"))
+              (sbin (expand-file-name ".sbin" target)))
+        (dired sbin)
+      (message "Folder .sbin not found."))))
 
 (use-package org
   :ensure nil
@@ -2877,7 +2877,8 @@ Stop trying if the input changes before the candidate appears."
     (consult-ripgrep default-directory nil))
 
   (defun sk-compile-scripts ()
-    (if-let* ((sbin (find-file-in-tree default-directory ".sbin"))
+    (if-let* ((target (locate-dominating-file default-directory ".sbin"))
+              (sbin (expand-file-name ".sbin" target))
               (files (directory-files sbin t "\\.sh$"))
               (files-alist
                (mapcar (lambda (f) (cons (file-name-nondirectory f) f)) files)))
