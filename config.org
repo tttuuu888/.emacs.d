@@ -2519,82 +2519,52 @@ Preserve the leading '#' if the input started with it."
           (add-face-text-property 0 (length copy) 'dired-directory 'append copy)
           copy)
       file))
-  (defun +vertico-kill-ring-no-truncate (orig str max)
-    "Return `kill-ring' candidate STR unfolded, ignoring MAX.
-Call ORIG for other categories."
-    (if (eq (vertico--metadata-get 'category) 'kill-ring)
-        (let ((lines (split-string (string-trim-right str) "\n")))
-          (if (> (length lines) +vertico-kill-ring-max-lines)
-              (concat
-               (string-join (seq-take lines +vertico-kill-ring-max-lines)
-                            "\n")
-               "\n[...]")
-            (string-trim-right str)))
-      (funcall orig str max)))
-  (advice-add 'vertico--truncate-multiline :around
-              #'+vertico-kill-ring-no-truncate)
-  (cl-defmethod vertico--format-candidate :around
-    (cand prefix suffix index start
-          &context ((vertico--metadata-get 'category) (eql kill-ring)))
-    "Draw a separator line after the candidate has been formatted."
-    (let ((formatted (cl-call-next-method cand prefix suffix index start)))
-      ;; No separator under the last candidate.
-      (if (>= index (1- vertico--total))
-          formatted
-        (concat formatted (propertize (concat (make-string 40 ?―) "\n")
-                                      'face '+vertico-kill-ring-separator)))))
-
   (defun +vertico-kill-ring--height (cand)
-    "Calculate height of kill-ring candidate CAND."
-    (let ((n (1+ (cl-count ?\n (string-trim-right cand)))))
-      (+ (min +vertico-kill-ring-max-lines n)
-         (if (> n +vertico-kill-ring-max-lines) 1 0)  ; "[...]" line
-         1)))                                         ; separator line
-  (defun +vertico-kill-ring--fit (scroll avail)
-    "Number of candidates from SCROLL that fit AVAIL lines."
-    (let ((used 0) (n 0))
-      (cl-loop for c in (nthcdr scroll vertico--candidates)
-               for h = (+vertico-kill-ring--height c)
-               while (or (zerop n) (<= (+ used h) avail))
-               do (setq used (+ used h)
-                        n (1+ n)))
-      (max 1 n)))
-  (defun +vertico-kill-ring--center (index avail)
-    "Scroll offset placing candidate INDEX about half a page down."
-    (let ((budget (/ avail 2)) (used 0) (s index))
-      (cl-loop for j from (1- index) downto 0
-               for h = (+vertico-kill-ring--height (nth j vertico--candidates))
-               while (<= (+ used h) budget)
-               do (setq used (+ used h)
-                        s j))
-      s))
-  (defun +vertico-kill-ring-page-scroll (orig)
-    "Page-jump scrolling for multiline `kill-ring' candidates."
-    (if (eq (vertico--metadata-get 'category) 'kill-ring)
-        (let* ((win (and (overlayp vertico--candidates-ov)
-                         (overlay-get vertico--candidates-ov 'window)))
-               (side (window-live-p win))
-               (avail
-                (if side
-                    (max 1 (- (/ (window-pixel-height win)
-                                 (default-line-height))
-                              (if mode-line-format 2 1)))
-                  ;; Bottom minibuffer: cap to half the frame height, matching
-                  ;; the `vertico-count' the side-style setup uses elsewhere.
-                  (max 1 (/ (frame-height) 2))))
-               (i (max 0 vertico--index))
-               (s (or vertico--scroll 0))
-               (page (+vertico-kill-ring--fit s avail)))
-          (when (or (< i s) (>= i (+ s page)))   ; left page -> recenter
-            (setq s (+vertico-kill-ring--center i avail)
-                  page (+vertico-kill-ring--fit s avail)))
-          ;; In the fixed-size side window the extra candidate fills the bottom
-          ;; gap; the auto-growing minibuffer must stay within AVAIL, so no +1.
-          (setq-local vertico-count (min (max 1 (- vertico--total s))
-                                         (if side (1+ page) page)))
-          (setq vertico--scroll s))
-      (funcall orig)))
-  (advice-add 'vertico--compute-scroll :around #'+vertico-kill-ring-page-scroll)
+    "Calculate height of `kill-ring' candidate CAND."
+    (let ((n (1+ (cl-count ?\n (string-trim-right cand "\n")))))
+      (+ (min n +vertico-kill-ring-max-lines)
+         (if (> n +vertico-kill-ring-max-lines) 2 1)))) ; "[...]" and separator
+  (defun +vertico-kill-ring--trim (cand)
+    "Return CAND without trailing newline, truncated with [...] if too long."
+    (let* ((trimmed (string-trim-right cand "\n"))
+           (lines (split-string trimmed "\n")))
+      (if (<= (length lines) +vertico-kill-ring-max-lines)
+          trimmed
+        (concat (string-join (seq-take lines +vertico-kill-ring-max-lines) "\n")
+                "\n[...]"))))
+  (defun +vertico-kill-ring--avail ()
+    "Calculate available lines to display candidates in window."
+    (if-let* (((overlayp vertico--candidates-ov))
+              (win (overlay-get vertico--candidates-ov 'window))
+              ((window-live-p win)))
+        (max 1 (- (/ (window-pixel-height win) (default-line-height))
+                  (if mode-line-format 2 1)))   ; minus prompt and mode-line
+      (max 1 (/ (frame-height) 2))))
+  (cl-defmethod vertico--arrange-candidates
+    (&context ((vertico--metadata-get 'category) (eql kill-ring)))
+    "Return a list of formatted, multiline `kill-ring' candidate strings."
+    (let ((avail (+vertico-kill-ring--avail)) ; available lines
+          (index (max 0 vertico--index))      ; selected candidate
+          ;; current page - start index / used lines / used candidate count
+          (start 0) (used 0) (count 0))
+      ;; Pack candidates into pages and keep the one holding index.
+      (cl-loop for cand in vertico--candidates for i from 0
+               for h = (+vertico-kill-ring--height cand)
+               do (when (and (> count 0) (> (+ used h) avail)) ; page is full
+                    (when (> i index) (cl-return)) ; index was on that page
+                    (setq start i used 0 count 0)) ; start a new page at i
+                  (setq used (+ used h) count (1+ count)))
+      (setq-local vertico-count count)  ; so that C-v/M-v works correctly
+      ;; Render the current page including the current index
+      (cl-loop for cand in (nthcdr start vertico--candidates)
+               for i from start repeat (1+ count) ; +1 to fill the bottom gap
+               for str = (+vertico-kill-ring--trim (vertico--hilit cand))
+               collect (concat
+                        (vertico--format-candidate str "" "" i start)
+                        ;; No separator after the last candidate
+                        (when (< i (1- vertico--total))
+                          (propertize (concat (make-string 40 ?―) "\n")
+                                      'face '+vertico-kill-ring-separator))))))
   (defun my-vertico-sort (input candidates)
     "Sort CANDIDATES into exact, prefix, and rest groups based on INPUT.
 Candidates within each group are sorted alphabetically."
