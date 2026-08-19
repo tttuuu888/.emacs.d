@@ -199,10 +199,8 @@ binding will be added to toggle MODE and REPL buffer unless NOBIND is not nil."
   (sharp-ifdef-insert start end (concat "#ifdef " in)))
 
 (defun find-file-in-tree (dir files &optional return-only-dir)
-  "Find first matching file of FILES up to home or a root folder.
-FILES can be a file name string or list of files. If RETURN-ONLY-DIR is
-non-nil, return the directory containing the file instead of the full
-path to the file itself."
+  "Find the first matching file from FILES (a list) up to home or root.
+If RETURN-ONLY-DIR is non-nil, return its directory instead of the full path."
   (let ((cur-dir (file-name-as-directory (expand-file-name dir)))
         (files (ensure-list files))
         (home (expand-file-name "~/")))
