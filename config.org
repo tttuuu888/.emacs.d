@@ -286,29 +286,29 @@ If RETURN-ONLY-DIR is non-nil, return its directory instead of the full path."
     (message "Windows are saved to F%d" num)))
 
 (defun sk-C-c-map-to-leader-c-map (mode mode-map &optional exceptions)
-  "Change C-c ... key map to <leader> c... key map, except EXCEPTIONS list"
+  "Bind MODE-MAP's C-c keys to <leader> c for MODE, except EXCEPTIONS list."
   (let* ((ret nil)
          (target (alist-get ?\C-c mode-map))
-         (cm (append (number-sequence ?\C-a ?\C-z)))
+         (cm (number-sequence ?\C-a ?\C-z))
          (ks (append cm (number-sequence ?\ ?z))))
     (cl-labels
         ((ctrl-map-search (elt pre)
            (if (symbolp elt)
-               (setq ret (append ret (list (cons pre elt))))
+               (push (cons pre elt) ret)
              (dolist (k ks)
                ;; NOTE: C-a, C-b, etc. will be converted to a, b, etc. for
                ;; npre. However, C-<letter> and <letter> will result in the same
                ;; value for npre, causing potential overwriting.
                (let ((nelt (alist-get k elt))
                      (npre (if (member k cm) (+ k 96) k)))
-                 (when nelt
+                 ;; Ignore multi-char keys. e.g. "SPC" would be read as S, P, C.
+                 (when (and nelt (= 1 (length (single-key-description npre))))
                    (ctrl-map-search nelt (append pre (list npre)))))))))
       (ctrl-map-search target (list ?\c))
+      (setq ret (nreverse ret))
       (dolist (e ret)
         (let ((key (mapconcat 'single-key-description (car e) "")))
-          (unless
-              (and exceptions
-                   (cl-some (lambda (e) (string-prefix-p e key)) exceptions))
+          (unless (cl-some (lambda (ex) (string-prefix-p ex key)) exceptions)
             (evil-leader/set-key-for-mode mode key (cdr e))))))))
 
 (defun tmux-running-p (&optional notice)
