@@ -3827,7 +3827,9 @@ Outside a project, kill the buffers under `default-directory'."
 (use-package janet-completion
   :vc (:url "https://github.com/tttuuu888/janet-completion"
             :branch "main"
-            :rev :newest))
+            :rev :newest)
+  :config
+  (janet-completion-mode 1))
 
 (use-package dart-mode
   :hook (dart-mode . eglot-ensure))
