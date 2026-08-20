@@ -2572,19 +2572,14 @@ Candidates within each group are sorted alphabetically."
             (eq (aref input 0) ?^))
         (vertico-sort-alpha candidates)
       (let ((first-word (or (car (split-string input)) ""))
-            res-exact res-prefix res-others)
+            exact prefix rest)
         (dolist (cand candidates)
-          (cond
-           ((eq t (compare-strings input nil nil cand nil nil t))
-            (push cand res-exact))
-           ((string-prefix-p first-word cand t)
-            (push cand res-prefix))
-           (t
-            (push cand res-others))))
-        (nconc
-         (vertico-sort-alpha res-exact)
-         (vertico-sort-alpha res-prefix)
-         (vertico-sort-alpha res-others)))))
+          (cond ((string-equal-ignore-case input cand) (push cand exact))
+                ((string-prefix-p first-word cand t) (push cand prefix))
+                (t (push cand rest))))
+        (nconc (vertico-sort-alpha exact)
+               (vertico-sort-alpha prefix)
+               (vertico-sort-alpha rest)))))
   (defun vertico-default-sort (candidates)
     "Sort candidates with `my-vertico-sort' unless INPUT is empty."
     (let ((input (minibuffer-contents-no-properties)))
