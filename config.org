@@ -2491,10 +2491,10 @@ Preserve the leading '#' if the input started with it."
    +vertico-kill-ring-max-lines 6
    +vertico-transform-functions nil
    vertico-multiform-categories
-   '((file (vertico-sort-function . vertico-sort-dirs-and-files)
+   '((file (vertico-sort-function . +vertico-sort-dirs-and-files)
            (+vertico-transform-functions . +vertico-highlight-directory)
            (:keymap . vertico-directory-map))
-     (t (vertico-sort-function . vertico-default-sort)))
+     (t (vertico-sort-function . +vertico-default-sort)))
    vertico-multiform-commands
    `((consult-git-grep ,@vertico-side-style)
      (consult-imenu ,@vertico-side-style)
@@ -2505,7 +2505,7 @@ Preserve the leading '#' if the input started with it."
      (sk-consult-git-grep ,@vertico-side-style)
      (sk-consult-line (vertico-mode . t) (vertico-posframe-mode . nil))
      (sk-consult-yasnippet (vertico-mode . t) (vertico-posframe-mode . nil)
-                           (vertico-sort-function . vertico-default-sort))))
+                           (vertico-sort-function . +vertico-default-sort))))
   (cl-defmethod vertico--format-candidate :around
     (cand prefix suffix index start
           &context ((not +vertico-transform-functions) null))
@@ -2580,13 +2580,13 @@ Candidates within each group are sorted alphabetically."
         (nconc (vertico-sort-alpha exact)
                (vertico-sort-alpha prefix)
                (vertico-sort-alpha rest)))))
-  (defun vertico-default-sort (candidates)
-    "Sort candidates with `my-vertico-sort' unless INPUT is empty."
+  (defun +vertico-default-sort (candidates)
+    "Sort CANDIDATES with `my-vertico-sort' unless the input is empty."
     (let ((input (minibuffer-contents-no-properties)))
       (if (string-empty-p input)
           candidates
         (my-vertico-sort input candidates))))
-  (defun vertico-sort-dirs-and-files (candidates)
+  (defun +vertico-sort-dirs-and-files (candidates)
     "Partition CANDIDATES into directories and files, then sort each group."
     (let ((input (file-name-nondirectory (minibuffer-contents-no-properties)))
           dirs files)
