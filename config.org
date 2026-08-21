@@ -695,28 +695,24 @@ settings.
 Defer code execution until the first command after initialization.
 
 #+begin_src emacs-lisp
-(defmacro sk-defer-init (&rest body)
-  "Defer BODY until the very first command after init."
-  (declare (indent defun))
-  (let ((name (gensym "defer-init-")))
-    `(progn
-       (defun ,name ()
-         ,@body
-         (remove-hook 'pre-command-hook ',name)
-         (unintern ',name nil))
-       (add-hook 'pre-command-hook #',name))))
-
 (add-to-list 'use-package-keywords :defer-init)
 
 (defalias 'use-package-normalize/:defer-init 'use-package-normalize-forms)
 
 (defun use-package-handler/:defer-init (name _keyword args rest state)
-  "Transforms `:defer-init BODY' into `:init (sk-defer-init BODY)'"
-  (use-package-process-keywords
-    name
-    (plist-put rest :init
-               (cons `(sk-defer-init ,@args) (plist-get rest :init)))
-    state))
+  "Generate code to defer ARGS until the first command after init."
+  (let ((fn (intern (format "defer-init/%s" (use-package-as-symbol name)))))
+    (use-package-process-keywords
+      name
+      (plist-put rest :init
+                 (cons `(progn
+                          (defun ,fn ()
+                            ,@args
+                            (remove-hook 'pre-command-hook #',fn)
+                            (unintern ',fn nil))
+                          (add-hook 'pre-command-hook #',fn))
+                       (plist-get rest :init)))
+      state)))
 #+end_src
 
 * Async, Evil and Evil-leader packages
