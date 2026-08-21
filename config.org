@@ -2409,7 +2409,7 @@ process name."
   :vc (:url "https://github.com/tttuuu888/stillness-mode.el"
             :rev :newest)
   :if (not (display-graphic-p))
-  :init (sk-defer-init (stillness-mode 1))
+  :defer-init (stillness-mode 1)
   :config
   (defvar sk-stillness-exclude-commands
     '(consult-git-grep
