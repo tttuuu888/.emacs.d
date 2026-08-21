@@ -173,6 +173,15 @@ or back to MODE.  Unless NOBIND is non-nil, binds <leader> z in both modes."
          (setq this-command ',eval-region)
          (,eval-region back curr)))
      (setq deactivate-mark t)))
+
+(defmacro sk-with-sudo (sudo &rest body)
+  "Evaluate BODY as root via TRAMP when SUDO is non-nil, or normally if nil.
+BODY should not switch buffers or rebind `default-directory'."
+  (declare (indent 1))
+  `(let ((default-directory (if ,sudo
+                                (concat "/sudo::" default-directory)
+                              default-directory)))
+     ,@body))
 #+end_src
 
 ** Custom functions
@@ -413,13 +422,14 @@ If NOTICE is non-nil, display a message when no session is running."
                            root))
       (user-error "No other file found"))))
 
-(defun async-shell-command-callback (cmd callback &rest args)
-  "Run CMD asynchronously, then call CALLBACK with ARGS."
-  (set-process-sentinel
-   (start-file-process "Async" nil shell-file-name shell-command-switch cmd)
-   (lambda (process _signal)
-     (when (memq (process-status process) '(exit signal))
-       (apply callback args))))
+(defun async-shell-command-callback (cmd sudo callback &rest args)
+  "Run CMD asynchronously as root if SUDO, then call CALLBACK with ARGS."
+  (sk-with-sudo sudo
+    (set-process-sentinel
+     (start-file-process "Async" nil shell-file-name shell-command-switch cmd)
+     (lambda (process _signal)
+       (when (memq (process-status process) '(exit signal))
+         (apply callback args)))))
   nil)
 
 (defun shell-quote-remote-file (file)
@@ -445,15 +455,6 @@ If NOTICE is non-nil, display a message when no session is running."
     (if (setq big-font (not big-font))
         (set-face-attribute 'default nil :height big-height)
       (set-face-attribute 'default nil :height origin-height))))
-
-(defun add-sudo-to-command (sudo cmd)
-  "Get password and add sudo to CMD if SUDO is non-nil, otherwise return CMD."
-  (concat
-   (when sudo
-     (concat "echo "
-             (shell-quote-argument (read-passwd "Password? "))
-             "| sudo -S "))
-   cmd))
 
 (defun sk-alist-to-js-obj (alist &optional omit-curly-braces)
   "Convert ALIST to JavaScript object string.
@@ -1189,6 +1190,7 @@ Defer code execution until the first command after initialization.
       (when ext
         (async-shell-command-callback
          (concat cmd target " " (string-join source " "))
+         nil
          (lambda (file)
            (dired-add-file file ?Z)
            (message "Compress files done."))
@@ -1225,7 +1227,7 @@ Defer code execution until the first command after initialization.
              files))
            (cmd (string-join cmds " && ")))
       (async-shell-command-callback
-       cmd
+       cmd nil
        (lambda ()
          (revert-buffer)
          (message "Decompress files done.")))))
@@ -1266,7 +1268,7 @@ Defer code execution until the first command after initialization.
                (dest (shell-quote-argument target))
                (cmd (concat "cp -rf " deref-opt source " " dest)))
           (async-shell-command-callback
-           (add-sudo-to-command (> arg 1) cmd) refresh-dired target-files)))))
+           cmd (> arg 1) refresh-dired target-files)))))
 
   (defun my-dired-do-delete (&optional arg)
     "Delete files asynchronously for local, and synchronously for remote."
@@ -1290,8 +1292,7 @@ Defer code execution until the first command after initialization.
               (funcall refresh-dired))
           (let* ((source (mapconcat #'shell-quote-argument files " "))
                  (cmd (concat "rm -rf " source)))
-            (async-shell-command-callback
-             (add-sudo-to-command (> arg 1) cmd) refresh-dired))))))
+            (async-shell-command-callback cmd (> arg 1) refresh-dired))))))
 
   (defun my-dired-do-flagged-delete (&optional arg)
     "Delete files flagged for deletion asynchronously."
@@ -1318,8 +1319,7 @@ Defer code execution until the first command after initialization.
               (funcall refresh-dired))
           (let* ((source (mapconcat #'shell-quote-argument files " "))
                  (cmd (concat "rm -rf " source)))
-            (async-shell-command-callback
-             (add-sudo-to-command (> arg 1) cmd) refresh-dired))))))
+            (async-shell-command-callback cmd (> arg 1) refresh-dired))))))
 
   (defun sk-meld-dir ()
     (interactive)
@@ -3366,7 +3366,7 @@ Outside a project, kill the buffers under `default-directory'."
     (interactive "DRoot directory: ")
     (let ((default-directory root))
       (async-shell-command-callback
-       "gtags"
+       "gtags" nil
        (lambda ()
          (clrhash ggtags-projects)
          (message "GTAGS generated in %s" root)))))
