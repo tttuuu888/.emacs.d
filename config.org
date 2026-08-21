@@ -367,8 +367,9 @@ If NOTICE is non-nil, display a message when no session is running."
 (defun my-find-file-in-git-project (regex root)
   (when (file-exists-p (expand-file-name ".git" root))
     (let ((default-directory (file-truename root)))
-      (seq-filter (lambda (f) (string-match-p regex f))
-                  (sk-process-lines "git" "ls-files")))))
+      (seq-filter
+       (lambda (f) (string-match-p regex f))
+       (sk-process-lines "git" "ls-files" "-co" "--exclude-standard")))))
 
 (defun sk-git-diff-relative ()
   "Run git diff with --relative option."
