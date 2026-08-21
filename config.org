@@ -534,8 +534,7 @@ Treat quoted strings and balanced delimiters as single units."
 
 (defun ensure-dir (dir)
   "Return DIR, creating it and any parent directories if needed."
-  (unless (file-exists-p dir)
-    (make-directory dir t))
+  (make-directory dir t)
   dir)
 
 (defun goto-first-korean-letter ()
