@@ -423,13 +423,20 @@ If NOTICE is non-nil, display a message when no session is running."
       (user-error "No other file found"))))
 
 (defun async-shell-command-callback (cmd sudo callback &rest args)
-  "Run CMD asynchronously as root if SUDO, then call CALLBACK with ARGS."
-  (sk-with-sudo sudo
-    (set-process-sentinel
-     (start-file-process "Async" nil shell-file-name shell-command-switch cmd)
-     (lambda (process _signal)
-       (when (memq (process-status process) '(exit signal))
-         (apply callback args)))))
+  "Run CMD asynchronously as root if SUDO, then call CALLBACK with ARGS.
+CALLBACK runs only when CMD exits successfully."
+  (let ((buffer (generate-new-buffer "*Async Shell Command*")))
+    (sk-with-sudo sudo
+      (set-process-sentinel
+       (start-file-process "Async" buffer shell-file-name shell-command-switch cmd)
+       (lambda (process _signal)
+         (when (memq (process-status process) '(exit signal))
+           (if (zerop (process-exit-status process))
+               (progn (kill-buffer buffer)
+                      (apply callback args))
+             (display-buffer buffer)
+             (message "Command failed (%d): %s"
+                      (process-exit-status process) cmd)))))))
   nil)
 
 (defun shell-quote-remote-file (file)
