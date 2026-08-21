@@ -387,34 +387,30 @@ If NOTICE is non-nil, display a message when no session is running."
 (defun my-find-file-in-dir (regex &optional dir)
   (directory-files (or dir default-directory) nil regex))
 
-(defun my-find-other-file ()
-  "Switch between C/C++ source and header files in the project."
-  (if-let* ((file (buffer-file-name))
-            (base (file-name-base file))
-            (ext (file-name-extension file))
-            (root default-directory)
-            (regex
-             (cond ((member ext '("h" "hpp"))
-                    (rx (or bol "/") (literal base) "." (or "c" "cpp") eol))
-                   ((member ext '("c" "cpp"))
-                    (rx (or bol "/") (literal base) "." (or "h" "hpp") eol))
-                   (t nil)))
-            (others (or (my-find-file-in-dir regex)
-                        (and (setq root (my-get-git-root-dir))
-                             (my-find-file-in-git-project regex root)))))
-      (find-file
-       (expand-file-name
-        (if (length= others 1)
-            (car others)
-          (consult--read others :prompt "Switch to: "))
-        root))))
-
-(defun sk-find-other-file (&optional FLEX-MATCHING)
+(defun sk-find-other-file ()
   "Switch between C/C++ source and header files in the project."
   (interactive)
   (let ((inhibit-message t))
-    (or (my-find-other-file)
-        (user-error "No other file found"))))
+    (if-let*
+        ((file (buffer-file-name))
+         (base (file-name-base file))
+         (ext  (file-name-extension file))
+         (root default-directory)
+         (regex
+          (cond ((member ext '("h" "hh" "hpp"))
+                 (rx (or bol "/") (literal base) "." (or "c" "cc" "cpp") eol))
+                ((member ext '("c" "cc" "cpp"))
+                 (rx (or bol "/") (literal base) "." (or "h" "hh" "hpp") eol))
+                (t nil)))
+         (others (or (my-find-file-in-dir regex)
+                     (and (setq root (my-get-git-root-dir))
+                          (my-find-file-in-git-project regex root)))))
+        (find-file
+         (expand-file-name (if (length= others 1)
+                               (car others)
+                             (consult--read others :prompt "Switch to: "))
+                           root))
+      (user-error "No other file found"))))
 
 (defun async-shell-command-callback (cmd callback &rest args)
   "Run CMD asynchronously, then call CALLBACK with ARGS."
