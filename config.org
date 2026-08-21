@@ -138,9 +138,9 @@ Instead of using =custom.el=, insert the contents of the file directly here.
 ** Custom macros
 #+begin_src emacs-lisp
 (defmacro sk-switch-buffer-repl (name mode repl run-repl &optional nobind)
-  "Create NAME function which switch between a file of MODE and a REPL.
-Open REPL with RUN-REPL function if REPL is not yet opened. Evil-Leader z
-binding will be added to toggle MODE and REPL buffer unless NOBIND is not nil."
+  "Define NAME to toggle between MODE and REPL buffers.
+When called, NAME switches from MODE to REPL, running RUN-REPL if needed,
+or back to MODE.  Unless NOBIND is non-nil, binds <leader> z in both modes."
   (declare (indent defun))
   `(let ((last-mode "")
          (last-repl ""))
@@ -312,12 +312,11 @@ If RETURN-ONLY-DIR is non-nil, return its directory instead of the full path."
             (evil-leader/set-key-for-mode mode key (cdr e))))))))
 
 (defun tmux-running-p (&optional notice)
-  "Check if Tmux is currently running.
-If NOTICE is non-nil and Tmux is not running, print the message:
-\"Tmux is not running!\""
+  "Return non-nil if a tmux session exists.
+If NOTICE is non-nil, display a message when no session is running."
   (let ((running (zerop (call-process "tmux" nil nil nil "has-session"))))
     (when (and (not running) notice)
-      (message "Tmux is not running!"))
+      (message "No tmux session is running!"))
     running))
 
 (defun tmux-new-window-here ()
@@ -335,7 +334,7 @@ If NOTICE is non-nil and Tmux is not running, print the message:
   (write-region "" nil (expand-file-name ".project" dir) t))
 
 (defun get-clear-buffer (buffer)
-  "Return the buffer specified by BUFFER. BUFFER is always returned empty."
+  "Return BUFFER after clearing its contents, creating it if needed."
   (with-current-buffer (get-buffer-create buffer)
     (erase-buffer)
     (current-buffer)))
@@ -389,7 +388,7 @@ If NOTICE is non-nil and Tmux is not running, print the message:
   (directory-files (or dir default-directory) nil regex))
 
 (defun my-find-other-file ()
-  "Switch betwen .c|.cpp and .h|.hpp files in project."
+  "Switch between C/C++ source and header files in the project."
   (if-let* ((file (buffer-file-name))
             (base (file-name-base file))
             (ext (file-name-extension file))
@@ -411,7 +410,7 @@ If NOTICE is non-nil and Tmux is not running, print the message:
         root))))
 
 (defun sk-find-other-file (&optional FLEX-MATCHING)
-  "Switch betwen .c|.cpp and .h|.hpp files."
+  "Switch between C/C++ source and header files in the project."
   (interactive)
   (let ((inhibit-message t))
     (or (my-find-other-file)
@@ -460,8 +459,8 @@ If NOTICE is non-nil and Tmux is not running, print the message:
    cmd))
 
 (defun sk-alist-to-js-obj (alist &optional omit-curly-braces)
-  "Convert ALIST to javascript object string.
-When OMIT-CURLY-BRACES is non-nil, omit curly braces wrapping."
+  "Convert ALIST to JavaScript object string.
+If OMIT-CURLY-BRACES is non-nil, omit the surrounding curly braces."
   (concat
    (unless omit-curly-braces "{ ")
    (string-join
@@ -504,9 +503,8 @@ When OMIT-CURLY-BRACES is non-nil, omit curly braces wrapping."
     (browse-url (format "https://www.google.com/search?q=%s&ie=UTF-8" target))))
 
 (defun align-columns (beg end)
-  "Align columns in region BEG END.
-Treat quoted strings and balanced parentheses, brackets, and braces as
-single units."
+  "Align columns in the region between BEG and END.
+Treat quoted strings and balanced delimiters as single units."
   (interactive "r")
   (align-regexp beg end
                 (rx (group (+ blank))
@@ -538,7 +536,7 @@ single units."
   (mapconcat (lambda (x) (format "%02x" x)) lst ""))
 
 (defun ensure-dir (dir)
-  "Ensure that DIR exists, creating it if necessary. Returns DIR."
+  "Return DIR, creating it and any parent directories if needed."
   (unless (file-exists-p dir)
     (make-directory dir t))
   dir)
@@ -2957,9 +2955,7 @@ Stop trying if the input changes before the candidate appears."
     (embark-act 1))
 
   (defun embark-which-key-indicator ()
-    "An embark indicator that displays keymaps using which-key.
-The which-key help message will show the type and value of the current
-target followed by an ellipsis if there are further targets."
+    "An embark indicator that displays keymaps using which-key."
     (lambda (&optional keymap targets prefix)
       (if (null keymap)
           (which-key--hide-popup-ignore-command)
