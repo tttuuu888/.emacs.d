@@ -356,7 +356,7 @@ If NOTICE is non-nil, display a message when no session is running."
 
 (defun git-tracked-file-p (&optional file-name)
   (when-let* ((file (or file-name buffer-file-name))
-              ((file-exists-p file))
+              (_ (file-exists-p file))
               (default-directory (file-name-directory (expand-file-name file))))
     (zerop (process-file "git" nil nil nil
                          "ls-files" "--error-unmatch"
@@ -2553,9 +2553,9 @@ Preserve the leading '#' if the input started with it."
                 "\n[...]"))))
   (defun +vertico-kill-ring--avail ()
     "Calculate available lines to display candidates in window."
-    (if-let* (((overlayp vertico--candidates-ov))
+    (if-let* ((_ (overlayp vertico--candidates-ov))
               (win (overlay-get vertico--candidates-ov 'window))
-              ((window-live-p win)))
+              (_ (window-live-p win)))
         (max 1 (- (/ (window-pixel-height win) (default-line-height))
                   (if mode-line-format 2 1)))   ; minus prompt and mode-line
       (max 1 (/ (frame-height) 2))))
