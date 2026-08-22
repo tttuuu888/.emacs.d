@@ -2655,16 +2655,14 @@ Candidates within each group are sorted alphabetically."
 Stop trying if the input changes before the candidate appears."
     (when-let* ((cand (seq-find #'stringp (cddr session)))
                 (input (cadr session))
-                ((not (and (>= vertico--index 0)
-                           (equal cand
-                                  (nth vertico--index vertico--candidates))))))
+                (_ (not vertico--lock-candidate)))
       (letrec
           ((reselect
             (lambda ()
               (if (equal (minibuffer-contents-no-properties) input)
                   (when-let* ((idx (seq-position vertico--candidates cand)))
-                    (setq vertico--index idx vertico--lock-candidate t)
                     (remove-hook 'consult--completion-refresh-hook reselect t)
+                    (vertico--goto idx)
                     (vertico--exhibit)
                     ;; Keep consult's buffer preview in sync
                     (when consult--preview-function
