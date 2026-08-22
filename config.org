@@ -2616,13 +2616,12 @@ Candidates within each group are sorted alphabetically."
       (nconc (my-vertico-sort input (nreverse dirs))
              (my-vertico-sort input (nreverse files)))))
   (defun my-vertico-directory-tilde ()
-    "Insert ~/ and clean the prompt."
+    "Insert ~ and let `vertico-directory-tidy' clean the prompt."
     (interactive)
-    (if (eq (char-before) ?/)
-        (progn
-          (delete-minibuffer-contents)
-          (insert "~/"))
-      (insert "~")))
+    (insert "~")
+    (when (eq (char-before (1- (point))) ?/)
+      (insert "/")
+      (setq this-command #'self-insert-command)))
   (defun my-vertico-insert-literal ()
     "Insert candidate without trailing slash."
     (interactive)
