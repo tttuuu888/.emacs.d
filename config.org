@@ -2625,14 +2625,10 @@ Candidates within each group are sorted alphabetically."
   (defun my-vertico-insert-literal ()
     "Insert candidate without trailing slash."
     (interactive)
-    (let* ((index (max 0 vertico--index))
-           (cand (elt vertico--candidates index))
-           (clean-cand (string-remove-suffix "/" cand))
-           (content (minibuffer-contents))
-           (dir (when (string-match "/" content)
-                  (file-name-directory content))))
-      (delete-minibuffer-contents)
-      (insert (concat dir clean-cand)))))
+    (when (> vertico--total 0)
+      (vertico-insert)
+      (when (eq (char-before) ?/)
+        (delete-char -1)))))
 
 (use-package vertico-repeat
   :ensure nil
