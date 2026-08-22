@@ -2646,10 +2646,8 @@ Candidates within each group are sorted alphabetically."
 
   (defun my-vertico-repeat-restore-dir (orig session)
     "Restore `default-directory' from SESSION when repeating."
-    (let* ((entry (seq-find (lambda (x) (and (consp x)
-                                             (eq (car x) 'default-directory)))
-                            (cddr session)))
-           (default-directory (if entry (cdr entry) default-directory)))
+    (let ((default-directory (alist-get 'default-directory (cddr session)
+                                        default-directory)))
       (funcall orig session)))
 
   (defun my-vertico-repeat-reselect (session)
