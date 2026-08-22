@@ -2493,7 +2493,6 @@ Preserve the leading '#' if the input started with it."
   :bind (:map vertico-directory-map
           ("RET" . exit-minibuffer)
           ("~"   . my-vertico-directory-tilde)
-          ("/"   . my-vertico-directory-slash)
           ("M-i" . my-vertico-insert-literal))
   :custom-face
   (+vertico-kill-ring-separator ((t :foreground "red")))
@@ -2624,14 +2623,6 @@ Candidates within each group are sorted alphabetically."
           (delete-minibuffer-contents)
           (insert "~/"))
       (insert "~")))
-  (defun my-vertico-directory-slash ()
-    "Insert / and clean the prompt."
-    (interactive)
-    (if (eq (char-before) ?/)
-        (progn
-          (delete-minibuffer-contents)
-          (insert "/"))
-      (insert "/")))
   (defun my-vertico-insert-literal ()
     "Insert candidate without trailing slash."
     (interactive)
