@@ -2871,6 +2871,32 @@ Stop trying if the input changes before the candidate appears."
       (setf (alist-get dir sk-compile-history nil 'remove #'equal) cmd)
       (compile cmd)))
 
+  (defun sk-consult-line--preselect (curr-line)
+    "Select the first candidate at or after CURR-LINE.
+The selection happens once vertico has computed its candidates."
+    (letrec
+        ((preselect
+          (lambda ()
+            (when (consp vertico--candidates)
+              (remove-hook 'post-command-hook preselect t)
+              ;; Don't override a candidate restored by `vertico-repeat',
+              ;; which locks the previously selected candidate.
+              (unless vertico--lock-candidate
+                ;; Select the first candidate at or after point
+                (when-let* ((idx (seq-position
+                                  vertico--candidates curr-line
+                                  (lambda (cand target)
+                                    (>= (cdr (get-text-property
+                                              0 'consult-location cand))
+                                        target)))))
+                  (vertico--goto idx)
+                  (vertico--exhibit)
+                  ;; Refresh consult's preview for the new selection
+                  (when consult--preview-function
+                    (funcall consult--preview-function))))))))
+      ;; buffer-local, reset on each minibuffer entry
+      (add-hook 'post-command-hook preselect 90 t)))
+
   (defun sk-consult-line (&optional initial)
     (interactive)
     (let ((curr-line (line-number-at-pos (point) consult-line-numbers-widen))
@@ -2878,28 +2904,7 @@ Stop trying if the input changes before the candidate appears."
       (minibuffer-with-setup-hook
           (lambda ()
             (when symbol (setq minibuffer-default symbol))
-            (letrec
-                ((preselect
-                  (lambda ()
-                    (when (consp vertico--candidates)
-                      (remove-hook 'post-command-hook preselect t)
-                      ;; Don't override a candidate restored by `vertico-repeat',
-                      ;; which locks the previously selected candidate.
-                      (unless vertico--lock-candidate
-                        ;; Select the first candidate at or after point
-                        (when-let* ((idx (seq-position
-                                          vertico--candidates curr-line
-                                          (lambda (cand target)
-                                            (>= (cdr (get-text-property
-                                                      0 'consult-location cand))
-                                                target)))))
-                          (vertico--goto idx)
-                          (vertico--exhibit)
-                          ;; Refresh consult's preview for the new selection
-                          (when consult--preview-function
-                            (funcall consult--preview-function))))))))
-              ;; buffer-local, reset on each minibuffer entry
-              (add-hook 'post-command-hook preselect 90 t)))
+            (sk-consult-line--preselect curr-line))
         (consult-line initial (not consult-line-start-from-top)))))
 
   (defun consult-occur ()
