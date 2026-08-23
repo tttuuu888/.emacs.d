@@ -2886,14 +2886,13 @@ Stop trying if the input changes before the candidate appears."
                       ;; Don't override a candidate restored by `vertico-repeat',
                       ;; which locks the previously selected candidate.
                       (unless vertico--lock-candidate
-                        ;; Select the candidate on the current line if present,
-                        ;; otherwise keep vertico's default (first match)
+                        ;; Select the first candidate at or after point
                         (when-let* ((idx (seq-position
                                           vertico--candidates curr-line
                                           (lambda (cand target)
-                                            (= (cdr (get-text-property
-                                                     0 'consult-location cand))
-                                               target)))))
+                                            (>= (cdr (get-text-property
+                                                      0 'consult-location cand))
+                                                target)))))
                           (vertico--goto idx)
                           (vertico--exhibit)
                           ;; Refresh consult's preview for the new selection
