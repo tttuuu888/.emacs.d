@@ -2352,11 +2352,8 @@ Defer code execution until the first command after initialization.
                                      yasnippet-capf-max-search-distance)
       (let ((table (completion-table-with-cache #'yasnippet-capf-candidates)))
         `(,(match-beginning 0) ,(match-end 0)
-          ,(lambda (str pred action)
-             ;; Reports the `yasnippet-key' completion category
-             (if (eq action 'metadata)
-                 '(metadata (category . yasnippet-key))
-               (funcall table str pred action)))
+          ;; Reports the `yasnippet-key' completion category
+          ,(completion-table-with-metadata table '((category . yasnippet-key)))
           ,@yasnippet-capf--properties)))))
 
 (use-package posframe)
