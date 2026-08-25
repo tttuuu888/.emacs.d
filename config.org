@@ -3335,8 +3335,7 @@ in case of ((|))."
   (defun sk-project-save-buffers ()
     "Save all modified buffers of the current project."
     (interactive)
-    (let ((bufs (project-buffers (project-current t))))
-      (save-some-buffers t (lambda () (memq (current-buffer) bufs)))))
+    (project-save-some-buffers t))
   (defun sk-add-known-project (project-root)
     "Make .project file and add the project to known projects list."
     (interactive (list (read-directory-name "Add to known projects: ")))
