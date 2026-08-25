@@ -3325,15 +3325,12 @@ in case of ((|))."
     "Return the project of DIR, rooted at a `sk-project-root-files' marker."
     (when-let* ((root (sk-project-root dir)))
       (cons 'sk root)))
-  (defun sk-project-prompt-project-dir ()
+  (defun sk-project-prompt-project-dir (&optional prompt predicate _)
     "Prompt for one of the known project roots."
     (project--ensure-read-project-list)
-    (let* ((dirs (project-known-project-roots))
-           (table (project--file-completion-table dirs)))
-      (unless dirs
-        (user-error "There are no known projects"))
-      (let (history-add-new-input)
-        (completing-read "Select project: " table nil t nil nil (car dirs)))))
+    (unless (project-known-project-roots)
+      (user-error "There are no known projects"))
+    (project-prompt-project-dir prompt predicate t))
   (cl-defmethod project-root ((project (head sk)))
     (cdr project))
   (defun sk-project-save-buffers ()
