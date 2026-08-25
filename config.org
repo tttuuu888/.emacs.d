@@ -501,12 +501,11 @@ If OMIT-CURLY-BRACES is non-nil, omit the surrounding curly braces."
   (interactive)
   (sk-yank-file-name-or-path 'whole-path))
 
-(defun sk-google-search ()
-  (interactive)
-  (let ((target
-         (if (region-active-p)
-             (buffer-substring-no-properties (region-beginning) (region-end))
-           (word-at-point t))))
+(defun sk-google-search (&optional beg end)
+  (interactive "R")
+  (let ((target (if beg
+                    (buffer-substring-no-properties beg end)
+                  (word-at-point t))))
     (browse-url (format "https://www.google.com/search?q=%s&ie=UTF-8" target))))
 
 (defun align-columns (beg end)
