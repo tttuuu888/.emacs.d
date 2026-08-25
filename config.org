@@ -1740,7 +1740,8 @@ Defer code execution until the first command after initialization.
   :defer-init (require 'tramp)
   :config
   (setq remote-file-name-inhibit-cache nil
-        tramp-auto-save-directory "/tmp/tramp/"
+        tramp-auto-save-directory (expand-file-name "tramp-auto-save/"
+                                                    user-emacs-directory)
         tramp-chunksize 2000
         tramp-histfile-override t
         tramp-verbose 1)
