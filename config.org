@@ -3316,9 +3316,8 @@ in case of ((|))."
   ;; `project-current' and `project-switch-project', which remember silently.
   (defvar sk-project-remember nil
     "Non-nil only while adding a project.")
-  (advice-add 'project--remember-dir :before-while
-              (lambda (&rest _) sk-project-remember))
   (setq project-find-functions '(sk-project-try)
+        project-list-exclude (list (lambda (_) (not sk-project-remember)))
         project-prompter #'sk-project-prompt-project-dir
         project-switch-commands 'project-dired)
   (defun sk-project-try (dir)
