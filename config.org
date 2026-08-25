@@ -2068,6 +2068,7 @@ process name."
   :defer-init (corfu-terminal-mode 1))
 
 (use-package popon
+  :disabled
   :vc (:url "https://codeberg.org/akib/emacs-popon.git"
             :rev :newest))
 
@@ -2403,6 +2404,7 @@ process name."
   :defer-init (xclip-mode 1))
 
 (use-package stillness-mode
+  :disabled
   :vc (:url "https://github.com/tttuuu888/stillness-mode.el"
             :rev :newest)
   :if (not (display-graphic-p))
