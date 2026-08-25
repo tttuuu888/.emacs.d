@@ -1621,6 +1621,7 @@ Defer code execution until the first command after initialization.
   :bind ("C-x C-b"  . switch-to-buffer)
   :config
   (setq ibuffer-expert t
+        ibuffer-human-readable-size t
         ibuffer-sorting-mode 'ibuffer-do-sort-by-mode-name-then-filename
         ibuffer-default-sorting-mode 'mode-name-then-filename
         ibuffer-saved-filter-groups
@@ -1662,12 +1663,6 @@ process name."
     (interactive)
     (ibuffer-unmark-all ?\s))
   (define-key ibuffer-mode-map (kbd "* *") 'my-ibuffer-unmark-all)
-  (define-ibuffer-column size
-    (:name "Size" :inline t)
-    (cond
-     ((> (buffer-size) 1000000) (format "%7.1fM" (/ (buffer-size) 1000000.0)))
-     ((> (buffer-size) 1000) (format "%7.1fk" (/ (buffer-size) 1000.0)))
-     (t (format "%8d" (buffer-size)))))
   (add-hook 'ibuffer-mode-hook
             (lambda ()
               (ibuffer-auto-mode 1)
