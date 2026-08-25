@@ -3146,8 +3146,7 @@ in case of ((|))."
   (defun xref-find-reference-here ()
     (interactive)
     (xref-find-references (thing-at-point 'symbol)))
-  (advice-add 'xref--goto-char :after
-              (lambda (&rest _) (which-func-update))))
+  (add-hook 'xref-after-jump-hook #'which-func-update))
 
 (use-package gdb-mi
   :ensure nil
