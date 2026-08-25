@@ -2716,23 +2716,18 @@ Stop trying if the input changes before the candidate appears."
                                     :width (my-vertico-posframe-width))))
   (defun my-vertico-posframe-width ()
     (min (- (frame-width) 5) 140))
+  (defun my-vertico-posframe-truncate-lines (&rest _)
+    (setq vertico-posframe-truncate-lines
+          (< (string-width
+              (buffer-substring-no-properties (point-min) (point-max)))
+             (- (my-vertico-posframe-width) 2))))
   (defun my-vertico-posframe-pad-tty (&rest _)
     (unless (display-graphic-p)
       (with-current-buffer vertico-posframe--buffer
         (when (frame-live-p posframe--frame)
           (set-window-margins (frame-root-window posframe--frame) 1 1)))))
-  (advice-add 'vertico-posframe--show
-              :before
-              (lambda (&rest _)
-                (let* ((input (buffer-substring-no-properties
-                               (minibuffer-prompt-end) (point-max)))
-                       (prompt-width
-                        (string-width
-                         (buffer-substring-no-properties
-                          (point-min) (minibuffer-prompt-end)))))
-                  (setq vertico-posframe-truncate-lines
-                        (< (+ prompt-width (string-width input))
-                           (- (my-vertico-posframe-width) 2))))))
+  (advice-add 'vertico-posframe--show :before
+              #'my-vertico-posframe-truncate-lines)
   (advice-add 'vertico-posframe--show :after #'my-vertico-posframe-pad-tty))
 
 (use-package orderless
