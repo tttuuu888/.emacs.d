@@ -1680,12 +1680,6 @@ Defer code execution until the first command after initialization.
   (evil-leader/set-key
     "se" 'eshell)
   :config
-  (defun eshell/clear ()
-    "Clear Eshell buffer"
-    (interactive)
-    (let ((inhibit-read-only t))
-      (erase-buffer)
-      (execute-kbd-macro (kbd "<RET>"))))
   (defun my-eshell-change-whole-line ()
     (interactive)
     (execute-kbd-macro (kbd "0C")))
