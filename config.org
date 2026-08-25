@@ -2266,14 +2266,15 @@ Defer code execution until the first command after initialization.
   (evil-leader/set-key
     "=" 'er/expand-region)
   (defun er/add-text-mode-expansions ()
+    "Exclude mark-page."
     (unless (member major-mode expand-region-exclude-text-mode-expansions)
       (setq-local er/try-expand-list
-                  (append
-                   er/try-expand-list
-                   '(er/mark-text-sentence
-                     er/mark-text-paragraph)))))
-  (eval-after-load 'the-org-mode-expansions
-    '(defalias 'er/add-org-mode-expansions 'er/add-text-mode-expansions)))
+                  (append er/try-expand-list
+                          '(er/mark-text-sentence
+                            er/mark-text-paragraph)))))
+  (defun my-er-plain-excursion ()
+    (kill-local-variable 'er/save-mode-excursion))
+  (add-hook 'org-mode-hook #'my-er-plain-excursion 90))
 
 (use-package smex)
 
