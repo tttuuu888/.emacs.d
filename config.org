@@ -2655,21 +2655,20 @@ Stop trying if the input changes before the candidate appears."
     (when-let* ((cand (seq-find #'stringp (cddr session)))
                 (input (cadr session))
                 (_ (not vertico--lock-candidate)))
-      (letrec
-          ((reselect
-            (lambda ()
-              (if (equal (minibuffer-contents-no-properties) input)
-                  (when-let* ((idx (seq-position vertico--candidates cand)))
-                    (remove-hook 'consult--completion-refresh-hook reselect t)
-                    (vertico--goto idx)
-                    (vertico--exhibit)
-                    ;; Keep consult's buffer preview in sync
-                    (when consult--preview-function
-                      (funcall consult--preview-function)))
-                ;; input edited -> give up
-                (remove-hook 'consult--completion-refresh-hook reselect t)))))
+      (cl-labels
+          ((reselect ()
+             (if (equal (minibuffer-contents-no-properties) input)
+                 (when-let* ((idx (seq-position vertico--candidates cand)))
+                   (remove-hook 'consult--completion-refresh-hook #'reselect t)
+                   (vertico--goto idx)
+                   (vertico--exhibit)
+                   ;; Keep consult's buffer preview in sync
+                   (when consult--preview-function
+                     (funcall consult--preview-function)))
+               ;; input edited -> give up
+               (remove-hook 'consult--completion-refresh-hook #'reselect t))))
         ;; buffer-local, reset on each minibuffer entry
-        (add-hook 'consult--completion-refresh-hook reselect t t))))
+        (add-hook 'consult--completion-refresh-hook #'reselect t t))))
 
   (add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
   (add-to-list 'vertico-repeat-transformers #'my-vertico-repeat-save-dir t)
@@ -2878,28 +2877,27 @@ Stop trying if the input changes before the candidate appears."
   (defun sk-consult-line--preselect (curr-line)
     "Select the first candidate at or after CURR-LINE.
 The selection happens once vertico has computed its candidates."
-    (letrec
-        ((preselect
-          (lambda ()
-            (when (consp vertico--candidates)
-              (remove-hook 'post-command-hook preselect t)
-              ;; Don't override a candidate restored by `vertico-repeat',
-              ;; which locks the previously selected candidate.
-              (unless vertico--lock-candidate
-                ;; Select the first candidate at or after point
-                (when-let* ((idx (seq-position
-                                  vertico--candidates curr-line
-                                  (lambda (cand target)
-                                    (>= (cdr (get-text-property
-                                              0 'consult-location cand))
-                                        target)))))
-                  (vertico--goto idx)
-                  (vertico--exhibit)
-                  ;; Refresh consult's preview for the new selection
-                  (when consult--preview-function
-                    (funcall consult--preview-function))))))))
+    (cl-labels
+        ((preselect ()
+           (when (consp vertico--candidates)
+             (remove-hook 'post-command-hook #'preselect t)
+             ;; Don't override a candidate restored by `vertico-repeat',
+             ;; which locks the previously selected candidate.
+             (unless vertico--lock-candidate
+               ;; Select the first candidate at or after point
+               (when-let* ((idx (seq-position
+                                 vertico--candidates curr-line
+                                 (lambda (cand target)
+                                   (>= (cdr (get-text-property
+                                             0 'consult-location cand))
+                                       target)))))
+                 (vertico--goto idx)
+                 (vertico--exhibit)
+                 ;; Refresh consult's preview for the new selection
+                 (when consult--preview-function
+                   (funcall consult--preview-function)))))))
       ;; buffer-local, reset on each minibuffer entry
-      (add-hook 'post-command-hook preselect 90 t)))
+      (add-hook 'post-command-hook #'preselect 90 t)))
 
   (defun sk-consult-line (&optional initial)
     (interactive)
