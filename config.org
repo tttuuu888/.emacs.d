@@ -787,18 +787,20 @@ Defer code execution until the first command after initialization.
         (no-prefix-rx
          (mapconcat #'identity evil-leader/no-prefix-mode-rx "\\|")))
     (defun sk-evil-leader-mode ()
-      (let* ((mode-map (cdr (assoc major-mode evil-leader--mode-maps)))
-             (map (or mode-map evil-leader--default-map)))
-        (evil-normalize-keymaps)
-        (define-key evil-motion-state-local-map leader map)
-        (define-key evil-emacs-state-local-map  sub-leader map)
-        (define-key evil-insert-state-local-map sub-leader map)
-        (define-key evil-motion-state-local-map sub-leader map)
-        (when (and no-prefix-rx
-                   (string-match-p no-prefix-rx (symbol-name major-mode)))
-          (define-key evil-emacs-state-local-map leader map)
-          (define-key evil-insert-state-local-map leader map)))))
+      (when evil-local-mode
+        (let* ((mode-map (cdr (assoc major-mode evil-leader--mode-maps)))
+               (map (or mode-map evil-leader--default-map)))
+          (evil-normalize-keymaps)
+          (define-key evil-motion-state-local-map leader map)
+          (define-key evil-emacs-state-local-map  sub-leader map)
+          (define-key evil-insert-state-local-map sub-leader map)
+          (define-key evil-motion-state-local-map sub-leader map)
+          (when (and no-prefix-rx
+                     (string-match-p no-prefix-rx (symbol-name major-mode)))
+            (define-key evil-emacs-state-local-map leader map)
+            (define-key evil-insert-state-local-map leader map))))))
   (add-hook 'evil-local-mode-hook 'sk-evil-leader-mode t)
+  (add-hook 'after-change-major-mode-hook 'sk-evil-leader-mode t)
   (defun evil-leader/set-key-minor-mode (mode key def &rest bindings)
     (declare (indent defun))
     (while key
@@ -1728,9 +1730,8 @@ process name."
 (use-package display-line-numbers
   :ensure nil
   :custom-face
-  (line-number ((t :foreground "gray51" :inherit 'default))
-               face-defface-spec)
-  (line-number-current-line ((t (:inherit 'default))) face-defface-spec)
+  (line-number ((t :foreground "gray51" :inherit 'default)))
+  (line-number-current-line ((t (:inherit 'default))))
   :hook
   ((find-file prog-mode text-mode) . display-line-numbers-mode)
   :config
@@ -2012,8 +2013,7 @@ process name."
 (use-package hexl
   :ensure nil
   :custom-face
-  (hexl-address-region ((t :inherit 'font-lock-function-name-face))
-                       face-defface-spec))
+  (hexl-address-region ((t :inherit 'font-lock-function-name-face))))
 
 (use-package dabbrev
   :ensure nil
@@ -2061,6 +2061,7 @@ process name."
     (kbd "M-/") 'corfu-yas-expand))
 
 (use-package corfu-terminal
+  :disabled
   :vc (:url "https://codeberg.org/akib/emacs-corfu-terminal.git"
             :rev :newest)
   :if (not (display-graphic-p))
@@ -2678,19 +2679,24 @@ Stop trying if the input changes before the candidate appears."
   (advice-add 'vertico-repeat--restore :after #'my-vertico-repeat-reselect))
 
 (use-package vertico-posframe
-  :if window-system
+  :preface
+  (defconst vertico-bg-light "#e6f2ff")
+  (defconst vertico-bg-dark "#282a36")
   :custom-face
   (vertico-posframe
-   ((((background light)) :background "#e6f2ff" :foreground "black")
-    (((background dark)) :background "#282a36" :foreground "gray80")))
+   ((((background light)) :background ,vertico-bg-light :foreground "black")
+    (((background dark)) :background ,vertico-bg-dark :foreground "gray80")))
   (vertico-posframe-border
-   ((t (:inherit vertico-posframe))) face-defface-spec)
+   ((t (:inherit vertico-posframe))))
   (vertico-posframe-border-2
-   ((t (:inherit vertico-posframe))) face-defface-spec)
+   ((t (:inherit vertico-posframe))))
   (vertico-posframe-border-3
-   ((t (:inherit vertico-posframe))) face-defface-spec)
+   ((t (:inherit vertico-posframe))))
   (vertico-posframe-border-4
-   ((t (:inherit vertico-posframe))) face-defface-spec)
+   ((t (:inherit vertico-posframe))))
+  (border
+   ((((background light)) :foreground ,vertico-bg-light)
+    (((background dark)) :foreground ,vertico-bg-dark)))
   :defer-init (vertico-posframe-mode 1)
   :config
   (setq vertico-posframe-border-width 20
@@ -3186,8 +3192,7 @@ in case of ((|))."
 
 (use-package which-func
   :ensure nil
-  :custom-face (which-func ((t :inherit font-lock-function-name-face))
-                           face-defface-spec)
+  :custom-face (which-func ((t :inherit font-lock-function-name-face)))
   :init
   (add-hook 'lisp-interaction-mode-hook
             (lambda () (setq-local which-func-mode nil)))
