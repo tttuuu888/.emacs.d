@@ -2267,11 +2267,11 @@ Defer code execution until the first command after initialization.
     "=" 'er/expand-region)
   (defun er/add-text-mode-expansions ()
     (unless (member major-mode expand-region-exclude-text-mode-expansions)
-      (set (make-local-variable 'er/try-expand-list)
-           (append
-            er/try-expand-list
-            '(er/mark-text-sentence
-              er/mark-text-paragraph)))))
+      (setq-local er/try-expand-list
+                  (append
+                   er/try-expand-list
+                   '(er/mark-text-sentence
+                     er/mark-text-paragraph)))))
   (eval-after-load 'the-org-mode-expansions
     '(defalias 'er/add-org-mode-expansions 'er/add-text-mode-expansions)))
 
