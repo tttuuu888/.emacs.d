@@ -819,7 +819,15 @@ Defer code execution until the first command after initialization.
         (evil-define-key* 'motion map k1 def)
         (define-key map k2 def))
       (setq key (pop bindings)
-            def (pop bindings)))))
+            def (pop bindings))))
+
+  (defun sk-evil-leader-restore (&rest _)
+    (sk-evil-leader-mode)
+    (evil-change-to-initial-state))
+  (dolist (f '(grep-edit-save-changes
+               wdired-change-to-dired-mode
+               xref-edit-save-changes))
+    (advice-add f :after #'sk-evil-leader-restore)))
 
 (use-package evil
   :bind (("M-B" . evil-backward-WORD-begin)
