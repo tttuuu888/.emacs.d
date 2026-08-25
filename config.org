@@ -1085,7 +1085,8 @@ Defer code execution until the first command after initialization.
   (evil-leader/set-key-for-mode 'dired-mode
     "cy" 'my-dired-copy-path            ; copy current folder path
     "cY" 'my-dired-copy-filepath        ; copy selected file path
-    "ee" 'wdired-change-to-wdired-mode
+    "ee" 'wdired-change-to-wdired-mode)
+  (evil-leader/set-key-for-mode 'wdired-mode
     "ec" 'wdired-finish-edit
     "eq" 'wdired-exit)
 
