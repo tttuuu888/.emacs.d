@@ -1641,9 +1641,7 @@ Defer code execution until the first command after initialization.
                        (name . "\*Apropos\*")
                        (name . "\*info\*"))))))
   (define-ibuffer-sorter mode-name-then-filename
-    "Sort buffers by mode name, then by file or process name.
-Sort the buffers first by their mode name, then by their file name or
-process name."
+    "Sort buffers by mode name, then by file or process name."
     (:description "mode name, then file name")
     (let* ((mode-a (with-current-buffer (car a) (format-mode-line mode-name)))
            (mode-b (with-current-buffer (car b) (format-mode-line mode-name)))
