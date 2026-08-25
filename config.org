@@ -2350,8 +2350,7 @@ Defer code execution until the first command after initialization.
   (defun sk-yasnippet-capf ()
     (when (thing-at-point-looking-at (rx (+ (or word punct)))
                                      yasnippet-capf-max-search-distance)
-      (let ((table (completion-table-with-cache
-                    (lambda (input) (yasnippet-capf-candidates input)))))
+      (let ((table (completion-table-with-cache #'yasnippet-capf-candidates)))
         `(,(match-beginning 0) ,(match-end 0)
           ,(lambda (str pred action)
              ;; Reports the `yasnippet-key' completion category
