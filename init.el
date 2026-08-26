@@ -20,7 +20,8 @@
   (when (file-newer-than-file-p config-org config-el)
     (package-initialize)
     (require 'org)
-    (org-babel-tangle-file config-org))
+    (org-babel-tangle-file config-org)
+    (set-file-times config-el))
 
   (require 'config config-el)
 
