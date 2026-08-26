@@ -3370,12 +3370,16 @@ Outside a project, kill the buffers under `default-directory'."
   :ensure nil
   :config
   (setq eglot-autoshutdown t
+        eglot-code-action-indications nil
         eglot-events-buffer-config '(:size 0 :format full)
         eglot-ignored-server-capabilities
         '(:documentHighlightProvider
+          :documentOnTypeFormattingProvider
           :documentSymbolProvider
           :inlayHintProvider
           :signatureHelpProvider)
+        eglot-max-file-watches 3000
+        eglot-report-progress nil
         eglot-server-programs (append `((python-mode . ("ty" "server")))
                                       eglot-server-programs)
         eglot-sync-connect 0)
