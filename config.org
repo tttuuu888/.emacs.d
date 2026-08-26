@@ -2026,6 +2026,11 @@ Defer code execution until the first command after initialization.
   (completions-annotations ((t :underline nil)))
   :config
   (setq read-file-name-completion-ignore-case t))
+
+(use-package xt-mouse
+  :ensure nil
+  :if (not (display-graphic-p))
+  :init (xterm-mouse-mode -1))
 #+END_SRC
 * General packages - external
 #+BEGIN_SRC emacs-lisp
