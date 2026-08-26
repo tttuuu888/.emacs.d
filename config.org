@@ -3236,6 +3236,7 @@ in case of ((|))."
          ("\\.hal\\'" . c++-mode))
   :config
   (c-add-style "my-bsd" '("bsd"
+                          (c-comment-only-line-offset . (0 . 0))
                           (c-offsets-alist
                            (case-label . +)
                            (inextern-lang . 0))))
