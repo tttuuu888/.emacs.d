@@ -3364,6 +3364,25 @@ Outside a project, kill the buffers under `default-directory'."
 
 (use-package lua-mode
   :ensure nil)
+
+(use-package eglot
+  :ensure nil
+  :config
+  (setq eglot-autoshutdown t
+        eglot-events-buffer-config '(:size 0 :format full)
+        eglot-ignored-server-capabilities
+        '(:documentHighlightProvider
+          :documentSymbolProvider
+          :inlayHintProvider
+          :signatureHelpProvider)
+        eglot-server-programs (append `((python-mode . ("ty" "server")))
+                                      eglot-server-programs)
+        eglot-sync-connect 0)
+  (fset #'jsonrpc--log-event #'ignore)
+  (evil-leader/set-key-minor-mode 'eglot--managed-mode
+    "ex" 'eglot-code-action-quickfix)
+  (evil-define-minor-mode-key 'normal 'eglot--managed-mode
+    "gh" 'eldoc-doc-buffer))
 #+END_SRC
 * Development packages - external
 #+BEGIN_SRC emacs-lisp
@@ -3686,24 +3705,6 @@ Outside a project, kill the buffers under `default-directory'."
     "gk" 'restclient-jump-prev)
   (evil-define-minor-mode-key 'normal 'restclient-response-mode
     "q"  'quit-window))
-
-(use-package eglot
-  :config
-  (setq eglot-autoshutdown t
-        eglot-events-buffer-config '(:size 0 :format full)
-        eglot-ignored-server-capabilities
-        '(:documentHighlightProvider
-          :documentSymbolProvider
-          :inlayHintProvider
-          :signatureHelpProvider)
-        eglot-server-programs (append `((python-mode . ("ty" "server")))
-                                      eglot-server-programs)
-        eglot-sync-connect 0)
-  (fset #'jsonrpc--log-event #'ignore)
-  (evil-leader/set-key-minor-mode 'eglot--managed-mode
-    "ex" 'eglot-code-action-quickfix)
-  (evil-define-minor-mode-key 'normal 'eglot--managed-mode
-    "gh" 'eldoc-doc-buffer))
 
 (use-package rust-mode
   :hook (rust-mode . eglot-ensure)
