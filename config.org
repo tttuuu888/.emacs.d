@@ -1990,15 +1990,6 @@ Defer code execution until the first command after initialization.
                                                      start-at))))
             "d. ")))
 
-(use-package winner
-  :ensure nil
-  :custom (winner-dont-bind-my-keys t)
-  :defer-init (winner-mode 1)
-  :config
-  (evil-leader/set-key
-    "xwu" 'winner-undo
-    "xwr" 'winner-redo))
-
 (use-package epa
   :ensure nil
   :bind (:map epa-key-list-mode-map
