@@ -1174,8 +1174,8 @@ Defer code execution until the first command after initialization.
   (defun my-dired-compress (&optional arg)
     "Compress files asynchronously."
     (interactive "p")
-    (let* ((defaults (dired-dwim-target-defaults nil nil))
-           (minibuffer-default defaults)
+    (let* ((defaults (delete (dired-current-directory)
+                             (dired-dwim-target-defaults nil nil)))
            (files (mapcar #'file-name-nondirectory (dired-get-marked-files)))
            (source (mapcar #'shell-quote-argument files))
            (initial-name (if (equal (length files) 1)
@@ -1190,7 +1190,8 @@ Defer code execution until the first command after initialization.
                            initial-name))
            (name (consult--read nil
                                 :prompt "Compress file name: "
-                                :initial (concat initial-name ".zip")))
+                                :initial (concat initial-name ".zip")
+                                :default defaults))
            (target (shell-quote-argument name))
            (ext (file-name-extension name))
            (pw (when (> arg 1)
