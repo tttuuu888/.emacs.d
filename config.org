@@ -33,13 +33,17 @@ This comment will be added on the top of =config.el=.
 #+END_SRC
 
 ** Package initialize
-Process =package-initialize= before setting =package-archives= to speed up Emacs
-start up time. So =package-read-all-archive-contents= should be called after
-start up to use of updated =package-archives=.
+=package-enable-at-startup= is nil in =early-init.el=, so activation is
+explicit. =package-activate-all= skips =package-read-all-archive-contents=,
+which is deferred below. =package-quickstart-file= is set here since its default
+is fixed even earlier.
 
 #+BEGIN_SRC emacs-lisp
+(setq package-quickstart t
+      package-quickstart-file (locate-user-emacs-file "package-quickstart.el"))
+
 (unless package--activated
-  (package-initialize))
+  (package-activate-all))
 
 (setq package-archives
       '(("gnu"   . "https://elpa.gnu.org/packages/")
