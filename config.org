@@ -3135,6 +3135,7 @@ in case of ((|))."
           ("<return>" . xref-quit-and-goto-xref)
           ("<RET>"    . xref-quit-and-goto-xref))
   :config
+  (require 'dumb-jump)
   (evil-set-initial-state 'xref--xref-buffer-mode 'emacs)
   (defun xref-find-reference-here ()
     (interactive)
@@ -3850,7 +3851,6 @@ Outside a project, kill the buffers under `default-directory'."
 (use-package ztree)
 
 (use-package dumb-jump
-  :defer-init (require 'dumb-jump)
   :config
   (setq dumb-jump-project-denoters sk-project-root-files)
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
