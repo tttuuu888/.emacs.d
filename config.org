@@ -3361,6 +3361,9 @@ Outside a project, kill the buffers under `default-directory'."
   :config
   (defun my-js-json-mode-hook ()
     (setq js-indent-level 2)))
+
+(use-package lua-mode
+  :ensure nil)
 #+END_SRC
 * Development packages - external
 #+BEGIN_SRC emacs-lisp
@@ -3713,8 +3716,6 @@ Outside a project, kill the buffers under `default-directory'."
     "Test using `cargo test -- --nocapture`"
     (interactive)
     (rust--compile "%s test -- --nocapture" rust-cargo-bin)))
-
-(use-package lua-mode)
 
 (use-package cmake-mode
   :config
