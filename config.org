@@ -34,9 +34,9 @@ This comment will be added on the top of =config.el=.
 
 ** Package initialize
 =package-enable-at-startup= is nil in =early-init.el=, so activation is
-explicit. =package-activate-all= skips =package-read-all-archive-contents=,
-which is deferred below. =package-quickstart-file= is set here since its default
-is fixed even earlier.
+explicit. =package-activate-all= skips =package-read-all-archive-contents=;
+package commands initialize it on demand. =package-quickstart-file= is set here
+since its default is fixed even earlier.
 
 #+BEGIN_SRC emacs-lisp
 (setq package-quickstart t
@@ -1794,7 +1794,6 @@ Defer code execution until the first command after initialization.
 
 (use-package package
   :ensure nil
-  :defer-init (package-read-all-archive-contents)
   :config
   (require 'package-vc)
   (defun sk-package-resync ()
