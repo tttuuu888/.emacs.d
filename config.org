@@ -1035,8 +1035,8 @@ Defer code execution until the first command after initialization.
           ("j"       . calendar-forward-week)
           ("k"       . calendar-backward-week)
           ("l"       . calendar-forward-day)
-          ("C-f"     . calendar-scroll-left-three-months)
-          ("C-b"     . calendar-scroll-right-three-months)
+          ("C-f"     . calendar-scroll-calendar-left)
+          ("C-b"     . calendar-scroll-calendar-right)
           ("<left>"  . calendar-scroll-right)
           ("<right>" . calendar-scroll-left))
   :config
@@ -1537,8 +1537,8 @@ Defer code execution until the first command after initialization.
         (org-cycle arg)
       (indent-for-tab-command arg)))
   (defun my-org-inline-image-hook ()
-    (when org-inline-image-overlays
-      (org-redisplay-inline-images)))
+    (when org-link-preview-overlays
+      (org-link-preview-refresh)))
   (defun sk-org-capture-image ()
     (interactive)
     (let* ((img (file-relative-name
@@ -1579,7 +1579,7 @@ Defer code execution until the first command after initialization.
     (interactive)
     (goto-char (point-max))
     (outline-previous-heading)
-    (org-show-context))
+    (org-fold-show-context))
   (defun sk-org-tag-view-all ()
     (interactive)
     (let ((org-agenda-files
