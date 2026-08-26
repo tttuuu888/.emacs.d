@@ -2397,7 +2397,7 @@ Defer code execution until the first command after initialization.
     "nl" 'org-roam-buffer-toggle))
 
 (use-package xclip
-  :if (and (not window-system)
+  :if (and (not (display-graphic-p))
            (executable-find "xclip"))
   :defer-init (xclip-mode 1))
 
