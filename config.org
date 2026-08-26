@@ -1473,6 +1473,7 @@ Defer code execution until the first command after initialization.
    org-latex-tables-centered nil
    org-latex-title-command "\\maketitle \\clearpage"
    org-latex-toc-command "\\tableofcontents \\clearpage"
+   org-latex-toc-include-unnumbered t
    org-log-done 'time
    org-outline-path-complete-in-steps nil
    org-plantuml-jar-path "/usr/share/java/plantuml/plantuml.jar"
