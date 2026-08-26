@@ -3059,6 +3059,7 @@ Select its window unless BUFFER matches `my-popper-no-focus-buffers'."
 #+BEGIN_SRC emacs-lisp
 (use-package prog-mode
   :ensure nil
+  :hook (prog-mode . delete-trailing-whitespace-mode)
   :config
   (evil-leader/set-key (kbd "<DEL>") 'sk-hungry-backspace)
   (evil-define-key 'normal prog-mode-map
@@ -3066,8 +3067,6 @@ Select its window unless BUFFER matches `my-popper-no-focus-buffers'."
     "gp" 'xref-go-back
     "gr" 'xref-find-reference-here
     "g[" 'xref-go-back)
-  (add-hook 'before-save-hook (lambda () (when (derived-mode-p 'prog-mode)
-                                           (delete-trailing-whitespace))))
   (defun sk-hungry-backspace (n)
     (interactive "p")
     (call-interactively 'c-hungry-backspace)
