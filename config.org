@@ -3379,11 +3379,15 @@ Outside a project, kill the buffers under `default-directory'."
         eglot-server-programs (append `((python-mode . ("ty" "server")))
                                       eglot-server-programs)
         eglot-sync-connect 0)
-  (fset #'jsonrpc--log-event #'ignore)
   (evil-leader/set-key-minor-mode 'eglot--managed-mode
     "ex" 'eglot-code-action-quickfix)
   (evil-define-minor-mode-key 'normal 'eglot--managed-mode
     "gh" 'eldoc-doc-buffer))
+
+(use-package jsonrpc
+  :ensure nil
+  :config
+  (setq jsonrpc-event-hook nil))
 #+END_SRC
 * Development packages - external
 #+BEGIN_SRC emacs-lisp
