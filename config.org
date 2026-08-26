@@ -2009,7 +2009,7 @@ Defer code execution until the first command after initialization.
 (use-package hexl
   :ensure nil
   :custom-face
-  (hexl-address-region ((t :inherit 'font-lock-function-name-face))))
+  (hexl-address-region ((t :inherit font-lock-function-name-face))))
 
 (use-package dabbrev
   :ensure nil
