@@ -1974,7 +1974,7 @@ Defer code execution until the first command after initialization.
 
 (use-package bookmark
   :ensure nil
-  :custom (bookmark-set-fringe-mark nil)
+  :custom (bookmark-fringe-mark nil)
   :config
   (remove-hook 'kill-emacs-hook 'bookmark-exit-hook-internal))
 
