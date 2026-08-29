@@ -87,7 +87,6 @@ Instead of using =custom.el=, insert the contents of the file directly here.
  '(auth-source-save-behavior nil)
  '(auto-save-list-file-prefix
    (expand-file-name "auto-save-list/.saves-" user-emacs-directory))
- '(backup-directory-alist '((".*" . "/tmp/")))
  '(blink-cursor-mode nil)
  '(browse-url-browser-function 'browse-url-chrome)
  '(byte-compile-warnings '(not obsolete))
@@ -100,7 +99,6 @@ Instead of using =custom.el=, insert the contents of the file directly here.
  '(inhibit-startup-screen t)
  '(line-number-display-limit-width 1000)
  '(major-mode 'text-mode)
- '(make-backup-files nil)
  '(mouse-wheel-progressive-speed nil)
  '(native-comp-async-report-warnings-errors 'silent)
  '(package-vc-register-as-project nil)
@@ -111,9 +109,6 @@ Instead of using =custom.el=, insert the contents of the file directly here.
            (and (* space) (1+ (any num)) (or "." ")") space))))
  '(password-cache-expiry 900)
  '(ring-bell-function 'ignore)
- '(safe-local-variable-values '((c-default-style . "linux")
-                                (indent-tabs-mode . t)
-                                (tab-width . 2)))
  '(send-mail-function 'smtpmail-send-it)
  '(size-indication-mode t)
  '(split-height-threshold nil)
@@ -992,7 +987,12 @@ Defer code execution until the first command after initialization.
       (when (file-directory-p path)
         (delete-directory path t))))
   :config
-  (setq remote-file-name-inhibit-locks t))
+  (setq backup-directory-alist '((".*" . "/tmp/"))
+        make-backup-files nil
+        remote-file-name-inhibit-locks t
+        safe-local-variable-values '((c-default-style . "linux")
+                                     (indent-tabs-mode . t)
+                                     (tab-width . 2))))
 
 (use-package bind-key
   :ensure nil
