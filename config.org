@@ -1136,21 +1136,28 @@ Defer code execution until the first command after initialization.
     (interactive)
     (let* ((files (dired-get-marked-files nil current-prefix-arg))
            (source (mapcar #'shell-quote-remote-file files))
-           (regex (rx bol "/" (or "ssh" "scp") (? nonl) ":"))
            (target (my-dired-get-target "Rsync to: " files))
            (src-remote-p (file-remote-p default-directory))
            (dst-remote-p (file-remote-p target))
-           (target (if dst-remote-p
-                       (replace-regexp-in-string regex "" target)
-                     target))
+           (port (when-let* ((remote (or dst-remote-p src-remote-p)))
+                   (tramp-file-name-port (tramp-dissect-file-name remote))))
+           ;; "/ssh:u@host#2222:/d" -> "u@host:/d"
+           (spec (lambda (f)
+                   (let ((v (tramp-dissect-file-name f)))
+                     (concat (when-let* ((u (tramp-file-name-user v)))
+                               (concat u "@"))
+                             (tramp-file-name-host v) ":"
+                             (file-local-name f)))))
+           (target (if dst-remote-p (funcall spec target) target))
            (cmd (concat "rsync -ahs"
                         (when (or src-remote-p dst-remote-p) "z")
+                        (when port (format " -e 'ssh -p %s'" port))
                         " --info=progress2 "))
            (arg (mapconcat
                  (if (or (not src-remote-p)
                          (and src-remote-p dst-remote-p))
                      #'file-local-name
-                   (lambda (f) (replace-regexp-in-string regex "" f)))
+                   spec)
                  source " "))
            (dst (concat " " (shell-quote-remote-file target)))
            (default-directory (if (and src-remote-p (not dst-remote-p))
