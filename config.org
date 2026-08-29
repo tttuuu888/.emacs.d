@@ -91,7 +91,6 @@ Instead of using =custom.el=, insert the contents of the file directly here.
  '(browse-url-browser-function 'browse-url-chrome)
  '(byte-compile-warnings '(not obsolete))
  '(completion-ignored-extensions nil)
- '(css-indent-offset 2)
  '(fill-column 80)
  '(font-use-system-font t)
  '(gc-cons-threshold (* 1024 1024 16))
@@ -3377,6 +3376,10 @@ Outside a project, kill the buffers under `default-directory'."
   :ensure nil
   :config
   (setq jsonrpc-event-hook nil))
+
+(use-package css-mode
+  :ensure nil
+  :config (setq css-indent-offset 2))
 #+END_SRC
 * Development packages - external
 #+BEGIN_SRC emacs-lisp
