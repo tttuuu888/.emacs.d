@@ -100,7 +100,6 @@ Instead of using =custom.el=, insert the contents of the file directly here.
  '(major-mode 'text-mode)
  '(mouse-wheel-progressive-speed nil)
  '(native-comp-async-report-warnings-errors 'silent)
- '(package-vc-register-as-project nil)
  '(paragraph-start
    (rx (or "\f"
            (and (* space) eol)
@@ -1836,6 +1835,7 @@ Defer code execution until the first command after initialization.
 (use-package package-vc
   :ensure nil
   :config
+  (setq package-vc-register-as-project nil)
   (remove-hook 'package-read-archive-hook 'package-vc--read-archive-data)
   (advice-add 'package-vc-install :around
               (lambda (func &rest r)
