@@ -1572,6 +1572,7 @@ Treat quoted strings and balanced delimiters as single units."
         (progn
           (async-start
            `(lambda ()
+              (setq revert-without-query '(".*"))
               (package-initialize)
               (require 'org)
               (org-babel-tangle-file ,target))
