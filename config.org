@@ -673,9 +673,12 @@ Defer code execution until the first command after initialization.
   (auth-source-save-behavior nil)
   (auto-save-list-file-prefix
    (expand-file-name "auto-save-list/.saves-" user-emacs-directory))
+  (bidi-inhibit-bpa t)
+  (bidi-paragraph-direction 'left-to-right)
   (blink-cursor-mode nil)
   (browse-url-browser-function 'browse-url-chrome)
   (byte-compile-warnings '(not obsolete))
+  (completion-ignore-case t)
   (completion-ignored-extensions nil)
   ;; custom.el will be saved but will not be used.
   (custom-file (expand-file-name "custom.el" user-emacs-directory))
@@ -684,6 +687,7 @@ Defer code execution until the first command after initialization.
   (gc-cons-threshold (* 1024 1024 16))
   (indent-tabs-mode nil)
   (inhibit-startup-screen t)
+  (kill-do-not-save-duplicates t)
   (line-number-display-limit-width 1000)
   (major-mode 'text-mode)
   (mouse-wheel-progressive-speed nil)
@@ -694,8 +698,10 @@ Defer code execution until the first command after initialization.
            (and (* space) (any "-+*") space)
            (and (* space) (1+ (any num)) (or "." ")") space))))
   (password-cache-expiry 900)
+  (read-buffer-completion-ignore-case t)
   (ring-bell-function 'ignore)
   (send-mail-function 'smtpmail-send-it)
+  (save-interprogram-paste-before-kill t)
   (size-indication-mode t)
   (split-height-threshold nil)
   (split-width-threshold 140)
@@ -703,14 +709,7 @@ Defer code execution until the first command after initialization.
   (tab-width 4)
   (use-file-dialog nil)
   (use-short-answers t)
-  (warning-suppress-log-types '((comp) (bytecomp)))
-  :config
-  (setq-default bidi-paragraph-direction 'left-to-right)
-  (setq bidi-inhibit-bpa t
-        completion-ignore-case t
-        kill-do-not-save-duplicates t
-        read-buffer-completion-ignore-case t
-        save-interprogram-paste-before-kill t))
+  (warning-suppress-log-types '((comp) (bytecomp))))
 #+end_src
 
 * Async, Evil and Evil-leader packages
