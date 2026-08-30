@@ -45,12 +45,10 @@ since its default is fixed even earlier.
 (unless package--activated
   (package-activate-all))
 
-(setq package-archives
-      '(("gnu"   . "https://elpa.gnu.org/packages/")
-        ("melpa" . "https://melpa.org/packages/"))
-      package-archive-priorities
-      '(("gnu"   . 5)
-        ("melpa" . 10)))
+(setq package-archives '(("gnu"   . "https://elpa.gnu.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/"))
+      package-archive-priorities '(("gnu"   . 5)
+                                   ("melpa" . 10)))
 #+END_SRC
 
 ** Use-package
