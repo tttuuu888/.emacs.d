@@ -2545,7 +2545,7 @@ Preserve the leading '#' if the input started with it."
                do (when (and (> count 0) (> (+ used h) avail)) ; page is full
                     (when (> i index) (cl-return)) ; index was on that page
                     (setq start i used 0 count 0)) ; start a new page at i
-                  (setq used (+ used h) count (1+ count)))
+               do (setq used (+ used h) count (1+ count)))
       (setq-local vertico-count count)  ; so that C-v/M-v works correctly
       ;; Render the current page including the current index
       (cl-loop for cand in (nthcdr start vertico--candidates)
