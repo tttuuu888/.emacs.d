@@ -711,6 +711,22 @@ Defer code execution until the first command after initialization.
       state)))
 #+end_src
 
+** Emacs core settings
+#+begin_src emacs-lisp
+;;; Emacs core settings
+(use-package emacs
+  :ensure nil
+  :custom-face
+  (header-line ((t (:inherit font-lock-function-name-face :underline nil))))
+  :config
+  (setq-default bidi-paragraph-direction 'left-to-right)
+  (setq bidi-inhibit-bpa t
+        completion-ignore-case t
+        kill-do-not-save-duplicates t
+        read-buffer-completion-ignore-case t
+        save-interprogram-paste-before-kill t))
+#+end_src
+
 * Async, Evil and Evil-leader packages
 #+BEGIN_SRC emacs-lisp
 (use-package async
@@ -965,18 +981,6 @@ Defer code execution until the first command after initialization.
 * General packages - built-in
 #+BEGIN_SRC emacs-lisp
 ;;; Built-in packages
-(use-package emacs
-  :ensure nil
-  :custom-face
-  (header-line ((t (:inherit font-lock-function-name-face :underline nil))))
-  :config
-  (setq-default bidi-paragraph-direction 'left-to-right)
-  (setq bidi-inhibit-bpa t
-        completion-ignore-case t
-        kill-do-not-save-duplicates t
-        read-buffer-completion-ignore-case t
-        save-interprogram-paste-before-kill t))
-
 (use-package files
   :ensure nil
   :defer-init
