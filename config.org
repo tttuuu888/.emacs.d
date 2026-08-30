@@ -99,8 +99,6 @@ Defer code execution until the first command after initialization.
 ;;; Emacs core settings
 (use-package emacs
   :ensure nil
-  :custom-face
-  (header-line ((t (:inherit font-lock-function-name-face :underline nil))))
   :custom
   (adaptive-fill-regexp
    (rx (0+ (any "	 "))
@@ -623,6 +621,8 @@ Treat quoted strings and balanced delimiters as single units."
 ;;; Appearance settings
 (use-package emacs
   :ensure nil
+  :custom-face
+  (header-line ((t (:inherit font-lock-function-name-face :underline nil))))
   :config
   ;; Font
   (when (display-graphic-p)
