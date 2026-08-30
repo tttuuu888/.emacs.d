@@ -3300,12 +3300,16 @@ in case of ((|))."
     "Return the project of DIR, rooted at a `sk-project-root-files' marker."
     (when-let* ((root (sk-project-root dir)))
       (cons 'sk root)))
-  (defun sk-project-prompt-project-dir (&optional prompt predicate _)
-    "Prompt for one of the known project roots."
+  (defun sk-project-prompt-project-dir (&optional prompt &rest _args)
+    "Prompt for one of the known project roots, except the current one."
     (project--ensure-read-project-list)
     (unless (project-known-project-roots)
       (user-error "There are no known projects"))
-    (project-prompt-project-dir prompt predicate t))
+    (let* ((root (sk-project-root))
+           (roots (and root (list root (abbreviate-file-name root))))
+           (pred (lambda (cand)
+                   (not (member (if (consp cand) (car cand) cand) roots)))))
+      (project-prompt-project-dir prompt pred t)))
   (cl-defmethod project-root ((project (head sk)))
     (cdr project))
   (defun sk-project-save-buffers ()
