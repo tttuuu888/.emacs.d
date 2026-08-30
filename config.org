@@ -39,16 +39,15 @@ package commands initialize it on demand. =package-quickstart-file= is set here
 since its default is fixed even earlier.
 
 #+BEGIN_SRC emacs-lisp
-(setq package-quickstart t
+(setq package-archives '(("gnu"   . "https://elpa.gnu.org/packages/")
+                         ("melpa" . "https://melpa.org/packages/"))
+      package-archive-priorities '(("gnu"   . 5)
+                                   ("melpa" . 10))
+      package-quickstart t
       package-quickstart-file (locate-user-emacs-file "package-quickstart.el"))
 
 (unless package--activated
   (package-activate-all))
-
-(setq package-archives '(("gnu"   . "https://elpa.gnu.org/packages/")
-                         ("melpa" . "https://melpa.org/packages/"))
-      package-archive-priorities '(("gnu"   . 5)
-                                   ("melpa" . 10)))
 #+END_SRC
 
 ** Use-package
