@@ -54,44 +54,32 @@ since its default is fixed even earlier.
 #+END_SRC
 
 ** Use-package
-Set some default settings for =use-package=.
-
-#+BEGIN_SRC emacs-lisp
-(setq use-package-always-defer t
-      use-package-always-ensure t
-      use-package-enable-imenu-support t)
-(put :map 'lisp-indent-function 'defun)
-#+END_SRC
-
-Load =use-package=. From this point, only =use-package= will be used for
-settings.
-
-#+BEGIN_SRC emacs-lisp
-(require 'use-package)
-#+END_SRC
-
-*** Add :defer-init keyword
-Defer code execution until the first command after initialization.
-
 #+begin_src emacs-lisp
-(add-to-list 'use-package-keywords :defer-init)
-
-(defalias 'use-package-normalize/:defer-init 'use-package-normalize-forms)
-
-(defun use-package-handler/:defer-init (name _keyword args rest state)
-  "Generate code to defer ARGS until the first command after init."
-  (let ((fn (intern (format "defer-init/%s" (use-package-as-symbol name)))))
-    (use-package-process-keywords
-      name
-      (plist-put rest :init
-                 (cons `(progn
-                          (defun ,fn ()
-                            ,@args
-                            (remove-hook 'pre-command-hook #',fn)
-                            (unintern ',fn nil))
-                          (add-hook 'pre-command-hook #',fn))
-                       (plist-get rest :init)))
-      state)))
+;;; Use-package setup
+(use-package use-package
+  :ensure nil
+  :custom
+  (use-package-always-defer t)
+  (use-package-always-ensure t)
+  (use-package-enable-imenu-support t)
+  :config
+  (put :map 'lisp-indent-function 'defun)
+  (add-to-list 'use-package-keywords :defer-init)
+  (defalias 'use-package-normalize/:defer-init 'use-package-normalize-forms)
+  (defun use-package-handler/:defer-init (name _keyword args rest state)
+    "Generate code to defer ARGS until the first command after init."
+    (let ((fn (intern (format "defer-init/%s" (use-package-as-symbol name)))))
+      (use-package-process-keywords
+        name
+        (plist-put rest :init
+                   (cons `(progn
+                            (defun ,fn ()
+                              ,@args
+                              (remove-hook 'pre-command-hook #',fn)
+                              (unintern ',fn nil))
+                            (add-hook 'pre-command-hook #',fn))
+                         (plist-get rest :init)))
+        state))))
 #+end_src
 
 ** Emacs core settings
