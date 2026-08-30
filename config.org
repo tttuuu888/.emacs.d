@@ -53,17 +53,6 @@ since its default is fixed even earlier.
         ("melpa" . 10)))
 #+END_SRC
 
-** User information
-If =USER_FULL_NAME= and =USER_MAIL_ADDRESS= environment variables are set,
-update =user-full-name= and =user-mail-address= variables.
-
-#+BEGIN_SRC emacs-lisp
-(let ((name (getenv "USER_FULL_NAME"))
-      (mail (getenv "USER_MAIL_ADDRESS")))
-  (when name (setq user-full-name name))
-  (when mail (setq user-mail-address mail)))
-#+END_SRC
-
 ** Custom variables
 #+begin_src emacs-lisp
 (defvar sk-font "D2Coding")
@@ -709,7 +698,10 @@ Defer code execution until the first command after initialization.
   (tab-width 4)
   (use-file-dialog nil)
   (use-short-answers t)
-  (warning-suppress-log-types '((comp) (bytecomp))))
+  (warning-suppress-log-types '((comp) (bytecomp)))
+  :config
+  (setq user-full-name (or (getenv "USER_FULL_NAME") user-full-name)
+        user-mail-address (or (getenv "USER_MAIL_ADDRESS") user-mail-address)))
 #+end_src
 
 * Async, Evil and Evil-leader packages
