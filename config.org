@@ -41,8 +41,7 @@ since its default is fixed even earlier.
 #+BEGIN_SRC emacs-lisp
 (setq package-archives '(("gnu"   . "https://elpa.gnu.org/packages/")
                          ("melpa" . "https://melpa.org/packages/"))
-      package-archive-priorities '(("gnu"   . 5)
-                                   ("melpa" . 10))
+      package-archive-priorities '(("gnu"   . 5) ("melpa" . 10))
       package-quickstart t
       package-quickstart-file (locate-user-emacs-file "package-quickstart.el"))
 
