@@ -64,7 +64,7 @@ since its default is fixed even earlier.
   (defalias 'use-package-normalize/:defer-init 'use-package-normalize-forms)
   (defun use-package-handler/:defer-init (name _keyword args rest state)
     "Generate code to defer ARGS until the first command after init."
-    (let ((fn (intern (format "defer-init/%s" (use-package-as-symbol name)))))
+    (let ((fn (intern (format "defer-init/%s" name))))
       (use-package-process-keywords
         name
         (plist-put rest :init
