@@ -53,470 +53,6 @@ since its default is fixed even earlier.
         ("melpa" . 10)))
 #+END_SRC
 
-** Custom variables
-#+begin_src emacs-lisp
-(defvar sk-font "D2Coding")
-
-(defvar sk-project-root-files
-  '(".project" ".git"
-    "CMakeLists.txt" "Makefile" "makefile.mk" "GTAGS"
-    "Android.bp" "Cargo.toml"))
-
-(defvar-local sk-vc-mode nil)
-(put 'sk-vc-mode 'risky-local-variable t)
-(put 'sk-vc-mode 'permanent-local t)
-#+end_src
-
-** Custom macros
-#+begin_src emacs-lisp
-(defmacro sk-switch-buffer-repl (name mode repl run-repl &optional nobind)
-  "Define NAME to toggle between MODE and REPL buffers.
-When called, NAME switches from MODE to REPL, running RUN-REPL if needed,
-or back to MODE.  Unless NOBIND is non-nil, binds <leader> z in both modes."
-  (declare (indent defun))
-  `(let ((last-mode "")
-         (last-repl ""))
-     (unless ,nobind
-       (evil-leader/set-key-for-mode ',mode "z" ',name)
-       (evil-leader/set-key-for-mode ',repl "z" ',name))
-     (defun ,name ()
-       (interactive)
-       (cond ((equal major-mode ',mode)
-              (setq last-mode (buffer-name))
-              (if (get-buffer last-repl)
-                  (pop-to-buffer last-repl)
-                (call-interactively ',run-repl)))
-             ((equal major-mode ',repl)
-              (setq last-repl (buffer-name))
-              (when (get-buffer last-mode)
-                (pop-to-buffer last-mode)))
-             (t nil)))))
-
-(defmacro sk-define-lisp-eval (name eval-region &optional doc)
-  "Create NAME function to eval sexp of region. This is for evil-mode."
-  (declare (indent defun))
-  `(defun ,name (&rest _)
-     ,@(when doc `(,doc))
-     (interactive "p")
-     (if (region-active-p)
-         (call-interactively ',eval-region)
-       (let* ((curr (min (1+ (point)) (point-max)))
-              (back (save-excursion (goto-char curr) (backward-sexp) (point))))
-         (setq this-command ',eval-region)
-         (,eval-region back curr)))
-     (setq deactivate-mark t)))
-
-(defmacro sk-with-sudo (sudo &rest body)
-  "Evaluate BODY as root via TRAMP when SUDO is non-nil, or normally if nil.
-BODY should not switch buffers or rebind `default-directory'."
-  (declare (indent 1))
-  `(let ((default-directory (if ,sudo
-                                (concat "/sudo::" default-directory)
-                              default-directory)))
-     ,@body))
-#+end_src
-
-** Custom functions
-#+BEGIN_SRC emacs-lisp
-(defun sharp-ifdef-insert (start end pre)
-  (save-excursion
-    (goto-char (1- end))
-    (end-of-line)
-    (unless (equal (point) (line-beginning-position))
-      (insert "\n"))
-    (insert "#endif")
-    (goto-char start)
-    (beginning-of-line)
-    (insert pre "\n")))
-
-(defun izero-insert (start end)
-  "Wrap a region with #if 0 and #endif."
-  (interactive "r")
-  (sharp-ifdef-insert start end "#if 0"))
-
-(defun idef-insert (start end in)
-  "Wrap a region with #ifdef and #endif."
-  (interactive "r\nsDefine : ")
-  (sharp-ifdef-insert start end (concat "#ifdef " in)))
-
-(defun find-file-in-tree (dir files &optional return-only-dir)
-  "Find the first matching file from FILES (a list) up to home or root.
-If RETURN-ONLY-DIR is non-nil, return its directory instead of the full path."
-  (let ((cur-dir (file-name-as-directory (expand-file-name dir)))
-        (files (ensure-list files))
-        (home (expand-file-name "~/")))
-    (cl-loop
-     for all-files = (and (file-readable-p cur-dir)
-                          (directory-files cur-dir))
-     for found = (cl-intersection files all-files :test #'string=)
-     for parent = (file-name-directory (directory-file-name cur-dir))
-     if found return (if return-only-dir
-                         cur-dir
-                       (expand-file-name (car found) cur-dir))
-     else if (or (equal cur-dir home)
-                 (equal cur-dir parent))
-     return nil
-     else do (setq cur-dir parent))))
-
-(defun sk-process-lines (program &rest args)
-  "Like `process-lines-ignore-status', but honor remote `default-directory'."
-  (with-temp-buffer
-    (apply #'process-file program nil t nil args)
-    (split-string (buffer-string) "\n" t)))
-
-(defun sk-clang-complete-make ()
-  "Generate .clang_complete file."
-  (interactive)
-  (let* ((file "./.clang_complete")
-         (dirs (delete-dups
-                (sk-process-lines
-                 "find" "-L" "." "-type" "f" "-name" "*.h"
-                 "-not" "-path" "*/.*" "-printf" "-I%h\\n")))
-         (includes (mapconcat (lambda (d) (concat d "\n"))
-                              (sort dirs #'string<) "")))
-    (write-region includes nil file)))
-
-(defun insert-date ()
-  "Insert date at point."
-  (interactive)
-  (insert (format-time-string "%Y-%m-%d %A")))
-
-(defun insert-date-and-time ()
-  "Insert date and time at point."
-  (interactive)
-  (insert (format-time-string "%Y-%m-%d %a %p %l:%M")))
-
-(defun nuke-all-buffers ()
-  "kill all buffers, leaving *scratch* only"
-  (interactive)
-  (mapc #'kill-buffer (buffer-list))
-  (delete-other-windows))
-
-(defun hide-ctrl-M ()
-  "Hides the '^M' in files containing mixed UNIX and DOS line endings."
-  (interactive)
-  (setq buffer-display-table (make-display-table))
-  (aset buffer-display-table ?\^M []))
-
-(defun move-line (n)
-  "Move the current line up or down by N lines."
-  (interactive "p")
-  (let ((col (current-column))
-        (txt (delete-and-extract-region (line-beginning-position)
-                                        (line-beginning-position 2))))
-    (forward-line n)
-    (insert txt)
-    ;; restore point to original column in moved line
-    (forward-line -1)
-    (forward-char col)))
-
-(defun transpose-windows ()
-  "Swap positions of 2 windows."
-  (interactive)
-  (let ((buffer1 (window-buffer (selected-window)))
-        (buffer2 (window-buffer (select-window (next-window)))))
-    (switch-to-buffer buffer1)
-    (switch-to-buffer-other-window buffer2)))
-
-(defun buffer-save-or-load (num &optional restore)
-  (if restore
-      (progn
-        (jump-to-register num)
-        (message "Windows are Restored by F%d" num))
-    (window-configuration-to-register num)
-    (message "Windows are saved to F%d" num)))
-
-(defun sk-C-c-map-to-leader-c-map (mode mode-map &optional exceptions)
-  "Bind MODE-MAP's C-c keys to <leader> c for MODE, except EXCEPTIONS list."
-  (let* ((ret nil)
-         (target (alist-get ?\C-c mode-map))
-         (cm (number-sequence ?\C-a ?\C-z))
-         (ks (append cm (number-sequence ?\ ?z))))
-    (cl-labels
-        ((ctrl-map-search (elt pre)
-           (if (symbolp elt)
-               (push (cons pre elt) ret)
-             (dolist (k ks)
-               ;; NOTE: C-a, C-b, etc. will be converted to a, b, etc. for
-               ;; npre. However, C-<letter> and <letter> will result in the same
-               ;; value for npre, causing potential overwriting.
-               (let ((nelt (alist-get k elt))
-                     (npre (if (member k cm) (+ k 96) k)))
-                 ;; Ignore multi-char keys. e.g. "SPC" would be read as S, P, C.
-                 (when (and nelt (= 1 (length (single-key-description npre))))
-                   (ctrl-map-search nelt (append pre (list npre)))))))))
-      (ctrl-map-search target (list ?\c))
-      (setq ret (nreverse ret))
-      (dolist (e ret)
-        (let ((key (mapconcat 'single-key-description (car e) "")))
-          (unless (cl-some (lambda (ex) (string-prefix-p ex key)) exceptions)
-            (evil-leader/set-key-for-mode mode key (cdr e))))))))
-
-(defun tmux-running-p (&optional notice)
-  "Return non-nil if a tmux session exists.
-If NOTICE is non-nil, display a message when no session is running."
-  (let ((running (zerop (call-process "tmux" nil nil nil "has-session"))))
-    (when (and (not running) notice)
-      (message "No tmux session is running!"))
-    running))
-
-(defun tmux-new-window-here ()
-  "Open new tmux window at the current path."
-  (interactive)
-  (when (tmux-running-p t)
-    (call-process "tmux" nil nil nil "new-window")
-    (message "New tmux window is opened.")))
-
-(defun sk-project-root (&optional dir)
-  (find-file-in-tree (or dir default-directory) sk-project-root-files t))
-
-(defun sk-create-project (dir)
-  "Create a .project file in DIR, if not exists."
-  (write-region "" nil (expand-file-name ".project" dir) t))
-
-(defun get-clear-buffer (buffer)
-  "Return BUFFER after clearing its contents, creating it if needed."
-  (with-current-buffer (get-buffer-create buffer)
-    (erase-buffer)
-    (current-buffer)))
-
-(defun my-git-output (&rest args)
-  "Run git with ARGS and return the output, or nil on failure."
-  (with-temp-buffer
-    (when (zerop (apply #'process-file "git" nil t nil args))
-      (string-trim-right (buffer-string)))))
-
-(defun git-tracked-file-p (&optional file-name)
-  (when-let* ((file (or file-name buffer-file-name))
-              (_ (file-exists-p file))
-              (default-directory (file-name-directory (expand-file-name file))))
-    (zerop (process-file "git" nil nil nil
-                         "ls-files" "--error-unmatch"
-                         (file-name-nondirectory file)))))
-
-(defun git-branch-of-file (file)
-  (when (git-tracked-file-p file)
-    (let* ((default-directory (file-name-directory (expand-file-name file)))
-           (branch (my-git-output "branch" "--show-current")))
-      (if (equal branch "")
-          (my-git-output "rev-parse" "--short" "HEAD")
-        branch))))
-
-(defun my-get-git-root-dir ()
-  (locate-dominating-file default-directory ".git"))
-
-(defun my-find-file-in-git-project (regex root)
-  (when (file-exists-p (expand-file-name ".git" root))
-    (let ((default-directory (file-truename root)))
-      (seq-filter
-       (lambda (f) (string-match-p regex f))
-       (sk-process-lines "git" "ls-files" "-co" "--exclude-standard")))))
-
-(defun sk-git-diff-relative ()
-  "Run git diff with --relative option."
-  (interactive)
-  (if (zerop
-       (process-file "git" nil (get-clear-buffer "*git-diff*") nil
-                     "--no-pager" "diff" "--relative"
-                     "--cached"))
-      (progn
-        (pop-to-buffer "*git-diff*")
-        (goto-char (point-min))
-        (diff-mode))
-    (kill-buffer "*git-diff*")
-    (message "Running git diff failed.")))
-
-(defun my-find-file-in-dir (regex &optional dir)
-  (directory-files (or dir default-directory) nil regex))
-
-(defun sk-find-other-file ()
-  "Switch between C/C++ source and header files in the project."
-  (interactive)
-  (let ((inhibit-message t))
-    (if-let*
-        ((file (buffer-file-name))
-         (base (file-name-base file))
-         (ext  (file-name-extension file))
-         (root default-directory)
-         (regex
-          (cond ((member ext '("h" "hh" "hpp"))
-                 (rx (or bol "/") (literal base) "." (or "c" "cc" "cpp") eol))
-                ((member ext '("c" "cc" "cpp"))
-                 (rx (or bol "/") (literal base) "." (or "h" "hh" "hpp") eol))
-                (t nil)))
-         (others (or (my-find-file-in-dir regex)
-                     (and (setq root (my-get-git-root-dir))
-                          (my-find-file-in-git-project regex root)))))
-        (find-file
-         (expand-file-name (if (length= others 1)
-                               (car others)
-                             (consult--read others :prompt "Switch to: "))
-                           root))
-      (user-error "No other file found"))))
-
-(defun async-shell-command-callback (cmd sudo callback &rest args)
-  "Run CMD asynchronously as root if SUDO, then call CALLBACK with ARGS.
-CALLBACK runs only when CMD exits successfully.  Return the process."
-  (let* ((buffer (generate-new-buffer "*Async Shell Command*"))
-         (proc (sk-with-sudo sudo
-                 (start-file-process "Async" buffer shell-file-name
-                                     shell-command-switch cmd))))
-    (set-process-sentinel
-     proc
-     (lambda (process _signal)
-       (when (memq (process-status process) '(exit signal))
-         (if (zerop (process-exit-status process))
-             (progn (kill-buffer buffer)
-                    (apply callback args))
-           (display-buffer buffer)
-           (message "Command failed (%d): %s"
-                    (process-exit-status process) cmd)))))
-    proc))
-
-(defun shell-quote-remote-file (file)
-  (let* ((local-name (file-local-name file))
-         (domain (string-remove-suffix local-name file))
-         (name (shell-quote-argument local-name)))
-    (concat domain name)))
-
-(defun file-to-string (file &optional online)
-  (let* ((target (if online (url-file-local-copy file) file))
-         (content (ignore-errors
-                    (with-temp-buffer
-                      (insert-file-contents target)
-                      (buffer-string)))))
-    (when online (delete-file target))
-    (or content "")))
-
-(let* ((origin-height (face-attribute 'default :height))
-       (big-height (round (* origin-height 1.5)))
-       (big-font nil))
-  (defun sk-toggle-big-font ()
-    (interactive)
-    (if (setq big-font (not big-font))
-        (set-face-attribute 'default nil :height big-height)
-      (set-face-attribute 'default nil :height origin-height))))
-
-(defun sk-alist-to-js-obj (alist &optional omit-curly-braces)
-  "Convert ALIST to JavaScript object string.
-If OMIT-CURLY-BRACES is non-nil, omit the surrounding curly braces."
-  (concat
-   (unless omit-curly-braces "{ ")
-   (string-join
-    (cl-loop for (key . value) in alist
-             collect
-             (format
-              (cond ((and (stringp key) (stringp value)) "\"%s\": \"%s\"")
-                    ((stringp key) "\"%s\": %s")
-                    ((stringp value) "%s: \"%s\"")
-                    (t "%s: %s"))
-              key value))
-    ", ")
-   (unless omit-curly-braces " }")))
-
-(defun sk-yank-file-name-or-path (&optional whole-path)
-  (let* ((file-name (buffer-file-name))
-         (name (and file-name
-                    (if whole-path
-                        file-name
-                      (file-name-nondirectory file-name)))))
-    (if (not name)
-        (message "Not in the file buffer")
-      (kill-new name)
-      (message (format "File name yanked : %s" name)))))
-
-(defun sk-yank-file-name ()
-  (interactive)
-  (sk-yank-file-name-or-path))
-
-(defun sk-yank-file-whole-path ()
-  (interactive)
-  (sk-yank-file-name-or-path 'whole-path))
-
-(defun sk-google-search (&optional beg end)
-  (interactive "R")
-  (let ((target (if beg
-                    (buffer-substring-no-properties beg end)
-                  (word-at-point t))))
-    (browse-url (format "https://www.google.com/search?q=%s&ie=UTF-8" target))))
-
-(defun align-columns (beg end)
-  "Align columns in the region between BEG and END.
-Treat quoted strings and balanced delimiters as single units."
-  (interactive "r")
-  (align-regexp beg end
-                (rx (group (+ blank))
-                    (+ (or (not (any space ?\" ?\( ?\[ ?\{))
-                           (seq ?\"
-                                (* (not (any ?\")))
-                                ?\")
-                           (seq ?\(
-                                (* (not (any ?\))))
-                                ?\))
-                           (seq ?\[
-                                (* (not (any ?\])))
-                                ?\])
-                           (seq ?\{
-                                (* (not (any ?\})))
-                                ?\}))))
-                1 1 t))
-
-(defun sk-get-gpg-encrypt-cmd (recipents)
-  (interactive "MRecipent? ")
-  (let* ((lst (split-string recipents "[ \f\t\n\r\v,;]+"))
-         (to (mapconcat (lambda (r) (concat " --recipient " r)) lst))
-         (cmd (concat "gpg" to " --encrypt ")))
-    (kill-new cmd)
-    (message cmd)))
-
-(defun list-to-hex-string (lst)
-  "Convert a list of integers into a hex string."
-  (mapconcat (lambda (x) (format "%02x" x)) lst ""))
-
-(defun ensure-dir (dir)
-  "Return DIR, creating it and any parent directories if needed."
-  (make-directory dir t)
-  dir)
-
-(defun goto-first-korean-letter ()
-  (interactive)
-  (let (pos)
-    (save-excursion
-      (goto-char (point-min))
-      (setq pos (re-search-forward "[ㄱ-ㅎㅏ-ㅣ가-힣]" nil t)))
-    (if pos
-        (goto-char pos)
-      (message "No Korean letter found."))))
-
-(defun sk-add-comment-start ()
-  "Add `comment-start' setting to the buffer header."
-  (interactive)
-  (let* ((cs (or comment-start
-                 (read-string "No comment syntax is defined.  Use: ")))
-         (comment-format (format " -*- comment-start: \"%s\"; -*-" cs cs)))
-    (setq-local comment-start cs)
-    (save-excursion
-      (goto-char (point-min))
-      (when (looking-at "#!") (forward-line 1))
-      (if (re-search-forward "-*- comment-start:" (line-end-position) t)
-          (message "Comment setting already present on first line.")
-        (if (not (looking-at cs))
-            (insert cs comment-format "\n")
-          (end-of-line)
-          (insert comment-format))
-        (message "Added comment-start: %s" cs)))))
-
-(defun html-head-css (&rest body)
-  (concat "<style type=\"text/css\">\n"
-          (string-join body)
-          "</style>\n"))
-
-(defun html-head-js (&rest body)
-  (concat "<script type=\"text/javascript\">\n"
-          (string-join body)
-          "</script>\n"))
-#+END_SRC
-
 ** Color setting
 Simple color setting function which has 'dark' and 'light' theme.
 
@@ -541,16 +77,6 @@ Enable dark theme.
 
 #+BEGIN_SRC emacs-lisp
 (my-theme-setting)
-#+END_SRC
-** Korean and Font setting
-#+BEGIN_SRC emacs-lisp
-(setq default-input-method "korean-hangul3")
-(when (display-graphic-p)
-  (set-fontset-font t 'unicode "Unifont" nil 'prepend)
-  (set-fontset-font t 'unicode "Unifont Upper" nil 'prepend)
-  (set-fontset-font t 'unicode "Noto Color Emoji" nil 'prepend)
-  (set-fontset-font t 'hangul sk-font)
-  (set-face-attribute 'fixed-pitch nil :family sk-font))
 #+END_SRC
 ** SK-mode-line
 Simple mode line setting function.
@@ -702,6 +228,486 @@ Defer code execution until the first command after initialization.
   :config
   (setq user-full-name (or (getenv "USER_FULL_NAME") user-full-name)
         user-mail-address (or (getenv "USER_MAIL_ADDRESS") user-mail-address)))
+#+end_src
+
+** Custom definitions
+#+begin_src emacs-lisp
+;;; Custom definitions
+(use-package emacs
+  :ensure nil
+  :config
+  ;; Variables
+  (defvar sk-font "D2Coding")
+
+  (defvar sk-project-root-files
+    '(".project" ".git"
+      "CMakeLists.txt" "Makefile" "makefile.mk" "GTAGS"
+      "Android.bp" "Cargo.toml"))
+
+  (defvar-local sk-vc-mode nil)
+  (put 'sk-vc-mode 'risky-local-variable t)
+  (put 'sk-vc-mode 'permanent-local t)
+
+  ;; Macros
+  (defmacro sk-switch-buffer-repl (name mode repl run-repl &optional nobind)
+    "Define NAME to toggle between MODE and REPL buffers.
+When called, NAME switches from MODE to REPL, running RUN-REPL if needed,
+or back to MODE.  Unless NOBIND is non-nil, binds <leader> z in both modes."
+    (declare (indent defun))
+    `(let ((last-mode "")
+           (last-repl ""))
+       (unless ,nobind
+         (evil-leader/set-key-for-mode ',mode "z" ',name)
+         (evil-leader/set-key-for-mode ',repl "z" ',name))
+       (defun ,name ()
+         (interactive)
+         (cond ((equal major-mode ',mode)
+                (setq last-mode (buffer-name))
+                (if (get-buffer last-repl)
+                    (pop-to-buffer last-repl)
+                  (call-interactively ',run-repl)))
+               ((equal major-mode ',repl)
+                (setq last-repl (buffer-name))
+                (when (get-buffer last-mode)
+                  (pop-to-buffer last-mode)))
+               (t nil)))))
+
+  (defmacro sk-define-lisp-eval (name eval-region &optional doc)
+    "Create NAME function to eval sexp of region. This is for evil-mode."
+    (declare (indent defun))
+    `(defun ,name (&rest _)
+       ,@(when doc `(,doc))
+       (interactive "p")
+       (if (region-active-p)
+           (call-interactively ',eval-region)
+         (let* ((curr (min (1+ (point)) (point-max)))
+                (back (save-excursion (goto-char curr) (backward-sexp) (point))))
+           (setq this-command ',eval-region)
+           (,eval-region back curr)))
+       (setq deactivate-mark t)))
+
+  (defmacro sk-with-sudo (sudo &rest body)
+    "Evaluate BODY as root via TRAMP when SUDO is non-nil, or normally if nil.
+BODY should not switch buffers or rebind `default-directory'."
+    (declare (indent 1))
+    `(let ((default-directory (if ,sudo
+                                  (concat "/sudo::" default-directory)
+                                default-directory)))
+       ,@body))
+
+  ;; Functions
+  (defun sharp-ifdef-insert (start end pre)
+    (save-excursion
+      (goto-char (1- end))
+      (end-of-line)
+      (unless (equal (point) (line-beginning-position))
+        (insert "\n"))
+      (insert "#endif")
+      (goto-char start)
+      (beginning-of-line)
+      (insert pre "\n")))
+
+  (defun izero-insert (start end)
+    "Wrap a region with #if 0 and #endif."
+    (interactive "r")
+    (sharp-ifdef-insert start end "#if 0"))
+
+  (defun idef-insert (start end in)
+    "Wrap a region with #ifdef and #endif."
+    (interactive "r\nsDefine : ")
+    (sharp-ifdef-insert start end (concat "#ifdef " in)))
+
+  (defun find-file-in-tree (dir files &optional return-only-dir)
+    "Find the first matching file from FILES (a list) up to home or root.
+If RETURN-ONLY-DIR is non-nil, return its directory instead of the full path."
+    (let ((cur-dir (file-name-as-directory (expand-file-name dir)))
+          (files (ensure-list files))
+          (home (expand-file-name "~/")))
+      (cl-loop
+       for all-files = (and (file-readable-p cur-dir)
+                            (directory-files cur-dir))
+       for found = (cl-intersection files all-files :test #'string=)
+       for parent = (file-name-directory (directory-file-name cur-dir))
+       if found return (if return-only-dir
+                           cur-dir
+                         (expand-file-name (car found) cur-dir))
+       else if (or (equal cur-dir home)
+                   (equal cur-dir parent))
+       return nil
+       else do (setq cur-dir parent))))
+
+  (defun sk-process-lines (program &rest args)
+    "Like `process-lines-ignore-status', but honor remote `default-directory'."
+    (with-temp-buffer
+      (apply #'process-file program nil t nil args)
+      (split-string (buffer-string) "\n" t)))
+
+  (defun sk-clang-complete-make ()
+    "Generate .clang_complete file."
+    (interactive)
+    (let* ((file "./.clang_complete")
+           (dirs (delete-dups
+                  (sk-process-lines
+                   "find" "-L" "." "-type" "f" "-name" "*.h"
+                   "-not" "-path" "*/.*" "-printf" "-I%h\\n")))
+           (includes (mapconcat (lambda (d) (concat d "\n"))
+                                (sort dirs #'string<) "")))
+      (write-region includes nil file)))
+
+  (defun insert-date ()
+    "Insert date at point."
+    (interactive)
+    (insert (format-time-string "%Y-%m-%d %A")))
+
+  (defun insert-date-and-time ()
+    "Insert date and time at point."
+    (interactive)
+    (insert (format-time-string "%Y-%m-%d %a %p %l:%M")))
+
+  (defun nuke-all-buffers ()
+    "kill all buffers, leaving *scratch* only"
+    (interactive)
+    (mapc #'kill-buffer (buffer-list))
+    (delete-other-windows))
+
+  (defun hide-ctrl-M ()
+    "Hides the '^M' in files containing mixed UNIX and DOS line endings."
+    (interactive)
+    (setq buffer-display-table (make-display-table))
+    (aset buffer-display-table ?\^M []))
+
+  (defun move-line (n)
+    "Move the current line up or down by N lines."
+    (interactive "p")
+    (let ((col (current-column))
+          (txt (delete-and-extract-region (line-beginning-position)
+                                          (line-beginning-position 2))))
+      (forward-line n)
+      (insert txt)
+      ;; restore point to original column in moved line
+      (forward-line -1)
+      (forward-char col)))
+
+  (defun transpose-windows ()
+    "Swap positions of 2 windows."
+    (interactive)
+    (let ((buffer1 (window-buffer (selected-window)))
+          (buffer2 (window-buffer (select-window (next-window)))))
+      (switch-to-buffer buffer1)
+      (switch-to-buffer-other-window buffer2)))
+
+  (defun buffer-save-or-load (num &optional restore)
+    (if restore
+        (progn
+          (jump-to-register num)
+          (message "Windows are Restored by F%d" num))
+      (window-configuration-to-register num)
+      (message "Windows are saved to F%d" num)))
+
+  (defun sk-C-c-map-to-leader-c-map (mode mode-map &optional exceptions)
+    "Bind MODE-MAP's C-c keys to <leader> c for MODE, except EXCEPTIONS list."
+    (let* ((ret nil)
+           (target (alist-get ?\C-c mode-map))
+           (cm (number-sequence ?\C-a ?\C-z))
+           (ks (append cm (number-sequence ?\ ?z))))
+      (cl-labels
+          ((ctrl-map-search (elt pre)
+             (if (symbolp elt)
+                 (push (cons pre elt) ret)
+               (dolist (k ks)
+                 ;; NOTE: C-a, C-b, etc. will be converted to a, b, etc. for
+                 ;; npre. However, C-<letter> and <letter> will result in the same
+                 ;; value for npre, causing potential overwriting.
+                 (let ((nelt (alist-get k elt))
+                       (npre (if (member k cm) (+ k 96) k)))
+                   ;; Ignore multi-char keys. e.g. "SPC" would be read as S, P, C.
+                   (when (and nelt (= 1 (length (single-key-description npre))))
+                     (ctrl-map-search nelt (append pre (list npre)))))))))
+        (ctrl-map-search target (list ?\c))
+        (setq ret (nreverse ret))
+        (dolist (e ret)
+          (let ((key (mapconcat 'single-key-description (car e) "")))
+            (unless (cl-some (lambda (ex) (string-prefix-p ex key)) exceptions)
+              (evil-leader/set-key-for-mode mode key (cdr e))))))))
+
+  (defun tmux-running-p (&optional notice)
+    "Return non-nil if a tmux session exists.
+If NOTICE is non-nil, display a message when no session is running."
+    (let ((running (zerop (call-process "tmux" nil nil nil "has-session"))))
+      (when (and (not running) notice)
+        (message "No tmux session is running!"))
+      running))
+
+  (defun tmux-new-window-here ()
+    "Open new tmux window at the current path."
+    (interactive)
+    (when (tmux-running-p t)
+      (call-process "tmux" nil nil nil "new-window")
+      (message "New tmux window is opened.")))
+
+  (defun sk-project-root (&optional dir)
+    (find-file-in-tree (or dir default-directory) sk-project-root-files t))
+
+  (defun sk-create-project (dir)
+    "Create a .project file in DIR, if not exists."
+    (write-region "" nil (expand-file-name ".project" dir) t))
+
+  (defun get-clear-buffer (buffer)
+    "Return BUFFER after clearing its contents, creating it if needed."
+    (with-current-buffer (get-buffer-create buffer)
+      (erase-buffer)
+      (current-buffer)))
+
+  (defun my-git-output (&rest args)
+    "Run git with ARGS and return the output, or nil on failure."
+    (with-temp-buffer
+      (when (zerop (apply #'process-file "git" nil t nil args))
+        (string-trim-right (buffer-string)))))
+
+  (defun git-tracked-file-p (&optional file-name)
+    (when-let* ((file (or file-name buffer-file-name))
+                (_ (file-exists-p file))
+                (default-directory (file-name-directory (expand-file-name file))))
+      (zerop (process-file "git" nil nil nil
+                           "ls-files" "--error-unmatch"
+                           (file-name-nondirectory file)))))
+
+  (defun git-branch-of-file (file)
+    (when (git-tracked-file-p file)
+      (let* ((default-directory (file-name-directory (expand-file-name file)))
+             (branch (my-git-output "branch" "--show-current")))
+        (if (equal branch "")
+            (my-git-output "rev-parse" "--short" "HEAD")
+          branch))))
+
+  (defun my-get-git-root-dir ()
+    (locate-dominating-file default-directory ".git"))
+
+  (defun my-find-file-in-git-project (regex root)
+    (when (file-exists-p (expand-file-name ".git" root))
+      (let ((default-directory (file-truename root)))
+        (seq-filter
+         (lambda (f) (string-match-p regex f))
+         (sk-process-lines "git" "ls-files" "-co" "--exclude-standard")))))
+
+  (defun sk-git-diff-relative ()
+    "Run git diff with --relative option."
+    (interactive)
+    (if (zerop
+         (process-file "git" nil (get-clear-buffer "*git-diff*") nil
+                       "--no-pager" "diff" "--relative"
+                       "--cached"))
+        (progn
+          (pop-to-buffer "*git-diff*")
+          (goto-char (point-min))
+          (diff-mode))
+      (kill-buffer "*git-diff*")
+      (message "Running git diff failed.")))
+
+  (defun my-find-file-in-dir (regex &optional dir)
+    (directory-files (or dir default-directory) nil regex))
+
+  (defun sk-find-other-file ()
+    "Switch between C/C++ source and header files in the project."
+    (interactive)
+    (let ((inhibit-message t))
+      (if-let*
+          ((file (buffer-file-name))
+           (base (file-name-base file))
+           (ext  (file-name-extension file))
+           (root default-directory)
+           (regex
+            (cond ((member ext '("h" "hh" "hpp"))
+                   (rx (or bol "/") (literal base) "." (or "c" "cc" "cpp") eol))
+                  ((member ext '("c" "cc" "cpp"))
+                   (rx (or bol "/") (literal base) "." (or "h" "hh" "hpp") eol))
+                  (t nil)))
+           (others (or (my-find-file-in-dir regex)
+                       (and (setq root (my-get-git-root-dir))
+                            (my-find-file-in-git-project regex root)))))
+          (find-file
+           (expand-file-name (if (length= others 1)
+                                 (car others)
+                               (consult--read others :prompt "Switch to: "))
+                             root))
+        (user-error "No other file found"))))
+
+  (defun async-shell-command-callback (cmd sudo callback &rest args)
+    "Run CMD asynchronously as root if SUDO, then call CALLBACK with ARGS.
+CALLBACK runs only when CMD exits successfully.  Return the process."
+    (let* ((buffer (generate-new-buffer "*Async Shell Command*"))
+           (proc (sk-with-sudo sudo
+                   (start-file-process "Async" buffer shell-file-name
+                                       shell-command-switch cmd))))
+      (set-process-sentinel
+       proc
+       (lambda (process _signal)
+         (when (memq (process-status process) '(exit signal))
+           (if (zerop (process-exit-status process))
+               (progn (kill-buffer buffer)
+                      (apply callback args))
+             (display-buffer buffer)
+             (message "Command failed (%d): %s"
+                      (process-exit-status process) cmd)))))
+      proc))
+
+  (defun shell-quote-remote-file (file)
+    (let* ((local-name (file-local-name file))
+           (domain (string-remove-suffix local-name file))
+           (name (shell-quote-argument local-name)))
+      (concat domain name)))
+
+  (defun file-to-string (file &optional online)
+    (let* ((target (if online (url-file-local-copy file) file))
+           (content (ignore-errors
+                      (with-temp-buffer
+                        (insert-file-contents target)
+                        (buffer-string)))))
+      (when online (delete-file target))
+      (or content "")))
+
+  (let* ((origin-height (face-attribute 'default :height))
+         (big-height (round (* origin-height 1.5)))
+         (big-font nil))
+    (defun sk-toggle-big-font ()
+      (interactive)
+      (if (setq big-font (not big-font))
+          (set-face-attribute 'default nil :height big-height)
+        (set-face-attribute 'default nil :height origin-height))))
+
+  (defun sk-alist-to-js-obj (alist &optional omit-curly-braces)
+    "Convert ALIST to JavaScript object string.
+If OMIT-CURLY-BRACES is non-nil, omit the surrounding curly braces."
+    (concat
+     (unless omit-curly-braces "{ ")
+     (string-join
+      (cl-loop for (key . value) in alist
+               collect
+               (format
+                (cond ((and (stringp key) (stringp value)) "\"%s\": \"%s\"")
+                      ((stringp key) "\"%s\": %s")
+                      ((stringp value) "%s: \"%s\"")
+                      (t "%s: %s"))
+                key value))
+      ", ")
+     (unless omit-curly-braces " }")))
+
+  (defun sk-yank-file-name-or-path (&optional whole-path)
+    (let* ((file-name (buffer-file-name))
+           (name (and file-name
+                      (if whole-path
+                          file-name
+                        (file-name-nondirectory file-name)))))
+      (if (not name)
+          (message "Not in the file buffer")
+        (kill-new name)
+        (message (format "File name yanked : %s" name)))))
+
+  (defun sk-yank-file-name ()
+    (interactive)
+    (sk-yank-file-name-or-path))
+
+  (defun sk-yank-file-whole-path ()
+    (interactive)
+    (sk-yank-file-name-or-path 'whole-path))
+
+  (defun sk-google-search (&optional beg end)
+    (interactive "R")
+    (let ((target (if beg
+                      (buffer-substring-no-properties beg end)
+                    (word-at-point t))))
+      (browse-url (format "https://www.google.com/search?q=%s&ie=UTF-8" target))))
+
+  (defun align-columns (beg end)
+    "Align columns in the region between BEG and END.
+Treat quoted strings and balanced delimiters as single units."
+    (interactive "r")
+    (align-regexp beg end
+                  (rx (group (+ blank))
+                      (+ (or (not (any space ?\" ?\( ?\[ ?\{))
+                             (seq ?\"
+                                  (* (not (any ?\")))
+                                  ?\")
+                             (seq ?\(
+                                  (* (not (any ?\))))
+                                  ?\))
+                             (seq ?\[
+                                  (* (not (any ?\])))
+                                  ?\])
+                             (seq ?\{
+                                  (* (not (any ?\})))
+                                  ?\}))))
+                  1 1 t))
+
+  (defun sk-get-gpg-encrypt-cmd (recipents)
+    (interactive "MRecipent? ")
+    (let* ((lst (split-string recipents "[ \f\t\n\r\v,;]+"))
+           (to (mapconcat (lambda (r) (concat " --recipient " r)) lst))
+           (cmd (concat "gpg" to " --encrypt ")))
+      (kill-new cmd)
+      (message cmd)))
+
+  (defun list-to-hex-string (lst)
+    "Convert a list of integers into a hex string."
+    (mapconcat (lambda (x) (format "%02x" x)) lst ""))
+
+  (defun ensure-dir (dir)
+    "Return DIR, creating it and any parent directories if needed."
+    (make-directory dir t)
+    dir)
+
+  (defun goto-first-korean-letter ()
+    (interactive)
+    (let (pos)
+      (save-excursion
+        (goto-char (point-min))
+        (setq pos (re-search-forward "[ㄱ-ㅎㅏ-ㅣ가-힣]" nil t)))
+      (if pos
+          (goto-char pos)
+        (message "No Korean letter found."))))
+
+  (defun sk-add-comment-start ()
+    "Add `comment-start' setting to the buffer header."
+    (interactive)
+    (let* ((cs (or comment-start
+                   (read-string "No comment syntax is defined.  Use: ")))
+           (comment-format (format " -*- comment-start: \"%s\"; -*-" cs cs)))
+      (setq-local comment-start cs)
+      (save-excursion
+        (goto-char (point-min))
+        (when (looking-at "#!") (forward-line 1))
+        (if (re-search-forward "-*- comment-start:" (line-end-position) t)
+            (message "Comment setting already present on first line.")
+          (if (not (looking-at cs))
+              (insert cs comment-format "\n")
+            (end-of-line)
+            (insert comment-format))
+          (message "Added comment-start: %s" cs)))))
+
+  (defun html-head-css (&rest body)
+    (concat "<style type=\"text/css\">\n"
+            (string-join body)
+            "</style>\n"))
+
+  (defun html-head-js (&rest body)
+    (concat "<script type=\"text/javascript\">\n"
+            (string-join body)
+            "</script>\n")))
+#+end_src
+
+** Appearance settings
+#+begin_src emacs-lisp
+;;; Appearance settings
+(use-package emacs
+  :ensure nil
+  :config
+  (setq default-input-method "korean-hangul3")
+  (when (display-graphic-p)
+    (set-fontset-font t 'unicode "Unifont" nil 'prepend)
+    (set-fontset-font t 'unicode "Unifont Upper" nil 'prepend)
+    (set-fontset-font t 'unicode "Noto Color Emoji" nil 'prepend)
+    (set-fontset-font t 'hangul sk-font)
+    (set-face-attribute 'fixed-pitch nil :family sk-font)))
 #+end_src
 
 * Async, Evil and Evil-leader packages
