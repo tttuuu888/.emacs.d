@@ -53,84 +53,6 @@ since its default is fixed even earlier.
         ("melpa" . 10)))
 #+END_SRC
 
-** Color setting
-Simple color setting function which has 'dark' and 'light' theme.
-
-#+BEGIN_SRC emacs-lisp
-(defun my-theme-setting (&optional light-theme)
-  (let ((base-fg-color   (if light-theme "Black" "Gray80"))
-        (base-bg-color   (if light-theme "Gray95" "Gray23"))
-        (region-bg-color (if light-theme "PowderBlue" "DodgerBlue4")))
-    (set-face-attribute 'default nil
-                        :foreground base-fg-color :background base-bg-color)
-    (set-face-attribute 'fringe nil
-                        :background base-bg-color)
-    (set-face-attribute 'vertical-border nil
-                        :foreground base-fg-color :background base-bg-color)
-    (set-face-attribute 'region nil
-                        :background region-bg-color)))
-(defun sk-light-theme () (interactive) (my-theme-setting t))
-(defun sk-dark-theme  () (interactive) (my-theme-setting))
-#+END_SRC
-
-Enable dark theme.
-
-#+BEGIN_SRC emacs-lisp
-(my-theme-setting)
-#+END_SRC
-** SK-mode-line
-Simple mode line setting function.
-
-#+BEGIN_SRC emacs-lisp
-;;; mode-line face setting
-(face-spec-set 'mode-line '((t (:box nil))))
-(face-spec-set 'mode-line-inactive '((t (:box nil))))
-
-;;; sk-mode-line
-(defun sk-mode-line ()
-  (setq-default
-   mode-line-format
-   '("%e"
-     (:eval
-      (let* ((width (- (window-width)
-                       (if (display-graphic-p) 5 6)))
-             (evil-info (and (featurep 'evil) evil-mode
-                             (concat " " (upcase (symbol-name evil-state)))))
-             (buffer-info (format-mode-line " %* "))
-             (buffer-name (propertize
-                           (format-mode-line " %b ")
-                           'face 'mode-line-emphasis))
-             (mode-and-vc (propertize
-                           (concat " "
-                                   (format-mode-line mode-name)
-                                   (and sk-vc-mode (concat " (" sk-vc-mode ")"))
-                                   " ")
-                           'face 'mode-line-inactive))
-             (input-name (propertize (concat current-input-method-title " ")
-                                     'face 'mode-line-inactive))
-             (line-and-pos-info (format-mode-line " %l,%3c  %p%% "))
-             (right-info (concat input-name line-and-pos-info))
-             (right-len (string-width right-info))
-             (left-str (concat evil-info buffer-info buffer-name mode-and-vc))
-             (left-width (- width right-len))
-             (left-info (if (<= (string-width left-str) left-width)
-                            left-str
-                          (truncate-string-to-width left-str left-width)))
-             (center-fill (propertize
-                           " "
-                           'face 'mode-line-inactive
-                           'display
-                           `((space :align-to
-                                    (- (+ right right-fringe right-margin)
-                                       ,right-len))))))
-        (concat left-info center-fill right-info))))))
-#+END_SRC
-
-Enable =sk-mode-line=.
-
-#+BEGIN_SRC emacs-lisp
-(sk-mode-line)
-#+END_SRC
 ** Use-package
 Set some default settings for =use-package=.
 
@@ -702,12 +624,73 @@ Treat quoted strings and balanced delimiters as single units."
   :ensure nil
   :config
   (setq default-input-method "korean-hangul3")
+
+  ;; Font
   (when (display-graphic-p)
     (set-fontset-font t 'unicode "Unifont" nil 'prepend)
     (set-fontset-font t 'unicode "Unifont Upper" nil 'prepend)
     (set-fontset-font t 'unicode "Noto Color Emoji" nil 'prepend)
     (set-fontset-font t 'hangul sk-font)
-    (set-face-attribute 'fixed-pitch nil :family sk-font)))
+    (set-face-attribute 'fixed-pitch nil :family sk-font))
+
+  ;; Themes
+  (defun my-theme-setting (&optional light-theme)
+    (let ((base-fg-color   (if light-theme "Black" "Gray80"))
+          (base-bg-color   (if light-theme "Gray95" "Gray23"))
+          (region-bg-color (if light-theme "PowderBlue" "DodgerBlue4")))
+      (set-face-attribute 'default nil
+                          :foreground base-fg-color :background base-bg-color)
+      (set-face-attribute 'fringe nil
+                          :background base-bg-color)
+      (set-face-attribute 'vertical-border nil
+                          :foreground base-fg-color :background base-bg-color)
+      (set-face-attribute 'region nil
+                          :background region-bg-color)))
+  (defun sk-light-theme () (interactive) (my-theme-setting t))
+  (defun sk-dark-theme  () (interactive) (my-theme-setting))
+  (my-theme-setting)
+
+  ;; Mode line
+  (face-spec-set 'mode-line '((t (:box nil))))
+  (face-spec-set 'mode-line-inactive '((t (:box nil))))
+  (defun sk-mode-line ()
+    (setq-default
+     mode-line-format
+     '("%e"
+       (:eval
+        (let* ((width (- (window-width)
+                         (if (display-graphic-p) 5 6)))
+               (evil-info (and (featurep 'evil) evil-mode
+                               (concat " " (upcase (symbol-name evil-state)))))
+               (buffer-info (format-mode-line " %* "))
+               (buffer-name (propertize
+                             (format-mode-line " %b ")
+                             'face 'mode-line-emphasis))
+               (mode-and-vc (propertize
+                             (concat " "
+                                     (format-mode-line mode-name)
+                                     (and sk-vc-mode (concat " (" sk-vc-mode ")"))
+                                     " ")
+                             'face 'mode-line-inactive))
+               (input-name (propertize (concat current-input-method-title " ")
+                                       'face 'mode-line-inactive))
+               (line-and-pos-info (format-mode-line " %l,%3c  %p%% "))
+               (right-info (concat input-name line-and-pos-info))
+               (right-len (string-width right-info))
+               (left-str (concat evil-info buffer-info buffer-name mode-and-vc))
+               (left-width (- width right-len))
+               (left-info (if (<= (string-width left-str) left-width)
+                              left-str
+                            (truncate-string-to-width left-str left-width)))
+               (center-fill (propertize
+                             " "
+                             'face 'mode-line-inactive
+                             'display
+                             `((space :align-to
+                                      (- (+ right right-fringe right-margin)
+                                         ,right-len))))))
+          (concat left-info center-fill right-info))))))
+  (sk-mode-line))
 #+end_src
 
 * Async, Evil and Evil-leader packages
