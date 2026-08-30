@@ -119,6 +119,7 @@ Defer code execution until the first command after initialization.
   (completion-ignored-extensions nil)
   ;; custom.el will be saved but will not be used.
   (custom-file (expand-file-name "custom.el" user-emacs-directory))
+  (default-input-method "korean-hangul3")
   (fill-column 80)
   (font-use-system-font t)
   (gc-cons-threshold (* 1024 1024 16))
@@ -137,8 +138,8 @@ Defer code execution until the first command after initialization.
   (password-cache-expiry 900)
   (read-buffer-completion-ignore-case t)
   (ring-bell-function 'ignore)
-  (send-mail-function 'smtpmail-send-it)
   (save-interprogram-paste-before-kill t)
+  (send-mail-function 'smtpmail-send-it)
   (size-indication-mode t)
   (split-height-threshold nil)
   (split-width-threshold 140)
@@ -623,8 +624,6 @@ Treat quoted strings and balanced delimiters as single units."
 (use-package emacs
   :ensure nil
   :config
-  (setq default-input-method "korean-hangul3")
-
   ;; Font
   (when (display-graphic-p)
     (set-fontset-font t 'unicode "Unifont" nil 'prepend)
