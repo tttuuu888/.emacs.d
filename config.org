@@ -1699,8 +1699,15 @@ Treat quoted strings and balanced delimiters as single units."
 
 (use-package tramp
   :ensure nil
-  :defer-init (require 'tramp)
+  :init
+  (defun sk-tramp-load-on-slash ()
+    "Load TRAMP when / is typed in a file name minibuffer."
+    (when (and (eq minibuffer-completion-table 'read-file-name-internal)
+               (eq (char-before) ?/))
+      (require 'tramp)))
+  (add-hook 'post-self-insert-hook #'sk-tramp-load-on-slash)
   :config
+  (remove-hook 'post-self-insert-hook #'sk-tramp-load-on-slash)
   (setq remote-file-name-inhibit-cache nil
         tramp-auto-save-directory (expand-file-name "tramp-auto-save/"
                                                     user-emacs-directory)
@@ -1996,18 +2003,23 @@ Treat quoted strings and balanced delimiters as single units."
   (package-loading-notifier-mode 1))
 
 (use-package corfu
-  :defer-init (global-corfu-mode 1)
   :bind (:map corfu-map
           ("C-n"      . corfu-next)
           ("C-p"      . corfu-previous)
           ("<return>" . corfu-insert))
+  :init
+  (defun sk-corfu-enable ()
+    (require 'corfu))
+  (add-hook 'evil-insert-state-entry-hook #'sk-corfu-enable)
   :config
+  (remove-hook 'evil-insert-state-entry-hook #'sk-corfu-enable)
   (require 'savehist)
   (setq corfu-auto t
         corfu-min-width 20
         corfu-on-exact-match 'insert
         corfu-popupinfo-delay '(1.25 . 0.5)
         corfu-preview-current nil)
+  (global-corfu-mode 1)
   (corfu-popupinfo-mode 1)
   (corfu-history-mode 1)
   (add-hook 'evil-insert-state-exit-hook #'corfu-quit)
