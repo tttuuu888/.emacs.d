@@ -1039,7 +1039,6 @@ Treat quoted strings and balanced delimiters as single units."
   (add-to-list 'display-buffer-alist
                '("*Async Shell Command*" display-buffer-no-window))
   (add-hook 'dired-mode-hook 'dired-omit-mode)
-  (add-hook 'wdired-mode-hook 'turn-on-undo-tree-mode)
   (advice-add 'dired-do-shell-command :after
               (lambda (&rest _) (revert-buffer)))
 
@@ -2068,7 +2067,6 @@ Treat quoted strings and balanced delimiters as single units."
   :defer-init (global-undo-tree-mode 1)
   :config
   (setq undo-tree-auto-save-history nil)
-  (add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode)
   (evil-set-initial-state 'undo-tree-visualizer-mode 'emacs)
   (evil-leader/set-key
     "xu" 'undo-tree-visualize))
