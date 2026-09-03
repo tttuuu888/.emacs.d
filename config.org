@@ -3042,7 +3042,7 @@ Select its window unless BUFFER matches `my-popper-no-focus-buffers'."
 
 (use-package elec-pair
   :ensure nil
-  :hook (prog-mode . electric-pair-mode)
+  :defer-init (electric-pair-mode 1)
   :config
   (defun electric-pair-delete-pair (arg &optional killp)
     "Custom pair-delete.
