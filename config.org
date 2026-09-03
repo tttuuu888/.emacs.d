@@ -2072,13 +2072,14 @@ Treat quoted strings and balanced delimiters as single units."
     "xu" 'undo-tree-visualize))
 
 (use-package wgrep
-  :config
+  :init
   (dolist (mode '(grep-mode helm-ag-mode helm-git-grep-mode helm-grep-mode))
     (evil-leader/set-key-for-mode mode
       "ce" 'wgrep-finish-edit
       "ee" 'wgrep-change-to-wgrep-mode
       "cs" 'wgrep-save-all-buffers
       "ck" 'wgrep-abort-changes))
+  :config
   (advice-add 'wgrep-change-to-wgrep-mode :after 'evil-normal-state))
 
 (use-package markdown-mode
@@ -2248,7 +2249,26 @@ Treat quoted strings and balanced delimiters as single units."
     (kill-local-variable 'er/save-mode-excursion))
   (add-hook 'org-mode-hook #'my-er-plain-excursion 90))
 
-(use-package smex)
+(use-package smex
+  :commands consult-M-x
+  :init
+  (defalias 'execute-extended-command 'consult-M-x)
+  :config
+  (smex-initialize)
+  (defun consult-M-x ()
+    (interactive)
+    (and smex-auto-update
+         (smex-detect-new-commands)
+         (smex-update))
+    (let ((cmd (consult--read smex-ido-cache :sort nil :prompt "M-x ")))
+      (setq cmd
+            (intern
+             (subst-char-in-string ?\s ?- (string-remove-prefix "^" cmd))))
+      (smex-rank cmd)
+      (setq prefix-arg current-prefix-arg)
+      (setq this-command cmd)
+      (setq real-this-command cmd)
+      (command-execute cmd 'record))))
 
 (use-package anzu
   :defer-init (global-anzu-mode 1)
@@ -2722,8 +2742,6 @@ Stop trying if the input changes before the candidate appears."
    ((((background light)) :foreground "#b00000" :extend t :inherit nil)
     (((background dark)) :foreground "gold1" :extend t :inherit nil)))
   :config
-  (require 'smex)
-  (require 'wgrep)
   (setq sk-compile-history nil
         consult-async-min-input 2
         consult-async-refresh-delay 0.1
@@ -2736,27 +2754,6 @@ Stop trying if the input changes before the candidate appears."
         enable-recursive-minibuffers t)
   (minibuffer-depth-indicate-mode 1)
   (advice-add #'register-preview :override #'consult-register-window)
-  (defalias 'execute-extended-command 'consult-M-x)
-
-  (defun consult-M-x ()
-    (interactive)
-    ;; Initialize Smex
-    (unless smex-initialized-p
-      (smex-initialize))
-    (and smex-auto-update
-         (smex-detect-new-commands)
-         (smex-update))
-    ;; Execute command
-    (let ((cmd (consult--read smex-ido-cache :sort nil :prompt "M-x ")))
-      (setq cmd
-            (intern
-             (subst-char-in-string ?\s ?- (string-remove-prefix "^" cmd))))
-      (smex-rank cmd)
-      (setq prefix-arg current-prefix-arg)
-      (setq this-command cmd)
-      (setq real-this-command cmd)
-      (command-execute cmd 'record)))
-
   (defun consult-org-capture ()
     "Capture something with consult completion."
     (interactive)
