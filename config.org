@@ -1691,11 +1691,13 @@ Treat quoted strings and balanced delimiters as single units."
   (line-number ((t :foreground "gray51" :inherit 'default)))
   (line-number-current-line ((t (:inherit 'default))))
   :hook
-  ((find-file prog-mode text-mode) . display-line-numbers-mode)
+  ((find-file prog-mode text-mode) . sk-line-numbers)
   :config
   (setq-default display-line-numbers-width 3
                 display-line-numbers-type 'visual
-                display-line-numbers-current-absolute nil))
+                display-line-numbers-current-absolute nil)
+  (defun sk-line-numbers ()
+    (unless display-line-numbers-mode (display-line-numbers-mode 1))))
 
 (use-package tramp
   :ensure nil
