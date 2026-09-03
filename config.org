@@ -2466,7 +2466,6 @@ Preserve the leading '#' if the input started with it."
   :custom-face
   (+vertico-kill-ring-separator ((t :foreground "red")))
   :config
-  (require 'dired)
   (require 'vertico-directory)
   (require 'vertico-sort)
   (setq
@@ -2504,7 +2503,8 @@ Preserve the leading '#' if the input started with it."
     "If FILE ends with a slash, highlight it as a directory."
     (if (string-suffix-p "/" file)
         (let ((copy (copy-sequence file)))
-          (add-face-text-property 0 (length copy) 'dired-directory 'append copy)
+          (add-face-text-property 0 (length copy)
+                                  'font-lock-function-name-face 'append copy)
           copy)
       file))
   (defun +vertico-kill-ring--height (cand)
