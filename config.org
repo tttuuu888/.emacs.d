@@ -2030,18 +2030,6 @@ Treat quoted strings and balanced delimiters as single units."
   (evil-define-key 'insert corfu-mode-map
     (kbd "M-/") 'corfu-yas-expand))
 
-(use-package corfu-terminal
-  :disabled
-  :vc (:url "https://codeberg.org/akib/emacs-corfu-terminal.git"
-            :rev :newest)
-  :if (not (display-graphic-p))
-  :defer-init (corfu-terminal-mode 1))
-
-(use-package popon
-  :disabled
-  :vc (:url "https://codeberg.org/akib/emacs-popon.git"
-            :rev :newest))
-
 (use-package cape
   :bind ("C-c p" . cape-prefix-map)
   :init
@@ -2389,25 +2377,6 @@ Treat quoted strings and balanced delimiters as single units."
            (executable-find "xclip"))
   :defer-init (xclip-mode 1))
 
-(use-package stillness-mode
-  :disabled
-  :vc (:url "https://github.com/tttuuu888/stillness-mode.el"
-            :rev :newest)
-  :if (not (display-graphic-p))
-  :defer-init (stillness-mode 1)
-  :config
-  (defvar sk-stillness-exclude-commands
-    '(consult-git-grep
-      consult-imenu consult-line consult-occur consult-rg-here
-      consult-yank-from-kill-ring sk-consult-git-grep sk-consult-line
-      sk-consult-yasnippet)
-    "Commands `stillness-mode' should keep out of.")
-  (define-advice stillness-mode--handle-point
-      (:around (fn read-fn &rest args) sk-skip)
-    (if (memq this-command sk-stillness-exclude-commands)
-        (apply read-fn args)
-      (apply fn read-fn args))))
-
 (use-package engrave-faces)
 
 (use-package marginalia
@@ -2509,7 +2478,6 @@ Preserve the leading '#' if the input started with it."
      (consult-occur ,@vertico-side-style)
      (consult-rg-here ,@vertico-side-style)
      (consult-yank-from-kill-ring ,@vertico-side-style)
-     (sk-consult-git-grep ,@vertico-side-style)
      (sk-consult-line (vertico-mode . t) (vertico-posframe-mode . nil))
      (sk-consult-yasnippet (vertico-mode . t) (vertico-posframe-mode . nil)
                            (vertico-sort-function . +vertico-default-sort))))
