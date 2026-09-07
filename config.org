@@ -3726,6 +3726,7 @@ Outside a project, kill the buffers under `default-directory'."
 (use-package janet-mode
   :config
   (require 'inf-janet)
+  (put 'with 'janet-indent-function 1)
   (sk-switch-buffer-repl sk-janet-buffer-repl-toggle
     janet-mode inf-janet-mode inf-janet)
   (evil-leader/set-key-for-mode 'janet-mode
