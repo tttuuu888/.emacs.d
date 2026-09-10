@@ -1789,7 +1789,7 @@ Treat quoted strings and balanced delimiters as single units."
                upgradeable-std))
              (upgraded (append upgraded-std upgraded-vc)))
         (sk-package-delete-obsolete)
-        (when package-quickstart (package-quickstart-refresh))
+        (when (and package-quickstart upgraded) (package-quickstart-refresh))
         (if (not upgraded)
             (message "No packages to upgrade.")
           (message "%s packages upgraded. %s" (length upgraded) upgraded))))))
