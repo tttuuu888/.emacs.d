@@ -3247,12 +3247,25 @@ in case of ((|))."
               (lambda (func &rest r)
                 (let ((vc-handled-backends '(Git)))
                   (apply func r))))
+  (defun sk-project--fd-files (dir)
+    "List files under DIR with fd."
+    (let* ((default-directory (file-name-as-directory dir))
+           (names (with-temp-buffer
+                    (process-file "fd" nil '(t nil) nil "-0" "-t" "f"
+                                  "--color=never" "--strip-cwd-prefix")
+                    (split-string (buffer-string) "\0" t))))
+      (if project-files-relative-names
+          names
+        (mapcar (lambda (f) (concat default-directory f)) names))))
   (cl-defmethod project-files ((project (head sk)) &optional dirs)
-    "Use the VC backend when the root is in a repository."
-    (if-let* ((vc (project-try-vc (cdr project)))
-              (files (project-files vc (or dirs (list (cdr project))))))
-        files
-      (cl-call-next-method)))
+    "Use git ls-files in a repository, else with fd."
+    (let ((dirs (or dirs (list (cdr project)))))
+      (or (when-let* ((vc (project-try-vc (cdr project))))
+            (project-files vc dirs))
+          (and (let ((default-directory (cdr project)))
+                 (executable-find "fd" t))
+               (mapcan #'sk-project--fd-files dirs))
+          (cl-call-next-method))))
   (defun sk-project-save-buffers ()
     "Save all modified buffers of the current project."
     (interactive)
