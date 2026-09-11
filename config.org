@@ -3243,6 +3243,16 @@ in case of ((|))."
       (project-prompt-project-dir prompt pred t)))
   (cl-defmethod project-root ((project (head sk)))
     (cdr project))
+  (advice-add 'project-try-vc :around
+              (lambda (func &rest r)
+                (let ((vc-handled-backends '(Git)))
+                  (apply func r))))
+  (cl-defmethod project-files ((project (head sk)) &optional dirs)
+    "Use the VC backend when the root is in a repository."
+    (if-let* ((vc (project-try-vc (cdr project)))
+              (files (project-files vc (or dirs (list (cdr project))))))
+        files
+      (cl-call-next-method)))
   (defun sk-project-save-buffers ()
     "Save all modified buffers of the current project."
     (interactive)
