@@ -2708,6 +2708,8 @@ Stop trying if the input changes before the candidate appears."
         (concat consult-ripgrep-args
                 " --no-ignore-parent --max-columns-preview")
         enable-recursive-minibuffers t)
+  (add-to-list 'consult-preview-allowed-hooks 'which-func-ff-hook)
+  (add-hook 'consult-after-jump-hook #'which-func-update)
   (minibuffer-depth-indicate-mode 1)
   (advice-add #'register-preview :override #'consult-register-window)
   (defun consult-org-capture ()
