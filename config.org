@@ -3160,10 +3160,10 @@ in case of ((|))."
          ("\\.hal\\'" . c++-mode))
   :config
   (c-add-style "my-bsd" '("bsd"
+                          (c-basic-offset . 4)
                           (c-comment-only-line-offset . (0 . 0))
-                          (c-offsets-alist
-                           (case-label . +)
-                           (inextern-lang . 0))))
+                          (c-offsets-alist . ((case-label . +)
+                                              (inextern-lang . 0)))))
   (setq c-basic-offset tab-width
         c-default-style "my-bsd")
   (defvaralias 'c-basic-offset 'tab-width)
