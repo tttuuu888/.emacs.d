@@ -2316,13 +2316,16 @@ Treat quoted strings and balanced delimiters as single units."
   :after yasnippet
   :config
   (defun sk-yasnippet-capf ()
-    (when (thing-at-point-looking-at (rx (+ (or word punct)))
-                                     yasnippet-capf-max-search-distance)
-      (let ((table (completion-table-with-cache #'yasnippet-capf-candidates)))
-        `(,(match-beginning 0) ,(match-end 0)
-          ;; Reports the `yasnippet-key' completion category
-          ,(completion-table-with-metadata table '((category . yasnippet-key)))
-          ,@yasnippet-capf--properties)))))
+    (let ((beg (save-excursion (skip-chars-backward "[:word:][:punct:]")
+                               (point))))
+      (when (and (< beg (point))
+                 (not (looking-at "[[:word:][:punct:]]")))
+        (let ((table (completion-table-with-cache #'yasnippet-capf-candidates)))
+          `(,beg
+            ,(point)
+            ;; Reports the `yasnippet-key' completion category
+            ,(completion-table-with-metadata table '((category . yasnippet-key)))
+            ,@yasnippet-capf--properties))))))
 
 (use-package posframe)
 
