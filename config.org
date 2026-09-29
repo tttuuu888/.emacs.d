@@ -309,8 +309,8 @@ If RETURN-ONLY-DIR is non-nil, return its directory instead of the full path."
       (window-configuration-to-register num)
       (message "Windows are saved to F%d" num)))
 
-  (defun sk-C-c-map-to-leader-c-map (mode mode-map &optional exceptions)
-    "Bind MODE-MAP's C-c keys to <leader> c for MODE, except EXCEPTIONS list."
+  (defun sk-C-c-map-to-leader-c-map (mode-map &optional exceptions)
+    "Bind MODE-MAP's C-c keys to <leader> c in MODE-MAP, except EXCEPTIONS."
     (let* ((ret nil)
            (target (alist-get ?\C-c mode-map))
            (cm (number-sequence ?\C-a ?\C-z))
@@ -333,7 +333,7 @@ If RETURN-ONLY-DIR is non-nil, return its directory instead of the full path."
         (dolist (e ret)
           (let ((key (mapconcat 'single-key-description (car e) "")))
             (unless (cl-some (lambda (ex) (string-prefix-p ex key)) exceptions)
-              (evil-leader/set-key-for-mode mode key (cdr e))))))))
+              (evil-leader/set-key-for-map mode-map key (cdr e))))))))
 
   (defun tmux-running-p (&optional notice)
     "Return non-nil if a tmux session exists.
@@ -1461,7 +1461,7 @@ Treat quoted strings and balanced delimiters as single units."
   ;; Open org link in the current window instead of a new one
   (setf (cdr (assoc 'file org-link-frame-setup)) 'find-file)
 
-  (sk-C-c-map-to-leader-c-map 'org-mode org-mode-map '("cc" "ck"))
+  (sk-C-c-map-to-leader-c-map org-mode-map)
   (evil-leader/set-key-for-mode 'org-mode
     "c <SPC>" 'org-table-blank-field
     "cL"  'org-store-link
@@ -1864,7 +1864,7 @@ Treat quoted strings and balanced delimiters as single units."
 (use-package diff-mode
   :ensure nil
   :config
-  (sk-C-c-map-to-leader-c-map 'diff-mode diff-mode-map))
+  (sk-C-c-map-to-leader-c-map diff-mode-map))
 
 (use-package ediff
   :ensure nil
@@ -3441,8 +3441,8 @@ Outside a project, kill the buffers under `default-directory'."
   (require 'cider)
   (add-hook 'clojure-mode-hook #'enable-paredit-mode)
   (sk-define-lisp-eval sk-cider-eval cider-eval-region)
-  (sk-C-c-map-to-leader-c-map 'clojure-mode cider-mode-map)
-  (sk-C-c-map-to-leader-c-map 'clojurescript-mode cider-mode-map)
+  (sk-C-c-map-to-leader-c-map cider-mode-map)
+  (add-hook 'cider-mode-hook #'evil-normalize-keymaps)
   (dolist (m (list clojure-mode-map clojurescript-mode-map))
     (evil-define-key* 'normal m
       "]e"  'cider-jump-to-compilation-error
@@ -3476,7 +3476,7 @@ Outside a project, kill the buffers under `default-directory'."
   (evil-set-initial-state 'cider-repl-history-mode        'emacs)
   (evil-set-initial-state 'cider-stacktrace-mode          'emacs)
   (evil-set-initial-state 'cider-test-report-mode         'emacs)
-  (sk-C-c-map-to-leader-c-map 'cider-repl-mode cider-repl-mode-map)
+  (sk-C-c-map-to-leader-c-map cider-repl-mode-map)
   (evil-define-key 'normal cider-repl-mode-map
     "gd" 'cider-find-dwim
     "gh" 'cider-doc
@@ -3513,7 +3513,7 @@ Outside a project, kill the buffers under `default-directory'."
      (if (sly-connected-p)
          'sly-restart-inferior-lisp
        'sly)))
-  (sk-C-c-map-to-leader-c-map 'lisp-mode sly-mode-map '("cb" "cr"))
+  (sk-C-c-map-to-leader-c-map sly-mode-map)
   (evil-leader/set-key-minor-mode 'sly-mode
     "z"   'my-sly-mrepl
     "cb"  'sly-compile-file
@@ -3564,7 +3564,7 @@ Outside a project, kill the buffers under `default-directory'."
         web-mode-code-indent-offset 2
         web-mode-markup-indent-offset 2
         web-mode-enable-current-element-highlight t)
-  (sk-C-c-map-to-leader-c-map 'web-mode web-mode-map)
+  (sk-C-c-map-to-leader-c-map web-mode-map)
   (defun my-web-corfu-setup ()
     (add-hook 'completion-at-point-functions
               (cape-company-to-capf #'company-web-html) nil t))
