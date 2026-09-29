@@ -1927,7 +1927,7 @@ Treat quoted strings and balanced delimiters as single units."
   (setq-default TeX-master nil)
   (setq TeX-parse-self t
         TeX-PDF-mode t)
-  (evil-leader/set-key-for-mode 'latex-mode
+  (evil-leader/set-key-for-mode 'LaTeX-mode
     "cc" 'my-latex-compile
     "ce" 'LaTeX-environment
     "cj" 'LaTeX-insert-item
