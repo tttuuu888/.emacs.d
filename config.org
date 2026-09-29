@@ -1467,7 +1467,11 @@ Treat quoted strings and balanced delimiters as single units."
     "cL"  'org-store-link
     "ee"  'org-edit-src-code
     "tc"  'org-table-create
-    "tl"  'org-tags-view)
+    "tl"  'org-tags-view
+    "cxd" 'org-clock-display
+    "cxo" 'org-clock-out
+    "cxq" 'org-clock-cancel
+    "cxx" 'org-clock-in-last)
   (evil-leader/set-key-minor-mode 'org-src-mode
     "ec" 'org-edit-src-exit
     "eq" 'org-edit-src-abort)
