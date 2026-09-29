@@ -497,6 +497,15 @@ If OMIT-CURLY-BRACES is non-nil, omit the surrounding curly braces."
       ", ")
      (unless omit-curly-braces " }")))
 
+  (defun sk-C-c-C-c ()
+    "Run the command bound to `C-c C-c' in the current buffer."
+    (interactive)
+    (let ((cmd (key-binding (kbd "C-c C-c"))))
+      (unless (commandp cmd)
+        (user-error "C-c C-c is undefined"))
+      (setq this-command cmd)
+      (call-interactively cmd)))
+
   (defun sk-yank-file-name-or-path (&optional whole-path)
     (let* ((file-name (buffer-file-name))
            (name (and file-name
@@ -731,7 +740,7 @@ Treat quoted strings and balanced delimiters as single units."
     "u"  'pop-to-mark-command
     "x"  (make-composed-keymap nil ctl-x-map)
     "w"  'save-buffer
-    "cc" (kbd "\C-c\C-c")
+    "cc" 'sk-C-c-C-c
     "cy" 'sk-yank-file-name
     "cY" 'sk-yank-file-whole-path
     "eg" 'sk-google-search
