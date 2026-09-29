@@ -3504,7 +3504,7 @@ Outside a project, kill the buffers under `default-directory'."
      (if (sly-connected-p)
          'sly-restart-inferior-lisp
        'sly)))
-  (sk-C-c-map-to-leader-c-map 'lisp-mode sly-mode-map)
+  (sk-C-c-map-to-leader-c-map 'lisp-mode sly-mode-map '("cb" "cr"))
   (evil-leader/set-key-minor-mode 'sly-mode
     "z"   'my-sly-mrepl
     "cb"  'sly-compile-file
