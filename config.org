@@ -3203,8 +3203,6 @@ in case of ((|))."
   (defun scheme-send-buffer ()
     (interactive)
     (scheme-send-region (point-min) (point-max)))
-  (evil-define-key 'normal inferior-scheme-mode
-    (kbd "<return>") 'my-comint-return)
   (evil-leader/set-key-for-mode 'scheme-mode
     "eb" 'scheme-send-buffer
     "ee" 'sk-scheme-eval
