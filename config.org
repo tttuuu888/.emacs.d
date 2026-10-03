@@ -692,32 +692,22 @@ Treat quoted strings and balanced delimiters as single units."
   :config
   (setq async-bytecomp-not-allowed-packages
         '(cond-let llama magit magit-section transient with-editor))
-  (defun async--package-compile (orig-fun pkg-desc &rest args)
-    (let ((cur-package (package-desc-name pkg-desc))
-          (pkg-dir (package-desc-dir pkg-desc)))
-      (if (and (or (member async-bytecomp-allowed-packages '(t all (all)))
-                   (memq cur-package (async-bytecomp--get-package-deps
-                                      async-bytecomp-allowed-packages)))
-               (not (memq cur-package async-bytecomp-not-allowed-packages)))
-          (progn
-            (when (eq cur-package 'async)
-              (fmakunbound 'async-byte-recompile-directory)
-              ;; Add to `load-path' the latest version of async and
-              ;; reload it when reinstalling async.
-              (cl-pushnew pkg-dir load-path)
-              (load "async-bytecomp"))
-            ;; `async-byte-recompile-directory' will add directory
-            ;; as needed to `load-path'.
-            (async-byte-recompile-directory (package-desc-dir pkg-desc) t))
-        (apply orig-fun pkg-desc args))))
+
   (async-bytecomp-package-mode 1)
-  (defun my-async--emacs-program-args-advice (orig-fun &rest args)
+
+  (defun my-async--emacs-program-args (orig-fun &rest args)
     "Let the child Emacs share the parent's eln-cache."
     (append (list "--eval" (format "(startup-redirect-eln-cache %S)"
                                    (car native-comp-eln-load-path)))
             (apply orig-fun args)))
-  (advice-add 'async--emacs-program-args :around
-              #'my-async--emacs-program-args-advice))
+  (advice-add 'async--emacs-program-args :around #'my-async--emacs-program-args)
+
+  (defun my-async--package-compile (fn orig-fun pkg-desc &rest args)
+    "Compile packages in `async-bytecomp-not-allowed-packages' synchronously."
+    (if (memq (package-desc-name pkg-desc) async-bytecomp-not-allowed-packages)
+        (apply orig-fun pkg-desc args)
+      (apply fn orig-fun pkg-desc args)))
+  (advice-add 'async--package-compile :around #'my-async--package-compile))
 
 (use-package evil-leader
   :demand t
