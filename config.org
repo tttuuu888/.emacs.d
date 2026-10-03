@@ -688,7 +688,8 @@ Treat quoted strings and balanced delimiters as single units."
 * Async, Evil and Evil-leader packages
 #+BEGIN_SRC emacs-lisp
 (use-package async
-  :init
+  :demand t
+  :config
   (setq async-bytecomp-not-allowed-packages
         '(cond-let llama magit magit-section transient with-editor))
   (defun async--package-compile (orig-fun pkg-desc &rest args)
@@ -710,7 +711,6 @@ Treat quoted strings and balanced delimiters as single units."
             (async-byte-recompile-directory (package-desc-dir pkg-desc) t))
         (apply orig-fun pkg-desc args))))
   (async-bytecomp-package-mode 1)
-  :config
   (defun my-async--emacs-program-args-advice (orig-fun &rest args)
     "Let the child Emacs share the parent's eln-cache."
     (append (list "--eval" (format "(startup-redirect-eln-cache %S)"
@@ -720,8 +720,8 @@ Treat quoted strings and balanced delimiters as single units."
               #'my-async--emacs-program-args-advice))
 
 (use-package evil-leader
-  :init
-  (require 'evil-leader)
+  :demand t
+  :config
   (setq evil-leader/sub-leader "M-m"
         evil-leader/no-prefix-mode-rx
         '("magit-.*-mode" "gnus-.*-mode" "package-.*-mode" "dired-mode"))
@@ -800,6 +800,7 @@ Treat quoted strings and balanced delimiters as single units."
     (advice-add f :after #'sk-evil-leader-restore)))
 
 (use-package evil
+  :demand t
   :bind (("M-B" . evil-backward-WORD-begin)
          ("M-F" . (lambda ()
                     (interactive)
@@ -823,9 +824,8 @@ Treat quoted strings and balanced delimiters as single units."
   :custom
   (evil-undo-system 'undo-tree)
   (evil-want-C-u-scroll t)
-  :init
-  (evil-mode)
   :config
+  (evil-mode 1)
   (setq evil-insert-state-modes (delete 'wdired-mode evil-insert-state-modes)
         evil-track-eol nil
         evil-v$-excludes-newline t)
