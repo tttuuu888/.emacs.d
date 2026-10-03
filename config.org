@@ -1995,7 +1995,7 @@ Treat quoted strings and balanced delimiters as single units."
 * General packages - external
 #+BEGIN_SRC emacs-lisp
 (use-package package-loading-notifier
-  :custom  (package-loading-notifier-packages '(helm org magit yasnippet))
+  :custom  (package-loading-notifier-packages '(org magit yasnippet))
   :defer-init
   (package-loading-notifier-mode 1))
 
@@ -2052,12 +2052,11 @@ Treat quoted strings and balanced delimiters as single units."
 
 (use-package wgrep
   :init
-  (dolist (mode '(grep-mode helm-ag-mode helm-git-grep-mode helm-grep-mode))
-    (evil-leader/set-key-for-mode mode
-      "ce" 'wgrep-finish-edit
-      "ee" 'wgrep-change-to-wgrep-mode
-      "cs" 'wgrep-save-all-buffers
-      "ck" 'wgrep-abort-changes))
+  (evil-leader/set-key-for-mode 'grep-mode
+    "ce" 'wgrep-finish-edit
+    "ee" 'wgrep-change-to-wgrep-mode
+    "cs" 'wgrep-save-all-buffers
+    "ck" 'wgrep-abort-changes)
   :config
   (advice-add 'wgrep-change-to-wgrep-mode :after 'evil-normal-state))
 
