@@ -2151,8 +2151,6 @@ Treat quoted strings and balanced delimiters as single units."
                   magit-section-show-child-count nil
                   magit-section-cache-visibility '(local remote tags)))
     (setq-local
-     magit-diff-highlight-hunk-body nil
-     magit-diff-paint-whitespace nil
      magit-refresh-status-buffer nil
      magit-revision-insert-related-refs nil
      magit-status-sections-hook
