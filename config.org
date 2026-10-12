@@ -1819,7 +1819,7 @@ Treat quoted strings and balanced delimiters as single units."
            (post-hash (my-git-output "rev-parse" "HEAD")))
       (when (not (equal pre-hash post-hash))
         (with-demoted-errors "Failed to activate: %S"
-          (package-vc--unpack-1 pkg-desc pkg-dir)))))
+          (package-vc-rebuild pkg-desc)))))
 
   (defun my-vc-packages ()
     "Return a list of VC packages under `package-user-dir'."
@@ -1852,7 +1852,7 @@ Treat quoted strings and balanced delimiters as single units."
     (let ((vc-pkgs (my-upgradable-vc-packages)))
       (dolist (pkg vc-pkgs)
         (when-let* ((desc (package-get-descriptor pkg)))
-          (package-vc--unpack-1 desc (package-desc-dir desc))))
+          (package-vc-rebuild desc)))
       vc-pkgs)))
 
 (use-package diff-mode
