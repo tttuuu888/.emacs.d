@@ -2445,29 +2445,19 @@ Preserve the leading '#' if the input started with it."
           trimmed
         (concat (string-join (seq-take lines +vertico-kill-ring-max-lines) "\n")
                 "\n[...]"))))
-  (defun +vertico-kill-ring--avail ()
-    "Calculate available lines to display candidates in window."
-    (if-let* ((_ (overlayp vertico--candidates-ov))
-              (win (overlay-get vertico--candidates-ov 'window))
-              (_ (window-live-p win)))
-        (max 1 (- (/ (window-pixel-height win) (default-line-height))
-                  (if mode-line-format 2 1)))   ; minus prompt and mode-line
-      (max 1 (/ (frame-height) 2))))
   (cl-defmethod vertico--arrange-candidates
     (&context ((vertico--metadata-get 'category) (eql kill-ring)))
     "Return a list of formatted, multiline `kill-ring' candidate strings."
-    (let ((avail (+vertico-kill-ring--avail)) ; available lines
-          (index (max 0 vertico--index))      ; selected candidate
+    (let ((index (max 0 vertico--index))      ; selected candidate
           ;; current page - start index / used lines / used candidate count
           (start 0) (used 0) (count 0))
       ;; Pack candidates into pages and keep the one holding index.
       (cl-loop for cand in vertico--candidates for i from 0
                for h = (+vertico-kill-ring--height cand)
-               do (when (and (> count 0) (> (+ used h) avail)) ; page is full
+               do (when (and (> count 0) (> (+ used h) vertico-count)) ; page is full
                     (when (> i index) (cl-return)) ; index was on that page
                     (setq start i used 0 count 0)) ; start a new page at i
                do (setq used (+ used h) count (1+ count)))
-      (setq-local vertico-count count)  ; so that C-v/M-v works correctly
       ;; Render the current page including the current index
       (cl-loop for cand in (nthcdr start vertico--candidates)
                for i from start repeat (1+ count) ; +1 to fill the bottom gap
