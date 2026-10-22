@@ -2418,6 +2418,9 @@ Preserve the leading '#' if the input started with it."
      (sk-consult-line (vertico-mode . t) (vertico-posframe-mode . nil))
      (sk-consult-yasnippet (vertico-mode . t) (vertico-posframe-mode . nil)
                            (vertico-sort-function . +vertico-default-sort))))
+  (defvar-local +vertico-kill-ring-page 1
+    "Number of candidates on the current `kill-ring' page.")
+
   (cl-defmethod vertico--format-candidate :around
     (cand prefix suffix index start
           &context ((not +vertico-transform-functions) null))
@@ -2458,6 +2461,7 @@ Preserve the leading '#' if the input started with it."
                     (when (> i index) (cl-return)) ; index was on that page
                     (setq start i used 0 count 0)) ; start a new page at i
                do (setq used (+ used h) count (1+ count)))
+      (setq +vertico-kill-ring-page count) ; for C-v/M-v
       ;; Render the current page including the current index
       (cl-loop for cand in (nthcdr start vertico--candidates)
                for i from start repeat (1+ count) ; +1 to fill the bottom gap
@@ -2468,6 +2472,12 @@ Preserve the leading '#' if the input started with it."
                         (when (< i (1- vertico--total))
                           (propertize (concat (make-string 40 ?―) "\n")
                                       'face '+vertico-kill-ring-separator))))))
+  (advice-add 'vertico-scroll-down :around
+              (lambda (f &rest args)
+                (if (eq (vertico--metadata-get 'category) 'kill-ring)
+                    (let ((vertico-count +vertico-kill-ring-page))
+                      (apply f args))
+                  (apply f args))))
   (defun my-vertico-sort (input candidates)
     "Sort CANDIDATES into exact, prefix, and rest groups based on INPUT.
 Candidates within each group are sorted alphabetically."
