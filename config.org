@@ -2214,19 +2214,13 @@ Treat quoted strings and balanced delimiters as single units."
   :after org
   :config
   (defvar my-org-light-frame nil)
-  (defun my-org-html-export (orig-fun &rest args)
+  (defun my-org-html-fontify-code (orig-fun &rest args)
     (unless (and my-org-light-frame (frame-live-p my-org-light-frame))
       (setq my-org-light-frame (make-frame '((visibility . nil)
                                              (background-color . "White")))))
-    (let ((buf (current-buffer))
-          (orig-hide-fg (face-foreground 'org-hide nil t)))
-      (unwind-protect
-          (with-selected-frame my-org-light-frame
-            (with-current-buffer buf
-              (apply orig-fun args)))
-        (set-face-foreground 'org-hide (or orig-hide-fg 'unspecified)))))
-  (advice-add 'org-html-export-to-html :around #'my-org-html-export)
-  (advice-add 'org-html-export-as-html :around #'my-org-html-export))
+    (with-selected-frame my-org-light-frame
+      (apply orig-fun args)))
+  (advice-add 'org-html-fontify-code :around #'my-org-html-fontify-code))
 
 (use-package korean-holidays
   :init
