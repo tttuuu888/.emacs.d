@@ -2180,7 +2180,7 @@ Treat quoted strings and balanced delimiters as single units."
                             er/mark-text-paragraph)))))
   (defun my-er-plain-excursion ()
     (kill-local-variable 'er/save-mode-excursion))
-  (add-hook 'org-mode-hook #'my-er-plain-excursion 90))
+  (advice-add 'er/add-org-mode-expansions :after #'my-er-plain-excursion))
 
 (use-package smex
   :commands consult-M-x
