@@ -1726,7 +1726,10 @@ Treat quoted strings and balanced delimiters as single units."
 
 (use-package view
   :ensure nil
-  :hook (view-mode . evil-motion-state))
+  :hook (view-mode . my-view-mode-evil-state)
+  :config
+  (defun my-view-mode-evil-state ()
+    (if view-mode (evil-motion-state) (evil-initialize-state))))
 
 (use-package flymake
   :ensure nil
