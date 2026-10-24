@@ -840,7 +840,8 @@ Treat quoted strings and balanced delimiters as single units."
           (message "Not in file buffer.")
         (find-alternate-file file)
         (goto-char p)
-        (message (format "%s is reloaded." file)))))
+        (when (eq major-mode 'org-mode) (org-fold-show-context))
+        (message "%s is reloaded." file))))
   (defun evil-paste-pgvy ()
     "Paste and restore visual block and yank."
     (interactive)
