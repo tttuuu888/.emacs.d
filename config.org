@@ -1222,8 +1222,13 @@ Treat quoted strings and balanced delimiters as single units."
           (clear-string pw))
         (process-send-eof proc))))
 
+  (defun my-dired-shell-args (files)
+    "Return FILES as quoted shell arguments with any remote prefix stripped."
+    (mapconcat (lambda (f) (shell-quote-argument (file-local-name f)))
+               files " "))
+
   (defun my-dired-do-copy (&optional arg)
-    "Copy files asynchronously for local, and synchronously for remote.
+    "Copy files asynchronously except between different hosts.
 - Default: normal copy.
 - M-0 : toggle dereference.
 - M-2 : sudo copy.
@@ -1231,8 +1236,10 @@ Treat quoted strings and balanced delimiters as single units."
     (interactive "p")
     (let* ((files (dired-get-marked-files))
            (target (my-dired-get-target "Copy to: " files))
-           (remote (or (file-remote-p default-directory)
-                       (file-remote-p target)))
+           (src-remote (file-remote-p default-directory))
+           (dst-remote (file-remote-p target))
+           (remote (or src-remote dst-remote))
+           (cross-host (not (equal src-remote dst-remote)))
            (is-dir (directory-name-p target))
            (target-files (if (not is-dir)
                              (list target)
@@ -1250,20 +1257,20 @@ Treat quoted strings and balanced delimiters as single units."
                             (message "Copy files done."))))
       (when (and remote (> arg 1))
         (user-error "Cannot use sudo on remote files"))
-      (if remote
+      (if cross-host
           (progn
             (dolist (f files)
               (dired-copy-file f (if is-dir target (car target-files)) t))
             (funcall refresh-dired))
         (let* ((deref-opt (if dired-copy-dereference "-L " ""))
-               (source (mapconcat #'shell-quote-argument files " "))
-               (dest (shell-quote-argument target))
-               (cmd (concat "cp -rf " deref-opt source " " dest)))
+               (cmd (concat "cp -rf " deref-opt
+                            (my-dired-shell-args files) " "
+                            (my-dired-shell-args (list target)))))
           (async-shell-command-callback
            cmd (> arg 1) refresh-dired target-files)))))
 
   (defun my-dired-do-delete (&optional arg)
-    "Delete files asynchronously for local, and synchronously for remote."
+    "Delete files asynchronously."
     (interactive "p")
     (let* ((remote (file-remote-p default-directory))
            (files (dired-get-marked-files))
@@ -1277,19 +1284,12 @@ Treat quoted strings and balanced delimiters as single units."
       (when (and files
                  (dired-mark-pop-up
                   " *Deletions*" 'delete files #'yes-or-no-p "Delete files? "))
-        (if remote
-            (progn
-              (dolist (f files)
-                (if (file-directory-p f)
-                    (delete-directory f t)
-                  (delete-file f)))
-              (funcall refresh-dired))
-          (let* ((source (mapconcat #'shell-quote-argument files " "))
-                 (cmd (concat "rm -rf " source)))
-            (async-shell-command-callback cmd (> arg 1) refresh-dired))))))
+        (async-shell-command-callback
+         (concat "rm -rf " (my-dired-shell-args files))
+         (> arg 1) refresh-dired))))
 
   (defun my-dired-do-flagged-delete (&optional arg)
-    "Delete files flagged for deletion asynchronously."
+    "Delete flagged files asynchronously."
     (interactive "p")
     (let* ((remote (file-remote-p default-directory))
            (dired-marker-char dired-del-marker)
@@ -1306,16 +1306,9 @@ Treat quoted strings and balanced delimiters as single units."
       (when (and files
                  (dired-mark-pop-up
                   " *Deletions*" 'delete files #'yes-or-no-p "Delete files? "))
-        (if remote
-            (progn
-              (dolist (f files)
-                (if (file-directory-p f)
-                    (delete-directory f t)
-                  (delete-file f)))
-              (funcall refresh-dired))
-          (let* ((source (mapconcat #'shell-quote-argument files " "))
-                 (cmd (concat "rm -rf " source)))
-            (async-shell-command-callback cmd (> arg 1) refresh-dired))))))
+        (async-shell-command-callback
+         (concat "rm -rf " (my-dired-shell-args files))
+         (> arg 1) refresh-dired))))
 
   (defun sk-meld-dir ()
     (interactive)
