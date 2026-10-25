@@ -195,9 +195,12 @@ or back to MODE.  Unless NOBIND is non-nil, binds <leader> z in both modes."
     "Evaluate BODY as root via TRAMP when SUDO is non-nil, or normally if nil.
 BODY should not switch buffers or rebind `default-directory'."
     (declare (indent 1))
-    `(let ((default-directory (if ,sudo
-                                  (concat "/sudo::" default-directory)
-                                default-directory)))
+    `(let ((default-directory
+            (if ,sudo
+                (if (file-remote-p default-directory)
+                    (user-error "Cannot use sudo on remote directory")
+                  (concat "/sudo::" default-directory))
+              default-directory)))
        ,@body))
 
   ;; Functions
@@ -1238,7 +1241,6 @@ Treat quoted strings and balanced delimiters as single units."
            (target (my-dired-get-target "Copy to: " files))
            (src-remote (file-remote-p default-directory))
            (dst-remote (file-remote-p target))
-           (remote (or src-remote dst-remote))
            (cross-host (not (equal src-remote dst-remote)))
            (is-dir (directory-name-p target))
            (target-files (if (not is-dir)
@@ -1255,7 +1257,7 @@ Treat quoted strings and balanced delimiters as single units."
                               (dired-remove-file dest)
                               (dired-add-file dest ?C))
                             (message "Copy files done."))))
-      (when (and remote (> arg 1))
+      (when (and cross-host (> arg 1))
         (user-error "Cannot use sudo on remote files"))
       (if cross-host
           (progn
@@ -1272,15 +1274,11 @@ Treat quoted strings and balanced delimiters as single units."
   (defun my-dired-do-delete (&optional arg)
     "Delete files asynchronously."
     (interactive "p")
-    (let* ((remote (file-remote-p default-directory))
-           (files (dired-get-marked-files))
+    (let* ((files (dired-get-marked-files))
            (refresh-dired (lambda (&rest _)
                             (dolist (f files)
                               (dired-delete-entry f))
                             (message "Delete files done."))))
-
-      (when (and remote (> arg 1))
-        (user-error "Cannot use sudo on remote files"))
       (when (and files
                  (dired-mark-pop-up
                   " *Deletions*" 'delete files #'yes-or-no-p "Delete files? "))
@@ -1291,8 +1289,7 @@ Treat quoted strings and balanced delimiters as single units."
   (defun my-dired-do-flagged-delete (&optional arg)
     "Delete flagged files asynchronously."
     (interactive "p")
-    (let* ((remote (file-remote-p default-directory))
-           (dired-marker-char dired-del-marker)
+    (let* ((dired-marker-char dired-del-marker)
            (regexp (dired-marker-regexp))
            (marks (save-excursion (goto-char (point-min))
                                   (re-search-forward regexp nil t)))
@@ -1301,8 +1298,6 @@ Treat quoted strings and balanced delimiters as single units."
                             (dolist (f files)
                               (dired-delete-entry f))
                             (message "Delete files done"))))
-      (when (and remote (> arg 1))
-        (user-error "Cannot use sudo on remote files"))
       (when (and files
                  (dired-mark-pop-up
                   " *Deletions*" 'delete files #'yes-or-no-p "Delete files? "))
