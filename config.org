@@ -1208,7 +1208,8 @@ Treat quoted strings and balanced delimiters as single units."
                            (ext (file-name-extension name))
                            (pw (when (and (> arg 1)
                                           (member ext '("zip" "7z" "001")))
-                                 (password-read "Password: "))))
+                                 (password-read
+                                  (format "(%s) Password: " name)))))
                       (when pw (push pw pws))
                       (concat
                        (cond
