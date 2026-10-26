@@ -186,7 +186,8 @@ or back to MODE.  Unless NOBIND is non-nil, binds <leader> z in both modes."
        (if (region-active-p)
            (call-interactively ',eval-region)
          (let* ((curr (min (1+ (point)) (point-max)))
-                (back (save-excursion (goto-char curr) (backward-sexp) (point))))
+                (back
+                 (save-excursion (goto-char curr) (backward-sexp) (point))))
            (setq this-command ',eval-region)
            (,eval-region back curr)))
        (setq deactivate-mark t)))
@@ -324,11 +325,11 @@ If RETURN-ONLY-DIR is non-nil, return its directory instead of the full path."
                  (push (cons pre elt) ret)
                (dolist (k ks)
                  ;; NOTE: C-a, C-b, etc. will be converted to a, b, etc. for
-                 ;; npre. However, C-<letter> and <letter> will result in the same
-                 ;; value for npre, causing potential overwriting.
+                 ;; npre. However, C-<letter> and <letter> will result in the
+                 ;; same value for npre, causing potential overwriting.
                  (let ((nelt (alist-get k elt))
                        (npre (if (member k cm) (+ k 96) k)))
-                   ;; Ignore multi-char keys. e.g. "SPC" would be read as S, P, C.
+                   ;; Ignore multi-char keys. e.g. "SPC" is read as S, P, C.
                    (when (and nelt (= 1 (length (single-key-description npre))))
                      (ctrl-map-search nelt (append pre (list npre)))))))))
         (ctrl-map-search target (list ?\c))
@@ -375,7 +376,8 @@ If NOTICE is non-nil, display a message when no session is running."
   (defun git-tracked-file-p (&optional file-name)
     (when-let* ((file (or file-name buffer-file-name))
                 (_ (file-exists-p file))
-                (default-directory (file-name-directory (expand-file-name file))))
+                (default-directory (file-name-directory
+                                    (expand-file-name file))))
       (zerop (process-file "git" nil nil nil
                            "ls-files" "--error-unmatch"
                            (file-name-nondirectory file)))))
@@ -533,7 +535,8 @@ If OMIT-CURLY-BRACES is non-nil, omit the surrounding curly braces."
     (let ((target (if beg
                       (buffer-substring-no-properties beg end)
                     (word-at-point t))))
-      (browse-url (format "https://www.google.com/search?q=%s&ie=UTF-8" target))))
+      (browse-url
+       (format "https://www.google.com/search?q=%s&ie=UTF-8" target))))
 
   (defun align-columns (beg end)
     "Align columns in the region between BEG and END.
@@ -664,7 +667,8 @@ Treat quoted strings and balanced delimiters as single units."
                (mode-and-vc (propertize
                              (concat " "
                                      (format-mode-line mode-name)
-                                     (and sk-vc-mode (concat " (" sk-vc-mode ")"))
+                                     (and sk-vc-mode
+                                          (concat " (" sk-vc-mode ")"))
                                      " ")
                              'face 'mode-line-inactive))
                (input-name (propertize (concat current-input-method-title " ")
@@ -1191,7 +1195,7 @@ Treat quoted strings and balanced delimiters as single units."
         (my-dired-send-passwords proc (list pw)))))
 
   (defun my-dired-do-shell-command (&optional arg)
-    "Decompress if all marked files are archives, else `dired-do-shell-command'."
+    "Decompress if all files are archives, else `dired-do-shell-command'."
     (interactive "p")
     (if (cl-every (lambda (f) (string-match-p my-dired-archive-regexp f))
                   (dired-get-marked-files))
@@ -2266,7 +2270,8 @@ Treat quoted strings and balanced delimiters as single units."
           `(,beg
             ,(point)
             ;; Reports the `yasnippet-key' completion category
-            ,(completion-table-with-metadata table '((category . yasnippet-key)))
+            ,(completion-table-with-metadata table
+                                             '((category . yasnippet-key)))
             ,@yasnippet-capf--properties))))))
 
 (use-package posframe)
