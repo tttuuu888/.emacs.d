@@ -2442,7 +2442,8 @@ Preserve the leading '#' if the input started with it."
       ;; Pack candidates into pages and keep the one holding index.
       (cl-loop for cand in vertico--candidates for i from 0
                for h = (+vertico-kill-ring--height cand)
-               do (when (and (> count 0) (> (+ used h) vertico-count)) ; page is full
+               ;; If page is full, start new page at i unless index was on it.
+               do (when (and (> count 0) (> (+ used h) vertico-count))
                     (when (> i index) (cl-return)) ; index was on that page
                     (setq start i used 0 count 0)) ; start a new page at i
                do (setq used (+ used h) count (1+ count)))
