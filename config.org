@@ -2404,7 +2404,9 @@ Preserve the leading '#' if the input started with it."
      (consult-line (vertico-mode . t) (vertico-posframe-mode . nil))
      (consult-occur ,@vertico-side-style)
      (consult-rg-here ,@vertico-side-style)
+     (consult-ripgrep ,@vertico-side-style)
      (consult-yank-from-kill-ring ,@vertico-side-style)
+     (sk-consult-git-grep ,@vertico-side-style)
      (sk-consult-line (vertico-mode . t) (vertico-posframe-mode . nil))
      (sk-consult-yasnippet (vertico-mode . t) (vertico-posframe-mode . nil)
                            (vertico-sort-function . +vertico-default-sort))))
@@ -2616,11 +2618,11 @@ Stop trying if the input changes before the candidate appears."
          ("M-y"     . consult-yank-from-kill-ring)
          :map minibuffer-local-map
          ("C-r"     . consult-history))
-  :commands sk-consult-line
+  :commands (sk-consult-line sk-consult-git-grep)
   :init
   (evil-leader/set-key
     "i"     'consult-imenu
-    "p"     'consult-git-grep
+    "p"     'sk-consult-git-grep
     "r"     'consult-recent-file
     "y"     'consult-yank-from-kill-ring
     "ho"    'consult-occur
@@ -2710,6 +2712,12 @@ Stop trying if the input changes before the candidate appears."
   (defun consult-rg-here ()
     (interactive)
     (consult-ripgrep default-directory nil))
+
+  (defun sk-consult-git-grep ()
+    (interactive)
+    (if-let* ((root (locate-dominating-file default-directory ".git")))
+        (consult-git-grep root)
+      (consult-ripgrep)))
 
   (defun sk-compile-scripts ()
     (let* ((target (or (locate-dominating-file default-directory ".sbin")
