@@ -196,12 +196,9 @@ or back to MODE.  Unless NOBIND is non-nil, binds <leader> z in both modes."
     "Evaluate BODY as root via TRAMP when SUDO is non-nil, or normally if nil.
 BODY should not switch buffers or rebind `default-directory'."
     (declare (indent 1))
-    `(let ((default-directory
-            (if ,sudo
-                (if (file-remote-p default-directory)
-                    (user-error "Cannot use sudo on remote directory")
-                  (concat "/sudo::" default-directory))
-              default-directory)))
+    `(let ((default-directory (if ,sudo
+                                  (sk-sudo-file default-directory)
+                                default-directory)))
        ,@body))
 
   ;; Functions
@@ -612,7 +609,16 @@ Treat quoted strings and balanced delimiters as single units."
   (defun html-head-js (&rest body)
     (concat "<script type=\"text/javascript\">\n"
             (string-join body)
-            "</script>\n")))
+            "</script>\n"))
+
+  (defun sk-sudo-file (file)
+    (if (file-remote-p file)
+        (user-error "Cannot use sudo on remote path")
+      (concat "/sudo::" (expand-file-name file))))
+
+  (defun sk-sudo-find-file (file)
+    (interactive "fSudo find file: ")
+    (find-file (sk-sudo-file file))))
 #+end_src
 
 ** Appearance settings
@@ -2811,9 +2817,7 @@ The selection happens once vertico has computed its candidates."
   (("M-o"   . embark-act)
    ("C-h B" . embark-bindings)
    :map minibuffer-mode-map
-   ("C-M-o" . embark-act-1)
-   :map embark-file-map
-   ("k"     . make-directory))
+   ("C-M-o" . embark-act-1))
   :init
   (evil-leader/set-key "hb" 'embark-bindings)
   :config
@@ -2886,7 +2890,9 @@ The selection happens once vertico has computed its candidates."
     :doc "Keymap for Embark file actions."
     :parent embark-file-map
     "." #'my-create-dir-locals
-    "p" #'sk-create-project)
+    "k" #'make-directory
+    "p" #'sk-create-project
+    "u" #'sk-sudo-find-file)
   (add-to-list 'embark-keymap-alist '(file . embark-my-file-actions))
   (advice-add 'embark-kill-ring-remove :before
               (lambda (text)
