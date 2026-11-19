@@ -2326,7 +2326,8 @@ Treat quoted strings and balanced delimiters as single units."
   (marginalia-documentation
    ((t :inherit font-lock-function-name-face :underline nil)))
   :config
-  (setq marginalia-max-relative-age 0)
+  (setq marginalia-align 'right
+        marginalia-max-relative-age 0)
   ;; For counsel-find-file
   (push '(file none) marginalia-annotators))
 
